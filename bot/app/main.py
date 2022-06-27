@@ -9,7 +9,7 @@ from app.config import config
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.DEBUG
+    level=logging.INFO
 )
 application = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).build()
 
