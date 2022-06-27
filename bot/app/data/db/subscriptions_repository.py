@@ -1,43 +1,49 @@
 from typing import List
 
 from sqlalchemy import and_
-from sqlalchemy.orm import Session
+from sqlalchemy.future import select
 
-from . import get_session
+from . import async_session
 from app.data.models.subscription import Subscription, SubscriptionUser, SubscriptionCondition
 from app.data.models.users import User
 
 
 async def get_subscriptions() -> List[Subscription]:
-    session = get_session()
-    return await session.query(Subscription).all()
+    async with async_session() as session:
+        result = await session.execute(select(Subscription))
+        return result.scalars().all()
 
 
 async def get_active_subscription_for_user(user_id: int) -> Subscription:
-    session = get_session()
-    subscription_user = await session.query(SubscriptionUser).filter(
-        and_(SubscriptionUser.user_id == user_id, SubscriptionUser.active is True)
-    ).first()
-    return subscription_user.subscription
+    async with async_session() as session:
+        result = await session.execute(select(SubscriptionUser).filter(
+            and_(SubscriptionUser.user_id == user_id, SubscriptionUser.active is True)
+        ))
+        subscription_user = result.scalars().first()
+        return subscription_user.subscription
 
 
 async def get_subscription_condition(subscription_id: int) -> List[SubscriptionCondition]:
-    session = get_session()
-    return await session.query(SubscriptionCondition).filter(SubscriptionCondition.subscription_id == subscription_id).all()
+    async with async_session() as session:
+        result = await session.execute(
+            select(SubscriptionCondition).filter(SubscriptionCondition.subscription_id == subscription_id))
+        return result.scalars().all()
 
 
 async def add_subscription_to_user(subscription_id: int, subscription_condition_id: int, user_id: int) -> None:
-    session = get_session()
-    user = session.query(User).filter(User.telegram_user_id == user_id).first()
-    subscription_condition = session.query(SubscriptionCondition).get(subscription_condition_id)
-    user.subscriptions.append(SubscriptionUser(
-        subscription_condition=subscription_condition,
-        subscription_id=subscription_id,
-        active=True
-    ))
-    await session.commit()
+    async with async_session() as session:
+        user = (await session.execute(select(User).filter(User.telegram_user_id == user_id))).scalars().first()
+        subscription_condition = await session.get(SubscriptionCondition, subscription_condition_id)
+        subscription_user = SubscriptionUser(
+            subscription_condition=subscription_condition,
+            subscription_id=subscription_id,
+            active=True,
+            user_id=user.id
+        )
+        session.add(subscription_user)
+        await session.commit()
 
 
 async def get_subscription_by_id(subscription_id: int) -> Subscription:
-    session = get_session()
-    return await session.query(Subscription).get(subscription_id)
+    async with async_session() as session:
+        return await session.get(Subscription, subscription_id)

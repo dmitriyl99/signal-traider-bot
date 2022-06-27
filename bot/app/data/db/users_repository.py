@@ -1,12 +1,14 @@
 from sqlalchemy.orm import Session
 
-from . import get_session
+from . import async_session
+from sqlalchemy.future import select
 from app.data.models.users import User
 
 
 async def get_user_by_telegram_id(telegram_user_id: int) -> User:
-    session = get_session()
-    return await session.query(User).filter(User.telegram_user_id == telegram_user_id).first()
+    async with async_session() as session:
+        result = await session.execute(select(User).filter(User.telegram_user_id == telegram_user_id))
+        return result.scalars().first()
 
 
 async def save_user(name: str, phone: str, telegram_user_id: int) -> User:
@@ -15,8 +17,8 @@ async def save_user(name: str, phone: str, telegram_user_id: int) -> User:
         phone=phone,
         telegram_user_id=telegram_user_id
     )
-    session = get_session()
-    session.add(user)
-    await session.commit()
+    async with async_session() as session:
+        session.add(user)
+        await session.commit()
 
     return user
