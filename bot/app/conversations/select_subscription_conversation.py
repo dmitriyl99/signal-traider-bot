@@ -11,7 +11,7 @@ CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION,SELECT_PAYMENT_PROVIDER = range(3)
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
     query = update.callback_query
-    subscriptions = subscriptions_repository.get_subscriptions()
+    subscriptions = await subscriptions_repository.get_subscriptions()
     chunked_subscriptions = array.chunks(subscriptions, 2)
     keyboard = []
     for chunk in chunked_subscriptions:
@@ -33,7 +33,7 @@ async def _choose_subscription(update: Update, context: CallbackContext.DEFAULT_
     callback_data = query.data
     subscription_id = int(callback_data.split(':')[1])
     context.user_data['subscription:id'] = subscription_id
-    subscription_conditions = subscriptions_repository.get_subscription_condition(subscription_id)
+    subscription_conditions = await subscriptions_repository.get_subscription_condition(subscription_id)
     chunked_conditions = array.chunks(subscription_conditions, 2)
     keyboard = []
     for chunk in chunked_conditions:
@@ -54,7 +54,7 @@ async def _choose_condition(update: Update, context: CallbackContext.DEFAULT_TYP
     subscription_condition_id = int(callback_data.split(':')[1])
     context.user_data['subscription:condition_id'] = subscription_condition_id
     subscription_id = context.user_data['subscription:id']
-    subscription = subscriptions_repository.get_subscription_by_id(subscription_id)
+    subscription = await subscriptions_repository.get_subscription_by_id(subscription_id)
     subscription_condition = list(filter(lambda sc: sc.id == subscription_condition_id, subscription.conditions))[0]
     await query.answer()
     providers = payment_providers.get_payment_providers()
@@ -74,7 +74,7 @@ async def _choose_condition(update: Update, context: CallbackContext.DEFAULT_TYP
 async def _select_payment_provider(update: Update, context: CallbackContext.DEFAULT_TYPE):
     query = update.callback_query
     subscription_id = context.user_data['subscription:id']
-    subscription = subscriptions_repository.get_subscription_by_id(subscription_id)
+    subscription = await subscriptions_repository.get_subscription_by_id(subscription_id)
     subscription_condition_id = context.user_data['subscription:condition_id']
     subscription_condition = list(filter(lambda sc: sc.id == subscription_condition_id, subscription.conditions))[0]
     _, _, payment_provider_name = query.data.split(':')

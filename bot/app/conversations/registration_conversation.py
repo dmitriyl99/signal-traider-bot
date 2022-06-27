@@ -11,7 +11,7 @@ NAME, PHONE = range(2)
 
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
-    current_user = users_repository.get_user_by_telegram_id(update.effective_user.id)
+    current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if current_user is not None:
         await update.message.reply_text(strings.hello_message % current_user.name)
         await actions.send_subscription_menu_button(update, context)
@@ -48,7 +48,7 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         dirty_phone_number = match.group(0)
         un_spaced_phone_number = dirty_phone_number.replace(' ', '')
         phone_number = un_spaced_phone_number.replace('+', '')
-    users_repository.save_user(context.user_data['registration_name'], phone_number, update.effective_user.id)
+    await users_repository.save_user(context.user_data['registration_name'], phone_number, update.effective_user.id)
     await update.message.reply_text(strings.registration_finished, reply_markup=ReplyKeyboardRemove())
     await actions.send_subscription_menu_button(update, context)
     del context.user_data['registration_name']
