@@ -1,0 +1,66 @@
+import re
+
+from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
+from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, filters
+
+from app.resources import strings
+from app import actions
+from app.data.db import users_repository
+
+NAME, PHONE = range(2)
+
+
+async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+    current_user = users_repository.get_user_by_telegram_id(update.effective_user.id)
+    if current_user is not None:
+        await update.message.reply_text(strings.hello_message % current_user.name)
+        await actions.send_subscription_menu_button(update, context)
+        return ConversationHandler.END
+    await update.message.reply_text(strings.registration_name, reply_markup=ReplyKeyboardRemove())
+
+    return NAME
+
+
+async def _name(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+    text = update.message.text
+    context.user_data['registration_name'] = text
+    keyboard = [[KeyboardButton(text=strings.send_phone_button_text, request_contact=True)]]
+
+    await update.message.reply_text(
+        strings.registration_phone,
+        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True),
+        parse_mode='HTML'
+    )
+
+    return PHONE
+
+
+async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+    if update.message.contact is not None:
+        phone_number = update.message.contact.phone_number
+    else:
+        regex = r'\+*998\s*\d{2}\s*\d{3}\s*\d{2}\s*\d{2}'
+        pattern = re.compile(regex)
+        match = re.search(pattern, update.message.text)
+        if match is None:
+            await update.message.reply_text(strings.validation_phone_message)
+            return PHONE
+        dirty_phone_number = match.group(0)
+        un_spaced_phone_number = dirty_phone_number.replace(' ', '')
+        phone_number = un_spaced_phone_number.replace('+', '')
+    users_repository.save_user(context.user_data['registration_name'], phone_number, update.effective_user.id)
+    await update.message.reply_text(strings.registration_finished, reply_markup=ReplyKeyboardRemove())
+    await actions.send_subscription_menu_button(update, context)
+    del context.user_data['registration_name']
+    return ConversationHandler.END
+
+
+handler = ConversationHandler(
+    entry_points=[CommandHandler('start', _start)],
+    states={
+        NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, _name)],
+        PHONE: [MessageHandler((filters.TEXT | filters.CONTACT) & ~filters.COMMAND, _phone)]
+    },
+    fallbacks=[MessageHandler(filters.TEXT, '')]
+)
+
