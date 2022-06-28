@@ -5,9 +5,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from jose import JWTError, jwt
 
 from app.data.db.users_repository import UsersRepository
-from app.dependencies import get_user_repository
+from app.data.models.admin_users import AdminUser
+from app.dependencies import get_user_repository, get_current_user
 from app.config import settings
-from app.routers.forms.auth import LoginForm
+
+from .forms.auth import LoginForm
+from .responses.auth import Token, User
 
 
 router = APIRouter(prefix='/auth', tags=['auth'])
@@ -24,7 +27,7 @@ def _create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-@router.post('/token')
+@router.post('/token', response_model=Token)
 async def token(
         form_data: LoginForm,
         user_repository: UsersRepository = Depends(get_user_repository)
@@ -38,8 +41,16 @@ async def token(
         )
     access_token_expires = timedelta(settings.jwt_ttl)
     access_token = _create_access_token(
-        data={'sub': user.id},
+        data={'sub': str(user.id)},
         expires_delta=access_token_expires
     )
 
     return {'access_token': access_token, 'token_type': 'bearer'}
+
+
+@router.get('/me', response_model=User)
+async def get_me(current_user: AdminUser = Depends(get_current_user)):
+    return User(
+        id=current_user.id,
+        username=current_user.username,
+    )

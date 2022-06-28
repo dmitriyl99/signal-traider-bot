@@ -41,3 +41,6 @@ class UsersRepository:
         await self._session.commit()
         await self._session.refresh(user)
         return user
+
+    async def get_user_by_id(self, user_id: int) -> AdminUser:
+        return await self._session.get(AdminUser, user_id)
