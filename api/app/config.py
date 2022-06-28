@@ -9,7 +9,7 @@ load_dotenv(os.path.join(os.getcwd(), '.env'))
 class Settings(BaseSettings):
     jwt_secret_key: str
     jwt_algorithm: str
-    jwt_ttl: str
+    jwt_ttl: int
 
     database_url: str
 
