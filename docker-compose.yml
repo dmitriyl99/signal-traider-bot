@@ -6,7 +6,7 @@ services:
     ports:
       - 8000:80
     volumes:
-      - ./api/app:/code
+      - ./api:/app
   
   bot:
     container_name: 'telegram_bot'
