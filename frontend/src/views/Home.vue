@@ -22,7 +22,7 @@ export default {
     ])
   },
 
-  beforeCreate() {
+  beforeMount() {
     if (this.jwtToken == null) {
       this.$router.push({name: 'auth.login'})
     }
