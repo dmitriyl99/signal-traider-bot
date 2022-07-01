@@ -34,9 +34,9 @@
           <!-- Navigation -->
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link " href="./widgets.html">
+              <router-link :to="{name: 'UsersList'}" class="nav-link">
                 <i class="fe fe-user"></i> Пользователи
-              </a>
+              </router-link>
             </li>
             <li class="nav-item">
               <a class="nav-link">

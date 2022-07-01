@@ -1,8 +1,11 @@
+from typing import List
+
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from passlib.context import CryptContext
 
 from app.data.models.admin_users import AdminUser
+from app.data.models.users import User
 
 
 class UsersRepository:
@@ -44,3 +47,7 @@ class UsersRepository:
 
     async def get_user_by_id(self, user_id: int) -> AdminUser:
         return await self._session.get(AdminUser, user_id)
+
+    async def get_all_users(self) -> List[User]:
+        result = await self._session.execute(select(User))
+        return result.scalars().all()
