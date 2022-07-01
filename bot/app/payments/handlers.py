@@ -1,7 +1,7 @@
 from telegram import Update, SuccessfulPayment
 from telegram.ext import CallbackContext, PreCheckoutQueryHandler, MessageHandler, filters
 
-from app.data.db import subscriptions_repository
+from app.data.db import subscriptions_repository, payments_repository, users_repository
 
 _allowed_actions = ['subscription']
 
@@ -33,6 +33,8 @@ async def _action_subscribe(update: Update, context: CallbackContext.DEFAULT_TYP
     successful_payment = update.message.successful_payment
     action, telegram_user_id, subscription_id, subscription_condition_id = successful_payment.invoice_payload.split(':')
     await subscriptions_repository.add_subscription_to_user(int(subscription_id), int(subscription_condition_id), int(telegram_user_id))
+    user = await users_repository.get_user_by_telegram_id(telegram_user_id)
+    await payments_repository.save_payment(successful_payment.total_amount, user.id, subscription_id, subscription_condition_id)
     if 'invoice_message_id' in context.user_data:
         await context.bot.delete_message(update.effective_chat.id, context.user_data['invoice_message_id'])
     await update.message.reply_text('Подписка куплена!')
