@@ -1,5 +1,7 @@
 <template>
-  <router-view/>
+  <AppLayout>
+    <router-view></router-view>
+  </AppLayout>
 </template>
 
 <style>
@@ -24,3 +26,12 @@
   color: #42b983;
 }
 </style>
+
+<script>
+import AppLayout from "./layouts/AppLayout";
+
+export default {
+  name: 'App',
+  components: { AppLayout }
+}
+</script>
