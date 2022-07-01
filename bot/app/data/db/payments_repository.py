@@ -17,6 +17,6 @@ async def save_payment(
     )
     async with async_session() as session:
         session.add(payment)
-        session.commit()
-        session.refresh(payment)
+        await session.commit()
+        await session.refresh(payment)
         return payment
