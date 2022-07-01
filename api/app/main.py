@@ -2,7 +2,7 @@ from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, users
+from app.routers import auth, users, payments
 
 
 app = FastAPI(title='Signal Traider Bot')
@@ -21,6 +21,10 @@ app.include_router(
 )
 app.include_router(
     users.router,
+    prefix='/api'
+)
+app.include_router(
+    payments.router,
     prefix='/api'
 )
 

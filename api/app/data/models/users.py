@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 
 from . import Base
 from .subscription import SubscriptionUser
+from .payments import Payment
 
 
 class User(Base):
@@ -17,3 +18,4 @@ class User(Base):
     created_at = sa.Column(sa.DateTime, default=datetime.now)
 
     subscriptions = relationship(SubscriptionUser, back_populates='user')
+    payments = relationship(Payment, back_populates='user')
