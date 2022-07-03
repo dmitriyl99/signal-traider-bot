@@ -8,16 +8,20 @@
           <tr>
             <th>ID</th>
             <th>Сумма</th>
+            <th>Провайдер</th>
             <th>Подписка</th>
             <th>Длительность</th>
+            <th>Дата</th>
           </tr>
           </thead>
           <tbody>
           <tr v-for="payment in payments" :key="payment.id">
             <td>{{ payment.id }}</td>
             <td>{{ payment.amount }}</td>
+            <td>{{ payment.provider }}</td>
             <td>{{ payment.subscription.name }}</td>
             <td>{{ payment.subscription_condition.duration_in_month }} мес.</td>
+            <td>{{ (new Date(payment.created_at)).toLocaleDateString() }}</td>
           </tr>
           </tbody>
         </table>

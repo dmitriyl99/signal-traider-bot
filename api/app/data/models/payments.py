@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from . import Base
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
@@ -12,6 +14,7 @@ class Payment(Base):
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'))
     subscription_id = sa.Column(sa.Integer, sa.ForeignKey('subscriptions.id'))
     subscription_condition_id = sa.Column(sa.Integer, sa.ForeignKey('subscription_conditions.id'))
+    created_at = sa.Column(sa.DateTime, default=datetime.now)
 
     user = relationship('User', back_populates='payments')
     subscription = relationship('Subscription')
