@@ -21,10 +21,10 @@ def upgrade() -> None:
         'payments',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('amount', sa.Integer),
+        sa.Column('provider', sa.String),
         sa.Column('user_id', sa.Integer, sa.ForeignKey('users.id')),
         sa.Column('subscription_id', sa.Integer, sa.ForeignKey('subscriptions.id')),
         sa.Column('subscription_condition_id', sa.Integer, sa.ForeignKey('subscription_conditions.id')),
-        sa.Column('provider', sa.String)
     )
 
 
