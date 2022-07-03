@@ -20,9 +20,9 @@
           </div>
           <div class="col-auto">
             <!-- Button -->
-            <a href="#!" class="btn btn-primary lift">
+            <router-link :to="{name: 'CreateSignal'}" class="btn btn-primary lift">
               Отправить сигнал
-            </a>
+            </router-link>
 
           </div>
         </div> <!-- / .row -->

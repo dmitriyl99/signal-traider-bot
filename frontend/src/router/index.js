@@ -2,6 +2,8 @@ import {createRouter, createWebHashHistory} from 'vue-router'
 import Dashboard from '../views/Dashboard.vue';
 import UsersList from "../views/Users/UsersList";
 import PaymentsList from "../views/payments/PaymentsList";
+import ListSignals from "../views/Signals/ListSignals";
+import CreateSignal from "../views/Signals/CreateSignal";
 import Login from "../views/auth/Login";
 
 const routes = [
@@ -28,6 +30,22 @@ const routes = [
         meta: {
             layout: 'AppLayoutAdmin'
         }
+    },
+    {
+        path: '/signals',
+        name: 'ListSignals',
+        component: ListSignals,
+        meta: {
+            layout: 'AppLayoutAdmin'
+        },
+    },
+    {
+        path: '/signals/create',
+        component: CreateSignal,
+        name: 'CreateSignal',
+        meta: {
+            layout: 'AppLayoutAdmin'
+        },
     },
     {
         path: '/auth/login',
