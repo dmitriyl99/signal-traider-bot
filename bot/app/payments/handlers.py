@@ -24,7 +24,7 @@ async def _pre_checkout_subscription(update: Update, context: CallbackContext.DE
 
 async def _checkout_subscription(update: Update, context: CallbackContext.DEFAULT_TYPE):
     successful_payment = update.message.successful_payment
-    action, _, _, _ = successful_payment.invoice_payload.split(':')
+    action, _, _, _, _ = successful_payment.invoice_payload.split(':')
     action_callback = _actions_map[action]
     await action_callback(update, context)
 
