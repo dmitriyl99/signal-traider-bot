@@ -32,4 +32,4 @@ class SubscriptionUser(Base):
     subscription_id = sa.Column(sa.Integer)
     active = sa.Column(sa.Boolean)
     subscription_condition = relationship('SubscriptionCondition', back_populates='users')
-    user = relationship('User', back_populates='subscriptions')
+    user = relationship('User', back_populates='subscription')

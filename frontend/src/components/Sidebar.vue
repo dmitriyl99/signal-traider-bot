@@ -44,9 +44,9 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link " href="./widgets.html">
+              <router-link class="nav-link " :to="{name: 'PaymentsList'}">
                 <i class="fe fe-credit-card"></i> История оплат
-              </a>
+              </router-link>
             </li>
           </ul>
 

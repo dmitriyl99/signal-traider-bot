@@ -10,4 +10,5 @@ router = APIRouter(prefix='/users', tags=['Users'])
 async def get_users_list(
         user_repository: UsersRepository = Depends(get_user_repository)
 ):
-    return await user_repository.get_all_users()
+    users = await user_repository.get_all_users()
+    return users

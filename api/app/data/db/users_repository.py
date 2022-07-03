@@ -2,10 +2,12 @@ from typing import List
 
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload, defaultload, joinedload
 from passlib.context import CryptContext
 
 from app.data.models.admin_users import AdminUser
 from app.data.models.users import User
+from app.data.models.subscription import SubscriptionUser, SubscriptionCondition
 
 
 class UsersRepository:
@@ -49,5 +51,8 @@ class UsersRepository:
         return await self._session.get(AdminUser, user_id)
 
     async def get_all_users(self) -> List[User]:
-        result = await self._session.execute(select(User))
+        stmt = select(User).options(selectinload(User.subscription).options(
+            joinedload(SubscriptionUser.subscription_condition).joinedload(SubscriptionCondition.subscription)
+        ))
+        result = await self._session.execute(stmt)
         return result.scalars().all()

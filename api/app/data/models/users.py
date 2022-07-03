@@ -17,5 +17,5 @@ class User(Base):
     phone = sa.Column(sa.String(12))
     created_at = sa.Column(sa.DateTime, default=datetime.now)
 
-    subscriptions = relationship(SubscriptionUser, back_populates='user')
+    subscription = relationship(SubscriptionUser, back_populates='user', uselist=False)
     payments = relationship(Payment, back_populates='user')
