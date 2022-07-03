@@ -13,5 +13,8 @@ class Settings(BaseSettings):
 
     database_url: str
 
+    telegram_bot_api_domain: str
+    telegram_bot_api_token: str
+
 
 settings = Settings()

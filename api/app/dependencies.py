@@ -8,6 +8,7 @@ from jose import jwt, JWTError
 
 from app.data.db.users_repository import UsersRepository
 from app.data.db.payments_repository import PaymentsRepository
+from app.data.db.signals_repository import SignalsRepository
 from app.data.db import get_session
 from app.data.models.admin_users import AdminUser
 from app.config import settings
@@ -21,6 +22,10 @@ def get_user_repository(session: AsyncSession = Depends(get_session)):
 
 def get_payments_repository(session: AsyncSession = Depends(get_session)):
     return PaymentsRepository(session)
+
+
+def get_signals_repository(session: AsyncSession = Depends(get_session)):
+    return SignalsRepository(session)
 
 
 async def get_current_user(

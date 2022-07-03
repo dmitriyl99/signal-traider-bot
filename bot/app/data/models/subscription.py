@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
@@ -33,3 +35,5 @@ class SubscriptionUser(Base):
     active = sa.Column(sa.Boolean)
     subscription_condition = relationship('SubscriptionCondition', back_populates='users')
     user = relationship('User', back_populates='subscriptions')
+
+    created_at = sa.Column(sa.DateTime, default=datetime.now)

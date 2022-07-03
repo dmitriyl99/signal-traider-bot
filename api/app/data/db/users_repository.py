@@ -56,3 +56,8 @@ class UsersRepository:
         ))
         result = await self._session.execute(stmt)
         return result.scalars().all()
+
+    async def get_all_users_with_active_subscriptions(self) -> List[User]:
+        stmt = select(User).options(selectinload(User.subscription)).filter(SubscriptionUser.active == True)
+        result = await self._session.execute(stmt)
+        return result.scalars().all()

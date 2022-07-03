@@ -37,6 +37,7 @@ def upgrade() -> None:
         sa.Column('subscription_condition_id', sa.Integer, sa.ForeignKey('subscription_conditions.id'), primary_key=True),
         sa.Column('subscription_id', sa.Integer),
         sa.Column('active', sa.Boolean, default=False),
+        sa.Column('created_at', sa.DateTime)
     )
 
 
