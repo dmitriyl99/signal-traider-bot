@@ -91,7 +91,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
             subscription_condition.duration_in_month,
             subscription_condition.price / 100
         ),
-        payload='subscription:%d:%d:%d:%d' % (update.effective_user.id, subscription_id, subscription_condition_id, payment_provider_name),
+        payload='subscription:%d:%d:%d:%s' % (update.effective_user.id, subscription_id, subscription_condition_id, payment_provider_name),
         provider_token=payment_provider.provider_token,
         currency='UZS',
         prices=[
