@@ -8,6 +8,7 @@ class Payment(Base):
 
     id = sa.Column(sa.Integer, primary_key=True)
     amount = sa.Column(sa.Integer)
+    provider = sa.Column(sa.String)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'))
     subscription_id = sa.Column(sa.Integer, sa.ForeignKey('subscriptions.id'))
     subscription_condition_id = sa.Column(sa.Integer, sa.ForeignKey('subscription_conditions.id'))
