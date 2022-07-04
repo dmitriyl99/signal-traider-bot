@@ -17,4 +17,4 @@ _job_stores = {
 }
 scheduler = AsyncIOScheduler(jobstores=_job_stores)
 
-scheduler.add_job(check_all_subscriptions_job, trigger=CronTrigger(hour=1))
+scheduler.add_job(check_all_subscriptions_job, trigger=CronTrigger(hour=0))

@@ -34,6 +34,7 @@ class SubscriptionUser(Base):
     subscription_id = sa.Column(sa.Integer)
     active = sa.Column(sa.Boolean)
     subscription_condition: SubscriptionCondition = relationship('SubscriptionCondition', back_populates='users')
+    subscription: Subscription = relationship('Subscription')
     user = relationship('User', back_populates='subscription')
 
     created_at = sa.Column(sa.DateTime, default=datetime.now)
