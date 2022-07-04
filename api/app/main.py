@@ -3,9 +3,21 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import auth, users, payments, signals
+from app.jobs import scheduler
 
 
 app = FastAPI(title='Signal Traider Bot')
+
+
+@app.on_event("startup")
+def _on_app_startup():
+    scheduler.start()
+
+
+@app.on_event('shutdown')
+def _on_app_shutdown():
+    scheduler.shutdown()
+
 
 app.add_middleware(
     CORSMiddleware,

@@ -33,7 +33,7 @@ class SubscriptionUser(Base):
     subscription_condition_id = sa.Column(sa.ForeignKey('subscription_conditions.id'), primary_key=True)
     subscription_id = sa.Column(sa.Integer)
     active = sa.Column(sa.Boolean)
-    subscription_condition = relationship('SubscriptionCondition', back_populates='users')
+    subscription_condition: SubscriptionCondition = relationship('SubscriptionCondition', back_populates='users')
     user = relationship('User', back_populates='subscription')
 
     created_at = sa.Column(sa.DateTime, default=datetime.now)
