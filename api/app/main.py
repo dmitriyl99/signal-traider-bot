@@ -1,9 +1,17 @@
+import logging
+
 from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import auth, users, payments, signals
 from app.jobs import scheduler
+
+
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 
 
 app = FastAPI(title='Signal Traider Bot')
