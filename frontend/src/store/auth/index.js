@@ -6,12 +6,20 @@ const authModule = {
         current_user: loadObject('current_user')
     }),
     mutations: {
-        login(state, {jwtToken, currentUser}) {
+        setJwtToken(state, {jwtToken}) {
             state.jwt_token = jwtToken;
-            state.current_user = currentUser;
-
             saveValue('jwt_token', jwtToken);
+        },
+        setCurrentUser(state, {currentUser}) {
+            state.current_user = currentUser;
             saveObject('current_user', currentUser);
+        },
+
+        logout(state) {
+            state.jwt_token = null;
+            state.current_user = null;
+            localStorage.removeItem('jwt_token');
+            localStorage.removeItem('current_user')
         }
     },
     actions: {
@@ -19,8 +27,9 @@ const authModule = {
             return new Promise((resolve, reject) => {
                 authApi.getJwtToken(username, password).then(response => {
                     let accessToken = response.data.access_token;
+                    context.commit('setJwtToken', {jwtToken: accessToken})
                     authApi.getCurrentUser(accessToken).then(response => {
-                        context.commit('login', {jwtToken: accessToken, currentUser: response.data})
+                        context.commit('setCurrentUser', {currentUser: response.data})
                         resolve(true)
                     }, error => {
                         reject(error)
@@ -29,6 +38,9 @@ const authModule = {
                     reject(error)
                 })
             })
+        },
+        logout(context) {
+            context.commit('logout')
         }
     },
     getters: {
@@ -37,6 +49,9 @@ const authModule = {
         },
         currentUser(state) {
             return state.current_user
+        },
+        isLoggedIn(state) {
+            return state.jwt_token != null && state.current_user != null
         }
     }
 };
