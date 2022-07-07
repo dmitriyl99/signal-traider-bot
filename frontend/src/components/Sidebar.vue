@@ -21,7 +21,6 @@
             </a>
             <!-- Menu -->
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sidebarIcon">
-              <a href="./profile-posts.html" class="dropdown-item">Profile</a>
               <hr class="dropdown-divider">
               <button v-on:click="logout" class="dropdown-item">Logout</button>
             </div>
@@ -37,11 +36,6 @@
               <router-link :to="{name: 'UsersList'}" class="nav-link">
                 <i class="fe fe-user"></i> Пользователи
               </router-link>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link">
-                <i class="fe fe-bell"></i> Cигналы
-              </a>
             </li>
             <li class="nav-item">
               <router-link class="nav-link " :to="{name: 'PaymentsList'}">
@@ -69,7 +63,6 @@
 
                 <!-- Menu -->
                 <div class="dropdown-menu" aria-labelledby="sidebarIconCopy">
-                  <a href="./profile-posts.html" class="dropdown-item">Profile</a>
                   <hr class="dropdown-divider">
                   <button v-on:click="logout" class="dropdown-item">Logout</button>
                 </div>
