@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler.triggers.interval import IntervalTrigger
@@ -17,4 +19,4 @@ _job_stores = {
 }
 scheduler = AsyncIOScheduler(jobstores=_job_stores)
 
-scheduler.add_job(check_all_subscriptions_job, trigger=IntervalTrigger(minutes=1))
+scheduler.add_job(check_all_subscriptions_job, trigger=IntervalTrigger(minutes=1), next_run_time=datetime.now())
