@@ -23,7 +23,7 @@
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sidebarIcon">
               <a href="./profile-posts.html" class="dropdown-item">Profile</a>
               <hr class="dropdown-divider">
-              <a href="./sign-in.html" class="dropdown-item">Logout</a>
+              <button v-on:click="logout" class="dropdown-item">Logout</button>
             </div>
           </div>
         </div>
@@ -71,7 +71,7 @@
                 <div class="dropdown-menu" aria-labelledby="sidebarIconCopy">
                   <a href="./profile-posts.html" class="dropdown-item">Profile</a>
                   <hr class="dropdown-divider">
-                  <a href="./sign-in.html" class="dropdown-item">Logout</a>
+                  <button v-on:click="logout" class="dropdown-item">Logout</button>
                 </div>
 
               </div>
@@ -89,6 +89,12 @@ export default {
   name: "Sidebar",
   created() {
     console.log(this.$router.currentRoute.value.name)
+  },
+  methods: {
+    logout() {
+      this.$store.dispatch('logout')
+      this.$router.push({ name: 'auth.login' })
+    }
   }
 }
 </script>
