@@ -21,6 +21,10 @@ function sendSignal(
     return apiInstance.post('/signals', payload);
 }
 
+function getAllSignals() {
+    return apiInstance.get('/signals');
+}
+
 export default {
-    sendSignal
+    sendSignal, getAllSignals
 }

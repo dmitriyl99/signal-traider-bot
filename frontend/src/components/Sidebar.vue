@@ -38,6 +38,11 @@
               </router-link>
             </li>
             <li class="nav-item">
+              <router-link :to="{name: 'ListSignals'}" class="nav-link">
+                <i class="fe fe-bell"></i> Сигналы
+              </router-link>
+            </li>
+            <li class="nav-item">
               <router-link class="nav-link " :to="{name: 'PaymentsList'}">
                 <i class="fe fe-credit-card"></i> История оплат
               </router-link>
