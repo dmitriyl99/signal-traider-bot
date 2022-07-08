@@ -35,6 +35,10 @@ async def add_subscription_to_user(subscription_id: int, subscription_condition_
     async with async_session() as session:
         user = (await session.execute(select(User).filter(User.telegram_user_id == user_id))).scalars().first()
         subscription_condition = await session.get(SubscriptionCondition, subscription_condition_id)
+        current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user_id)
+        current_subscription_user = (await session.execute(current_subscription_user_stmt)).scalars().first()
+        if current_subscription_user is not None:
+            current_subscription_user.delete()
         subscription_user = SubscriptionUser(
             subscription_condition=subscription_condition,
             subscription_id=subscription_id,
