@@ -2,6 +2,7 @@ from typing import List
 
 from sqlalchemy import and_
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 
 from . import async_session
 from app.data.models.subscription import Subscription, SubscriptionUser, SubscriptionCondition
@@ -14,13 +15,13 @@ async def get_subscriptions() -> List[Subscription]:
         return result.scalars().all()
 
 
-async def get_active_subscription_for_user(user_id: int) -> Subscription:
+async def get_active_subscription_for_user(user: User) -> SubscriptionUser:
     async with async_session() as session:
-        result = await session.execute(select(SubscriptionUser).filter(
-            and_(SubscriptionUser.user_id == user_id, SubscriptionUser.active is True)
+        result = await session.execute(select(SubscriptionUser).options(joinedload(SubscriptionUser.subscription_condition)).filter(
+            and_(SubscriptionUser.user_id == user.id, SubscriptionUser.active == True)
         ))
         subscription_user = result.scalars().first()
-        return subscription_user.subscription
+        return subscription_user
 
 
 async def get_subscription_condition(subscription_id: int) -> List[SubscriptionCondition]:

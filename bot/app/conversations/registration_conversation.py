@@ -1,11 +1,15 @@
 import re
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, filters
 
 from app.resources import strings
+from app.data.models.subscription import SubscriptionUser
 from app import actions
-from app.data.db import users_repository
+from app.data.db import users_repository, subscriptions_repository
+from app.helpers import date
 
 NAME, PHONE = range(2)
 
@@ -14,6 +18,19 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if current_user is not None:
         await update.message.reply_text(strings.hello_message % current_user.name)
+        active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(current_user)
+        if active_subscription is not None:
+            subscription = await subscriptions_repository.get_subscription_by_id(active_subscription.subscription_id)
+            now = datetime.now()
+            subscription_end_date = active_subscription.created_at + relativedelta(months=active_subscription.subscription_condition.duration_in_month)
+            diff_days = date.diff_in_days(now, subscription_end_date)
+            await update.message.reply_text(strings.active_subscription.format(
+                name=subscription.name,
+                month=active_subscription.subscription_condition.duration_in_month,
+                days=diff_days
+                ),
+            )
+            return ConversationHandler.END
         await actions.send_subscription_menu_button(update, context)
         return ConversationHandler.END
     await update.message.reply_text(strings.registration_name, reply_markup=ReplyKeyboardRemove())
