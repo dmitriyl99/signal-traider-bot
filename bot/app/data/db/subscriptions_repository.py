@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 
 from sqlalchemy import and_
 from sqlalchemy.future import select
@@ -7,6 +8,10 @@ from sqlalchemy.orm import joinedload
 from . import async_session
 from app.data.models.subscription import Subscription, SubscriptionUser, SubscriptionCondition
 from app.data.models.users import User
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 async def get_subscriptions() -> List[Subscription]:
@@ -33,20 +38,20 @@ async def get_subscription_condition(subscription_id: int) -> List[SubscriptionC
 
 async def add_subscription_to_user(subscription_id: int, subscription_condition_id: int, user_id: int) -> None:
     async with async_session() as session:
-        user = (await session.execute(select(User).filter(User.telegram_user_id == user_id))).scalars().first()
+        user: User = (await session.execute(select(User).filter(User.telegram_user_id == user_id))).scalars().first()
         subscription_condition = await session.get(SubscriptionCondition, subscription_condition_id)
-        current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user_id)
-        current_subscription_user = (await session.execute(current_subscription_user_stmt)).scalars().first()
-        if current_subscription_user is not None:
-            current_subscription_user.delete()
-            await session.commit()
-        subscription_user = SubscriptionUser(
-            subscription_condition=subscription_condition,
-            subscription_id=subscription_id,
-            active=True,
-            user_id=user.id
-        )
-        session.add(subscription_user)
+        current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user.id)
+        result = await session.execute(current_subscription_user_stmt)
+        subscription_user: SubscriptionUser = result.scalars().first()
+        logger.info('Current user subscription: {}'.format(subscription_user))
+        if subscription_user is None:
+            subscription_user = SubscriptionUser()
+            session.add(subscription_user)
+        subscription_user.subscription_id = subscription_id
+        subscription_user.user_id = user.id
+        subscription_user.subscription_condition_id = subscription_condition_id
+        subscription_user.created_at = datetime.now()
+        subscription_user.active = True
         await session.commit()
 
 
