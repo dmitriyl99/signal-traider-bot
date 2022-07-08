@@ -39,6 +39,7 @@ async def add_subscription_to_user(subscription_id: int, subscription_condition_
         current_subscription_user = (await session.execute(current_subscription_user_stmt)).scalars().first()
         if current_subscription_user is not None:
             current_subscription_user.delete()
+            await session.commit()
         subscription_user = SubscriptionUser(
             subscription_condition=subscription_condition,
             subscription_id=subscription_id,
