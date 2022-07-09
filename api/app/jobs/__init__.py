@@ -19,4 +19,4 @@ _job_stores = {
 }
 scheduler = AsyncIOScheduler(jobstores=_job_stores)
 
-scheduler.add_job(check_all_subscriptions_job, trigger=IntervalTrigger(minutes=1), next_run_time=datetime.now())
+scheduler.add_job(check_all_subscriptions_job, trigger=IntervalTrigger(minutes=1))
