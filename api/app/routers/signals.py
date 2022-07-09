@@ -9,7 +9,8 @@ from app.services import bot
 
 
 router = APIRouter(
-    prefix='/signals'
+    prefix='/signals',
+    tags=['Signals']
 )
 
 
