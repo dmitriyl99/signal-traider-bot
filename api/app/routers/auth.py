@@ -13,7 +13,7 @@ from .forms.auth import LoginForm
 from .responses.auth import Token, User
 
 
-router = APIRouter(prefix='/auth', tags=['auth'])
+router = APIRouter(prefix='/auth', tags=['Auth'])
 
 
 def _create_access_token(data: dict, expires_delta: timedelta | None = None):
