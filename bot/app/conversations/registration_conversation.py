@@ -55,6 +55,7 @@ async def _name(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
 async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     if update.message.contact is not None:
         phone_number = update.message.contact.phone_number
+        phone_number = phone_number.replace('+', '')
     else:
         regex = r'\+*998\s*\d{2}\s*\d{3}\s*\d{2}\s*\d{2}'
         pattern = re.compile(regex)
