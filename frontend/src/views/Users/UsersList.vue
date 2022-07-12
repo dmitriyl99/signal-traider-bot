@@ -32,7 +32,8 @@
               <td>{{ user.id }}</td>
               <td>{{ user.name }}</td>
               <td>{{ user.phone }}</td>
-              <td :class="{'text-success': user.subscription.active, 'text-danger': !user.subscription.active}">{{ user.subscription.subscription_condition.subscription.name }}, {{ user.subscription.subscription_condition.duration_in_month }} мес.</td>
+              <td v-if="user.subscription == null">-</td>
+              <td :class="{'text-success': user.subscription.active, 'text-danger': !user.subscription.active}" v-else>{{ user.subscription.subscription_condition.subscription.name }}, {{ user.subscription.subscription_condition.duration_in_month }} мес.</td>
               <td>{{ (new Date(user.created_at)).toLocaleDateString() }}</td>
             </tr>
           </tbody>
