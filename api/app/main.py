@@ -29,7 +29,7 @@ def _on_app_shutdown():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
+    allow_origins=["http://localhost:8080", "http://bot.masspay.uz", "https://bot.masspay.uz"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
