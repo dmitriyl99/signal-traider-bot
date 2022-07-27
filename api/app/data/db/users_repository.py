@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload, defaultload, joinedload
+from sqlalchemy.orm import selectinload, joinedload
 from passlib.context import CryptContext
 
 from app.data.models.admin_users import AdminUser
@@ -58,6 +58,6 @@ class UsersRepository:
         return result.scalars().all()
 
     async def get_all_users_with_active_subscriptions(self) -> List[User]:
-        stmt = select(User).options(selectinload(User.subscription)).filter(SubscriptionUser.active == True)
+        stmt = select(User).options(joinedload(User.subscription.and_(SubscriptionUser.active == True), innerjoin=True))
         result = await self._session.execute(stmt)
         return result.scalars().all()
