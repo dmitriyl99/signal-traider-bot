@@ -17,7 +17,7 @@
           <tbody>
           <tr v-for="payment in payments" :key="payment.id">
             <td>{{ payment.id }}</td>
-            <td>{{ payment.amount }}</td>
+            <td>{{ payment.amount / 100 }}</td>
             <td>{{ payment.provider }}</td>
             <td>{{ payment.subscription.name }}</td>
             <td>{{ payment.subscription_condition.duration_in_month }} мес.</td>
