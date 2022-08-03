@@ -5,6 +5,8 @@ from app.payments import providers as payment_providers
 from app.data.db import subscriptions_repository
 from app.helpers import array
 
+from app.services import currency_exchange as currency_exchange_service
+
 
 CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION,SELECT_PAYMENT_PROVIDER = range(3)
 
@@ -62,10 +64,10 @@ async def _choose_condition(update: Update, context: CallbackContext.DEFAULT_TYP
         lambda provider: InlineKeyboardButton(provider.name,
                                               callback_data='subscription:payment_provider:' + provider.name),
         providers))
-    await query.edit_message_text(text='<b>Подписка:</b> {}\n<b>Срок:</b> {}\n<b>Цена:</b> {}'.format(
+    await query.edit_message_text(text='<b>Подписка:</b> {}\n<b>Срок:</b> {}\n<b>Цена:</b> ${}'.format(
         subscription.name,
         subscription_condition.duration_in_month,
-        subscription_condition.price
+        int(subscription_condition.price / 100)
     ), reply_markup=InlineKeyboardMarkup([keyboard_buttons]), parse_mode='HTML')
 
     return SELECT_PAYMENT_PROVIDER
@@ -79,6 +81,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     subscription_condition = list(filter(lambda sc: sc.id == subscription_condition_id, subscription.conditions))[0]
     _, _, payment_provider_name = query.data.split(':')
     payment_provider = payment_providers.get_payment_provider_by_name(payment_provider_name)
+    exchanged_price = currency_exchange_service.convert_usd_to_uzs(subscription_condition.price / 100)
     if payment_provider is None:
         await query.answer('Invalid payment provider', show_alert=True)
         return ConversationHandler.END
@@ -86,7 +89,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     message = await context.bot.send_invoice(
         chat_id=update.effective_chat.id,
         title='Оплатить подписку',
-        description='%s на %d месяцев за %d сум' % (
+        description='%s на %d месяцев за $%d' % (
             subscription.name,
             subscription_condition.duration_in_month,
             subscription_condition.price / 100
@@ -95,7 +98,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
         provider_token=payment_provider.provider_token,
         currency='UZS',
         prices=[
-            LabeledPrice('%d месяцев' % subscription_condition.duration_in_month, subscription_condition.price)
+            LabeledPrice('%d месяцев' % subscription_condition.duration_in_month, int(exchanged_price) * 100)
         ]
     )
     context.user_data['invoice_message_id'] = message.message_id
