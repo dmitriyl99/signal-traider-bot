@@ -2,7 +2,7 @@
 <nav class="navbar navbar-vertical fixed-left navbar-expand-md navbar-light" id="sidebar">
       <div class="container-fluid">
         <!-- Toggler -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse" aria-controls="sidebarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse" aria-controls="sidebarCollapse" aria-expanded="false" aria-label="Toggle navigation" @click="toggleSidebarCollapsed">
           <span class="navbar-toggler-icon"></span>
         </button>
         <!-- Brand -->
@@ -28,7 +28,7 @@
         </div>
 
         <!-- Collapse -->
-        <div class="collapse navbar-collapse" id="sidebarCollapse">
+        <div class="collapse navbar-collapse" :class="{sidebarShow: 'show'}" id="sidebarCollapse">
 
           <!-- Navigation -->
           <ul class="navbar-nav">
@@ -85,6 +85,9 @@
 <script>
 export default {
   name: "Sidebar",
+  data: () => ({
+    sidebarShow: false
+  }),
   created() {
     console.log(this.$router.currentRoute.value.name)
   },
@@ -92,6 +95,10 @@ export default {
     logout() {
       this.$store.dispatch('logout')
       this.$router.push({ name: 'auth.login' })
+    },
+
+    toggleSidebarCollapsed() {
+      this.sidebarShow = !this.sidebarShow;
     }
   }
 }
