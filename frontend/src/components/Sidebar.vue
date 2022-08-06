@@ -28,7 +28,7 @@
         </div>
 
         <!-- Collapse -->
-        <div class="collapse navbar-collapse" :class="{sidebarShow: 'show'}" id="sidebarCollapse">
+        <div class="collapse navbar-collapse" :class="{show: sidebarShow}" id="sidebarCollapse">
 
           <!-- Navigation -->
           <ul class="navbar-nav">
