@@ -44,7 +44,7 @@
         </div>
 
         <!-- Button -->
-        <button class="btn btn-primary" type="submit" v-html="isLoading ? 'Отправляю, подождите...' : 'Отправить сигнал'"/>
+        <button v-if="sendButtonView" :disabled="isLoading" class="btn btn-primary" type="submit" v-html="isLoading ? 'Отправляю, подождите...' : 'Отправить сигнал'"/>
         <span class="text-success ms-3" v-if="successText != null">{{ successText }}</span>
 
       </form>
@@ -65,7 +65,8 @@ export default {
     tr_2: null,
     sl: null,
     isLoading: false,
-    successText: null
+    successText: null,
+    sendButtonView: true
   }),
 
   methods: {
@@ -74,6 +75,10 @@ export default {
       this.successText = null;
       signalsApi.sendSignal(this.currency_pair, this.execution_method, this.price, this.tr_1, this.tr_2, this.sl).then(() => {
         this.successText = 'Сигнал успешно отправлен';
+        this.sendButtonView = false;
+        setTimeout(() => {
+          this.$router.push({name: 'ListSignals'});
+        }, 5000);
       }).finally(() => {
         this.isLoading = false;
       })
