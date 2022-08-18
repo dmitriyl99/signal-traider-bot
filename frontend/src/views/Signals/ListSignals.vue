@@ -12,8 +12,8 @@
             <th>Валюта</th>
             <th>Метод исполнения</th>
             <th>Цена</th>
-            <th>TR 1</th>
-            <th>TR 2</th>
+            <th>TP 1</th>
+            <th>TP 2</th>
             <th>SL</th>
             <th>Дата</th>
           </tr>

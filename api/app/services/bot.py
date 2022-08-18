@@ -14,8 +14,8 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository):
     users_chunks = array.chunks(users, 50)
 
     text = """<b>{currency_pair}</b> <b>{execution_method}</b> <b>{price}</b>
-<b>TR 1</b>: {tr_1}
-<b>TR 2</b>: {tr_2}
+<b>TP 1</b>: {tr_1}
+<b>TP 2</b>: {tr_2}
 <b>SL</b>: {sl}
     """.format(
         currency_pair=signal.currency_pair,

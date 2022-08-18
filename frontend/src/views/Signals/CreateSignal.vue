@@ -24,12 +24,12 @@
         </div>
         <div class="row g-3">
           <div class="col-12 col-md-6 mb-3">
-            <label for="tr_1" class="form-label">TR 1</label>
-            <input type="text" class="form-control" id="tr_1" placeholder="TR 1" v-model="tr_1"/>
+            <label for="tr_1" class="form-label">TP 1</label>
+            <input type="text" class="form-control" id="tr_1" placeholder="TP 1" v-model="tr_1"/>
           </div>
           <div class="col-12 col-md-6 mb-3">
-            <label for="tr_2" class="form-label">TR 2</label>
-            <input type="text" class="form-control" id="tr_2" placeholder="TR 2" v-model="tr_2"/>
+            <label for="tr_2" class="form-label">TP 2</label>
+            <input type="text" class="form-control" id="tr_2" placeholder="TP 2" v-model="tr_2"/>
           </div>
         </div>
         <div class="row g-3">
