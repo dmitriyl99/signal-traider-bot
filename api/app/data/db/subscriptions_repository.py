@@ -31,6 +31,7 @@ class SubscriptionsRepository:
         subscription_user.subscription_condition_id = subscription_condition_id
         subscription_user.proactively_added = proactively_added
         subscription_user.user_id = user.id
+        subscription_user.active = False
         self._session.add(subscription_user)
         await self._session.commit()
 
