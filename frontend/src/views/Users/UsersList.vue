@@ -20,6 +20,7 @@
               <th>Номер телефона</th>
               <th>Подписка</th>
               <th>Дата создания</th>
+              <th>Дата регистрации</th>
             </tr>
           </thead>
           <tbody>
@@ -29,7 +30,8 @@
               <td>{{ user.phone }}</td>
               <td v-if="user.subscription == null">-</td>
               <td :class="{'text-success': user.subscription.active, 'text-danger': !user.subscription.active}" v-else>{{ user.subscription.subscription_condition.subscription.name }}, {{ user.subscription.subscription_condition.duration_in_month }} мес.</td>
-              <td>{{ (new Date(user.created_at)).toLocaleDateString() }}</td>
+              <td>{{ (new Date(user.created_at)).toLocaleString() }}</td>
+              <td><span v-if="user.registration_date != null">{{ (new Date(user.registration_date)).toLocaleString() }}</span></td>
             </tr>
           </tbody>
         </table>

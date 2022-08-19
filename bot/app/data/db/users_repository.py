@@ -1,8 +1,8 @@
-import logging
+from datetime import datetime
 
 from . import async_session
 from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.orm import joinedload
 from app.data.models.users import User
 from app.data.models.subscription import SubscriptionUser
 
@@ -22,10 +22,10 @@ async def save_user(name: str, phone: str, telegram_user_id: int) -> User:
             user = User(
                 name=name,
                 phone=phone,
-                telegram_user_id=telegram_user_id
             )
             session.add(user)
         user.telegram_user_id = telegram_user_id
+        user.registration_date = datetime.now()
         await session.commit()
 
     return user
@@ -40,6 +40,7 @@ async def check_for_proactively_added_user(phone: str, telegram_user_id: int) ->
             return False
         if user.telegram_user_id is None:
             user.telegram_user_id = telegram_user_id
+            user.registration_date = datetime.now()
         if len(user.subscriptions) > 0:
             proactively_subscription: SubscriptionUser = user.subscriptions[0]
             proactively_subscription.proactively_added = False

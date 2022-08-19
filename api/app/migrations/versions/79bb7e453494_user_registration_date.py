@@ -17,8 +17,8 @@ depends_on = None
 
 
 def upgrade() -> None:
-    pass
+    op.add_column('users', sa.Column('registration_date', sa.DateTime, nullable=True, default=None))
 
 
 def downgrade() -> None:
-    pass
+    op.drop_column('users', 'registration_date')
