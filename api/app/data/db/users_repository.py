@@ -1,4 +1,5 @@
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,8 +48,13 @@ class UsersRepository:
         await self._session.refresh(user)
         return user
 
-    async def get_user_by_id(self, user_id: int) -> AdminUser:
+    async def get_admin_user_by_id(self, user_id: int) -> AdminUser:
         return await self._session.get(AdminUser, user_id)
+
+    async def get_user_by_id(self, user_id: int) -> User:
+        stmt = select(User).options(joinedload(User.subscription)).filter(User.id == user_id)
+        result = await self._session.execute(stmt)
+        return result.scalars().first()
 
     async def get_all_users(self) -> List[User]:
         stmt = select(User).options(selectinload(User.subscription).options(
@@ -70,6 +76,38 @@ class UsersRepository:
         self._session.add(user)
         await self._session.commit()
         await self._session.refresh(user)
+        await self._session.commit()
+
+        return user
+
+    async def update_user(
+            self,
+            user_id: int,
+            name: str,
+            phone: str,
+            subscription_id: Optional[int] = None,
+            subscription_condition_id: Optional[int] = None
+    ) -> Optional[User]:
+        user = await self.get_user_by_id(user_id)
+        if user is None:
+            return None
+
+        user.name = name
+        user.phone = phone
+        if subscription_id and subscription_condition_id:
+            current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user.id)
+            result = await self._session.execute(current_subscription_user_stmt)
+            subscription_user: SubscriptionUser = result.scalars().first()
+            if subscription_user is None:
+                subscription_user = SubscriptionUser()
+                self._session.add(subscription_user)
+            subscription_user.subscription_id = subscription_id
+            subscription_user.user_id = user.id
+            subscription_user.subscription_condition_id = subscription_condition_id
+            subscription_user.created_at = datetime.now()
+            subscription_user.active = False
+            subscription_user.proactively_added = True
+
         await self._session.commit()
 
         return user

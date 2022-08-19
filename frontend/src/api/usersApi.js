@@ -13,6 +13,18 @@ function saveUser(
     })
 }
 
+function getUserById(id) {
+    return apiInstance.get(`/users/${id}`);
+}
+
+function updateUser(
+    id, name, phone, subscription_id, subscription_condition_id
+) {
+    return apiInstance.put(`/users/${id}`, {
+        name, phone, subscription_id, subscription_condition_id
+    })
+}
+
 export default {
-    getUsersList, saveUser
+    getUsersList, saveUser, getUserById, updateUser
 }

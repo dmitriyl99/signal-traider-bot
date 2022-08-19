@@ -21,6 +21,7 @@
               <th>Подписка</th>
               <th>Дата создания</th>
               <th>Дата регистрации</th>
+              <th>Действия</th>
             </tr>
           </thead>
           <tbody>
@@ -32,6 +33,7 @@
               <td :class="{'text-success': user.subscription.active, 'text-danger': !user.subscription.active}" v-else>{{ user.subscription.subscription_condition.subscription.name }}, {{ user.subscription.subscription_condition.duration_in_month }} мес.</td>
               <td>{{ (new Date(user.created_at)).toLocaleString() }}</td>
               <td><span class="text-success" v-if="user.registration_date != null">{{ (new Date(user.registration_date)).toLocaleString() }}</span><span v-else class="text-danger">Не зарегистрирован</span></td>
+              <td><router-link class="btn btn-warning" :to="{name: 'UpdateUser', params: {id: user.id}}"><span class="fe fe-edit"></span></router-link></td>
             </tr>
           </tbody>
         </table>
