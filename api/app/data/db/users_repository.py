@@ -61,3 +61,20 @@ class UsersRepository:
         stmt = select(User).options(joinedload(User.subscription.and_(SubscriptionUser.active == True), innerjoin=True))
         result = await self._session.execute(stmt)
         return result.scalars().all()
+
+    async def create_user(self, name: str, phone: str, subscription_condition_id: int, subscription_id: int) -> User:
+        user = User(
+            name=name,
+            phone=phone
+        )
+        subscription_user = SubscriptionUser()
+        subscription_user.subscription_id = subscription_id
+        subscription_user.subscription_condition_id = subscription_condition_id
+        self._session.add(user)
+        await self._session.commit()
+        await self._session.refresh(user)
+        subscription_user.user_id = user.id
+        self._session.add(subscription_user)
+        await self._session.commit()
+
+        return user

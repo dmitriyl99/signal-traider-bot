@@ -2,15 +2,10 @@
   <div class="card">
     <div class="card-header">
       <div class="row align-items-center">
-        <div class="col">
-          <form>
-            <div class="input-group input-group-flush input-group-merge input-group-reverse">
-              <input class="form-control list-search" type="search" placeholder="Search">
-              <span class="input-group-text">
-                              <i class="fe fe-search"></i>
-                            </span>
-            </div>
-          </form>
+        <div class="d-flex justify-content-end">
+          <router-link :to="{name: 'CreateUser'}" class="btn btn-primary lift">
+              Добавить пользователя
+            </router-link>
         </div>
       </div>
     </div>

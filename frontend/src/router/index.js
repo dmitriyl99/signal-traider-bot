@@ -1,6 +1,7 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
 import Dashboard from '../views/Dashboard.vue';
 import UsersList from "../views/Users/UsersList";
+import CreateUser from "../views/Users/CreateUser";
 import PaymentsList from "../views/payments/PaymentsList";
 import ListSignals from "../views/Signals/ListSignals";
 import CreateSignal from "../views/Signals/CreateSignal";
@@ -26,6 +27,17 @@ const routes = [
         path: '/users',
         name: 'UsersList',
         component: UsersList,
+        meta: {
+            layout: 'AppLayoutAdmin',
+            middleware: [
+                auth
+            ]
+        }
+    },
+    {
+        path: '/users/create',
+        name: 'CreateUser',
+        component: CreateUser,
         meta: {
             layout: 'AppLayoutAdmin',
             middleware: [
