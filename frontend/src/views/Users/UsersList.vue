@@ -31,7 +31,7 @@
               <td v-if="user.subscription == null">-</td>
               <td :class="{'text-success': user.subscription.active, 'text-danger': !user.subscription.active}" v-else>{{ user.subscription.subscription_condition.subscription.name }}, {{ user.subscription.subscription_condition.duration_in_month }} мес.</td>
               <td>{{ (new Date(user.created_at)).toLocaleString() }}</td>
-              <td><span v-if="user.registration_date != null">{{ (new Date(user.registration_date)).toLocaleString() }}</span></td>
+              <td><span class="text-success" v-if="user.registration_date != null">{{ (new Date(user.registration_date)).toLocaleString() }}</span><span v-else class="text-danger">Не зарегистрирован</span></td>
             </tr>
           </tbody>
         </table>
