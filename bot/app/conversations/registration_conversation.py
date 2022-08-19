@@ -66,6 +66,12 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         dirty_phone_number = match.group(0)
         un_spaced_phone_number = dirty_phone_number.replace(' ', '')
         phone_number = un_spaced_phone_number.replace('+', '')
+    proactively_check_result = await users_repository.check_for_proactively_added_user(phone_number, update.effective_user.id)
+    if proactively_check_result is True:
+        await update.message.reply_text(strings.registration_proactively.format(name=context.user_data['registration_name']))
+        await update.message.reply_text(strings.registration_finished, reply_markup=ReplyKeyboardRemove())
+        del context.user_data['registration_name']
+        return ConversationHandler.END
     await users_repository.save_user(context.user_data['registration_name'], phone_number, update.effective_user.id)
     await update.message.reply_text(strings.registration_finished, reply_markup=ReplyKeyboardRemove())
     await actions.send_subscription_menu_button(update, context)

@@ -39,7 +39,6 @@ async def get_subscription_condition(subscription_id: int) -> List[SubscriptionC
 async def add_subscription_to_user(subscription_id: int, subscription_condition_id: int, user_id: int) -> None:
     async with async_session() as session:
         user: User = (await session.execute(select(User).filter(User.telegram_user_id == user_id))).scalars().first()
-        subscription_condition = await session.get(SubscriptionCondition, subscription_condition_id)
         current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user.id)
         result = await session.execute(current_subscription_user_stmt)
         subscription_user: SubscriptionUser = result.scalars().first()

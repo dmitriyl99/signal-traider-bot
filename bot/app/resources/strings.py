@@ -1,5 +1,6 @@
 registration_name = 'Привет!!\nПожалуйста, введите своё имя'
 registration_phone = 'Введите номер телефона в формате <b>+998XXXXXXXXX</b> или воспользуйтесь кнопкой "Отправить номер"'
+registration_proactively = '{name}, вы активировали подписку!'
 registration_finished = 'Спасибо, регистрация завершена!'
 
 subscription_menu_message = 'Для продолжения работы с ботом необходимо приобрести подписку'
