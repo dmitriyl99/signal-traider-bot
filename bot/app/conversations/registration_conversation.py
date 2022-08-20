@@ -18,6 +18,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if current_user is not None:
         await update.message.reply_text(strings.hello_message % current_user.name)
+        await users_repository.check_for_proactively_added_user(current_user.phone, current_user.telegram_user_id)
         active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(current_user)
         if active_subscription is not None:
             subscription = await subscriptions_repository.get_subscription_by_id(active_subscription.subscription_id)
