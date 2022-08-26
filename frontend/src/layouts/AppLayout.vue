@@ -17,9 +17,7 @@ export default {
       immediate: true,
       async handler(route) {
         try {
-          console.log(route.meta.layout);
           const component = await import(`@/layouts/${route.meta.layout}.vue`)
-          console.log(component)
           this.layout = component.default || AppLayoutDefault
         } catch (e) {
           this.layout = AppLayoutDefault
