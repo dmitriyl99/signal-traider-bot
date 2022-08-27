@@ -47,6 +47,11 @@
                 <i class="fe fe-credit-card"></i> История оплат
               </router-link>
             </li>
+            <li class="nav-item">
+              <router-link class="nav-link" :to="{name: 'CurrencyPairsList'}">
+                <i class="fe fe-dollar-sign"></i> Валютные пары
+              </router-link>
+            </li>
           </ul>
 
           <!-- Push content down -->
