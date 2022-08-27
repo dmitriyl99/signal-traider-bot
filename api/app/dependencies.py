@@ -11,6 +11,7 @@ from app.data.db.payments_repository import PaymentsRepository
 from app.data.db.signals_repository import SignalsRepository
 from app.data.db.statistics_repository import StatisticsRepository
 from app.data.db.subscriptions_repository import SubscriptionsRepository
+from app.data.db.currency_pair_repository import CurrencyPairRepository
 from app.data.db import get_session
 from app.data.models.admin_users import AdminUser
 from app.config import settings
@@ -36,6 +37,10 @@ def get_statistics_repository(session: AsyncSession = Depends(get_session)):
 
 def get_subscriptions_repository(session: AsyncSession = Depends(get_session)):
     return SubscriptionsRepository(session)
+
+
+def get_currency_pair_repository(session: AsyncSession = Depends(get_session)):
+    return CurrencyPairRepository(session)
 
 
 async def get_current_user(

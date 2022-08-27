@@ -4,7 +4,7 @@ from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, users, payments, signals, dashboard, subscriptions
+from app.routers import auth, users, payments, signals, dashboard, subscriptions, currency_pairs
 from app.jobs import scheduler
 
 
@@ -57,6 +57,11 @@ app.include_router(
 )
 app.include_router(
     subscriptions.router,
+    prefix='/api'
+)
+
+app.include_router(
+    currency_pairs.router,
     prefix='/api'
 )
 
