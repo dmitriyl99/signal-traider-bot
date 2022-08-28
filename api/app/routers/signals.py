@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, Body
+from fastapi import APIRouter, Depends, Body, HTTPException
 
 from app.dependencies import get_signals_repository, get_user_repository, get_current_user
 from app.data.db.signals_repository import SignalsRepository
 from app.data.db.users_repository import UsersRepository
 from app.data.models.admin_users import AdminUser
 from app.routers.forms.signals import CreateSignalForm
-from app.services import bot
+from app.services import bot, trading_view
 
 
 router = APIRouter(
@@ -39,3 +39,24 @@ async def create_signal(
         form.sl
     )
     await bot.send_distribution(signal, users_repository)
+
+
+@router.get('/suggestion')
+async def get_currency_suggestion(
+    current_user: AdminUser = Depends(get_current_user),
+    currency_pair: str | None = None
+):
+    if currency_pair is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Please, choose currency pair"
+        )
+
+    trading_view_response: trading_view.TradingViewScanResponse | None = trading_view.trading_view_scan(currency_pair)
+    if trading_view_response is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f'Currency pair {currency_pair} not found in tradingview.com'
+        )
+
+    return trading_view_response

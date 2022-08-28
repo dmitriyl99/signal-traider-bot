@@ -8,7 +8,10 @@
         <div class="row g-3">
           <div class="col-12 col-md-6 mb-3">
             <label for="currency_pair" class="form-label">Валютная пара</label>
-            <input type="text" class="form-control" id="currency_pair" placeholder="Валютная пара" v-model="currency_pair"/>
+            <Select2 v-model="currency_pair" :options="currencyPairsList" @select="mySelectEvent($event)"/>
+            <div class="invalid-feedback" style="display: block" v-if="errorText">
+                          {{ errorText }}
+                        </div>
           </div>
           <div class="col-12 col-md-6 mb-3">
             <label for="execution_method" class="form-label">Метод исполнения</label>
@@ -36,6 +39,7 @@
           <div class="col-12 col-md-6 mb-3">
             <label for="price" class="form-label">Цена</label>
             <input type="number" class="form-control" id="price" placeholder="Цена" v-model="price"/>
+            <span id="emailHelp" class="valid-feedback" style="display: block" v-if="recommendedPrice" @click="copyRecommendedPrice">Цена с tradingview.com: {{ recommendedPrice }}</span>
           </div>
           <div class="col-12 col-md-6 mb-3">
             <label for="sl" class="form-label">SL</label>
@@ -54,9 +58,12 @@
 
 <script>
 import signalsApi from "../../api/signalsApi";
+import currencyPairsApi from "../../api/currencyPairsApi";
+import Select2 from 'vue3-select2-component';
 
 export default {
   name: "CreateSignal",
+  components: {Select2},
   data: () => ({
     currency_pair: null,
     execution_method: null,
@@ -66,7 +73,10 @@ export default {
     sl: null,
     isLoading: false,
     successText: null,
-    sendButtonView: true
+    sendButtonView: true,
+    currencyPairsList: [],
+    errorText: null,
+    recommendedPrice: null,
   }),
 
   methods: {
@@ -82,7 +92,39 @@ export default {
       }).finally(() => {
         this.isLoading = false;
       })
+    },
+
+    loadCurrencyPairs() {
+      currencyPairsApi.getCurrencyPairs().then(response => {
+        this.currencyPairsList = response.data.map(function (i) {
+          return i.pair;
+        });
+      })
+    },
+    mySelectEvent({id}){
+      this.errorText = null;
+      this.execution_method = null;
+      this.price = null;
+      this.recommendedPrice = null;
+      signalsApi.getSuggestion(id).then(response => {
+        const suggestionData = response.data;
+        this.recommendedPrice = suggestionData.price
+        if (suggestionData.recommends < 0) {
+          this.execution_method = 'sell';
+        } else {
+          this.execution_method = 'buy'
+        }
+      }).catch(error => {
+        this.errorText = error.response.data.detail;
+      })
+    },
+
+    copyRecommendedPrice() {
+      this.price = this.recommendedPrice;
     }
+  },
+  created() {
+    this.loadCurrencyPairs();
   }
 }
 </script>

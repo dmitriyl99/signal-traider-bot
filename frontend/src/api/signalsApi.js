@@ -25,6 +25,10 @@ function getAllSignals() {
     return apiInstance.get('/signals');
 }
 
+function getSuggestion(currencyPair) {
+    return apiInstance.get('/signals/suggestion', {params: {currency_pair: currencyPair}})
+}
+
 export default {
-    sendSignal, getAllSignals
+    sendSignal, getAllSignals, getSuggestion
 }
