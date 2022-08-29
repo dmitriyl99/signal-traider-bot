@@ -16,7 +16,7 @@
           </div>
         </div>
         <div class="row g-3">
-          <div class="col-12 col-md-6 nb-3">
+          <div class="col-12 col-md-4 nb-3">
             <label class="form-label">Подписка</label>
             <select class="form-select" id="user_subscription" v-model="selectedSubscriptionId">
               <option v-for="subscription in subscriptions" :key="subscription.id" :value="subscription.id">
@@ -24,13 +24,17 @@
               </option>
             </select>
           </div>
-          <div class="col-12 col-md-6 nb-3" v-if="selectedSubscription != null">
+          <div class="col-12 col-md-4 nb-3" v-if="selectedSubscription != null">
             <label class="form-label">Условие подписки</label>
             <select id="user_subscription_condition" class="form-select" v-model="selectedSubscriptionConditionId">
               <option v-for="condition in selectedSubscription.conditions" :key="condition.id" :value="condition.id">
                 {{ condition.duration_in_month }} мес.
               </option>
             </select>
+          </div>
+          <div class="col-12 col-md-4 mb-3" v-if="selectedSubscription != null" >
+            <label for="subscription_duration_in_days" class="form-label">Дней подписки</label>
+            <input type="number" name="subscription_duration_in_days" id="subscription_duration_in_days" class="form-control" placeholder="Количество дней подписки" v-model="subscriptionDurationInDays">
           </div>
         </div>
         <button :disabled="isLoading" class="btn btn-primary mt-3" type="submit" v-html="isLoading ? 'Сохраняю, подождите...' : 'Сохранить'"/>
@@ -51,6 +55,7 @@ export default {
     subscriptions: [],
     selectedSubscriptionId: null,
     selectedSubscriptionConditionId: null,
+    subscriptionDurationInDays: null,
     isLoading: false
   }),
 
@@ -76,7 +81,6 @@ export default {
         let user = response.data
         this.name = user.name;
         this.phone = user.phone;
-        console.log()
         this.selectedSubscriptionId = user.subscription.subscription_id;
         this.selectedSubscriptionConditionId = user.subscription.subscription_condition_id
       }).catch(error => {
@@ -93,7 +97,8 @@ export default {
           this.name,
           this.phone,
           this.selectedSubscriptionId,
-          this.selectedSubscriptionConditionId
+          this.selectedSubscriptionConditionId,
+          this.subscriptionDurationInDays
       ).then(() => {
         this.$router.push({name: 'UsersList'})
       }).finally(() => {

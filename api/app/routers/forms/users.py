@@ -6,8 +6,9 @@ from pydantic import BaseModel
 class CreateUserForm(BaseModel):
     name: str
     phone: str
-    subscription_id: int
-    subscription_condition_id: int
+    subscription_id: Optional[int] = None
+    subscription_condition_id: Optional[int] = None
+    subscription_duration_in_days: Optional[int] = None
 
 
 class UpdateUserForm(BaseModel):
@@ -15,3 +16,4 @@ class UpdateUserForm(BaseModel):
     phone: str
     subscription_id: Optional[int] = None
     subscription_condition_id: Optional[int] = None
+    subscription_duration_in_days: Optional[int] = None

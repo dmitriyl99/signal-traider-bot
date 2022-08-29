@@ -23,11 +23,11 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         if active_subscription is not None:
             subscription = await subscriptions_repository.get_subscription_by_id(active_subscription.subscription_id)
             now = datetime.now()
-            subscription_end_date = active_subscription.created_at + relativedelta(months=active_subscription.subscription_condition.duration_in_month)
+            subscription_end_date: datetime = active_subscription.created_at + relativedelta(days=active_subscription.duration_in_days)
             diff_days = date.diff_in_days(now, subscription_end_date)
             await update.message.reply_text(strings.active_subscription.format(
                 name=subscription.name,
-                month=active_subscription.subscription_condition.duration_in_month,
+                to_date=subscription_end_date.strftime('%d.%m.%Y'),
                 days=diff_days
                 ),
             )

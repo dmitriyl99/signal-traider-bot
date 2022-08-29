@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 async def check_all_subscriptions_job():
     stmt = select(SubscriptionUser).options(
-        joinedload(SubscriptionUser.subscription_condition),
         joinedload(SubscriptionUser.user),
     ).filter(SubscriptionUser.active == True)
     logger.info('Start job to deactivate subscriptions')
@@ -24,13 +23,12 @@ async def check_all_subscriptions_job():
         active_subscriptions: List[SubscriptionUser] = result.scalars().all()
         logger.info('Active subscription found: %d' % len(active_subscriptions))
         for subscription in active_subscriptions:
-            diff_in_month = date.diff_in_month(subscription.created_at, datetime.now())
-            if abs(diff_in_month) == subscription.subscription_condition.duration_in_month:
+            diff_in_days = date.diff_in_days(subscription.created_at, datetime.now())
+            if abs(diff_in_days) == subscription.duration_in_days:
                 logger.info('Deactivate subscription %d for user %d' % (subscription.subscription_id, subscription.user_id))
                 subscription.active = False
                 await session.commit()
                 subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
-                bot.send_message_to_user(subscription.user, 'Ваша подписка {name} {months} мес. деактивирована. Отправьте команду /start чтобы приобрести подписку заново'.format(
-                    name=subscription_entity.name,
-                    months=subscription.subscription_condition.duration_in_month)
+                bot.send_message_to_user(subscription.user, 'Ваша подписка {name} деактивирована. Отправьте команду /start чтобы приобрести подписку заново'.format(
+                    name=subscription_entity.name)
                 )

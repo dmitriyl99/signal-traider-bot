@@ -1,11 +1,14 @@
-from typing import List
+from typing import List, Optional
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.data.models.subscription import Subscription, SubscriptionUser
+from app.data.models.subscription import Subscription, SubscriptionUser, SubscriptionCondition
 from app.data.models.users import User
+from app.helpers import date as date_helper
 
 
 class SubscriptionsRepository:
@@ -23,12 +26,25 @@ class SubscriptionsRepository:
             self,
             user: User,
             subscription_id: int,
-            subscription_condition_id: int,
+            duration_in_days: Optional[int] = None,
+            subscription_condition_id: Optional[int] = None,
             proactively_added=True
     ) -> SubscriptionUser:
-        subscription_user = SubscriptionUser()
+        current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user.id)
+        result = await self._session.execute(current_subscription_user_stmt)
+        subscription_user: SubscriptionUser = result.scalars().first()
+        if subscription_user is None:
+            subscription_user = SubscriptionUser()
         subscription_user.subscription_id = subscription_id
-        subscription_user.subscription_condition_id = subscription_condition_id
+        if subscription_condition_id is not None:
+            subscription_condition: SubscriptionCondition = await self._session.get(SubscriptionCondition, subscription_condition_id)
+            if subscription_condition is None:
+                raise Exception(f"Subscription condition with id {subscription_condition_id} not found")
+            now_datetime = datetime.now()
+            subscription_end_date = now_datetime + relativedelta(
+                months=subscription_condition.duration_in_month)
+            duration_in_days = date_helper.diff_in_days(now_datetime, subscription_end_date)
+        subscription_user.duration_in_days = duration_in_days
         subscription_user.proactively_added = proactively_added
         subscription_user.user_id = user.id
         subscription_user.active = False

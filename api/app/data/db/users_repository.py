@@ -1,5 +1,6 @@
 from typing import List, Optional
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,6 +10,7 @@ from passlib.context import CryptContext
 from app.data.models.admin_users import AdminUser
 from app.data.models.users import User
 from app.data.models.subscription import SubscriptionUser, SubscriptionCondition
+from app.helpers import date as date_helper
 
 
 class UsersRepository:
@@ -58,7 +60,7 @@ class UsersRepository:
 
     async def get_all_users(self) -> List[User]:
         stmt = select(User).options(selectinload(User.subscription).options(
-            joinedload(SubscriptionUser.subscription_condition).joinedload(SubscriptionCondition.subscription)
+            joinedload(SubscriptionUser.subscription)
         ))
         result = await self._session.execute(stmt)
         return result.scalars().all()
@@ -85,8 +87,6 @@ class UsersRepository:
             user_id: int,
             name: str,
             phone: str,
-            subscription_id: Optional[int] = None,
-            subscription_condition_id: Optional[int] = None
     ) -> Optional[User]:
         user = await self.get_user_by_id(user_id)
         if user is None:
@@ -94,19 +94,6 @@ class UsersRepository:
 
         user.name = name
         user.phone = phone
-        if subscription_id and subscription_condition_id:
-            current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user.id)
-            result = await self._session.execute(current_subscription_user_stmt)
-            subscription_user: SubscriptionUser = result.scalars().first()
-            if subscription_user is None:
-                subscription_user = SubscriptionUser()
-                self._session.add(subscription_user)
-            subscription_user.subscription_id = subscription_id
-            subscription_user.user_id = user.id
-            subscription_user.subscription_condition_id = subscription_condition_id
-            subscription_user.created_at = datetime.now()
-            subscription_user.active = False
-            subscription_user.proactively_added = True
 
         await self._session.commit()
 

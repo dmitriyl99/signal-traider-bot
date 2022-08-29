@@ -13,6 +13,7 @@ class Subscription(Base):
     name = sa.Column(sa.String)
 
     conditions = relationship('SubscriptionCondition', back_populates='subscription', lazy='subquery')
+    users = relationship('SubscriptionUser', back_populates='subscription')
 
 
 class SubscriptionCondition(Base):
@@ -24,17 +25,17 @@ class SubscriptionCondition(Base):
     subscription_id = sa.Column(sa.Integer, sa.ForeignKey('subscriptions.id'))
 
     subscription = relationship('Subscription', back_populates='conditions')
-    users = relationship('SubscriptionUser', back_populates='subscription_condition')
 
 
 class SubscriptionUser(Base):
     __tablename__ = 'subscription_user'
+
     user_id = sa.Column(sa.ForeignKey('users.id'), primary_key=True)
-    subscription_condition_id = sa.Column(sa.ForeignKey('subscription_conditions.id'), primary_key=True)
-    subscription_id = sa.Column(sa.Integer)
+    subscription_id = sa.Column(sa.ForeignKey('subscriptions.id'), primary_key=True)
     active = sa.Column(sa.Boolean)
     proactively_added = sa.Column(sa.Boolean)
-    subscription_condition: SubscriptionCondition = relationship('SubscriptionCondition', back_populates='users')
+    duration_in_days = sa.Column(sa.Integer)
+    subscription: Subscription = relationship('Subscription', back_populates='users')
     user = relationship('User', back_populates='subscriptions')
 
     created_at = sa.Column(sa.DateTime, default=datetime.now)

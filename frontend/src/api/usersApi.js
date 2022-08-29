@@ -5,11 +5,11 @@ function getUsersList() {
 }
 
 function saveUser(
-    name, phone, subscription_id, subscription_condition_id
+    name, phone, subscription_id, subscription_condition_id, subscription_duration_in_days
 ) {
     return apiInstance.post('/users', {
         name, phone,
-        subscription_id, subscription_condition_id
+        subscription_id, subscription_condition_id, subscription_duration_in_days
     })
 }
 
@@ -18,10 +18,10 @@ function getUserById(id) {
 }
 
 function updateUser(
-    id, name, phone, subscription_id, subscription_condition_id
+    id, name, phone, subscription_id, subscription_condition_id, subscription_duration_in_days
 ) {
     return apiInstance.put(`/users/${id}`, {
-        name, phone, subscription_id, subscription_condition_id
+        name, phone, subscription_id, subscription_condition_id, subscription_duration_in_days
     })
 }
 

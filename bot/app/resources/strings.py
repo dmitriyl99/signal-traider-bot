@@ -12,4 +12,4 @@ send_phone_button_text = 'Отправить номер'
 
 validation_phone_message = 'Неправильный формат номера'
 
-active_subscription = 'У вас имеется подписка {name} на {month} мес. Осталось: {days} дней'
+active_subscription = 'У вас имеется подписка {name} до {to_date}. Осталось: {days} дней'
