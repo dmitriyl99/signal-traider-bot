@@ -56,6 +56,7 @@ async def add_subscription_to_user(subscription_id: int, subscription_condition_
         subscription_user.duration_in_days = date_helper.diff_in_days(now_datetime, subscription_end_date)
         subscription_user.created_at = now_datetime
         subscription_user.active = True
+        subscription_user.activation_datetime = now_datetime
         await session.commit()
 
 

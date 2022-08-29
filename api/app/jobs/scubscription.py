@@ -23,7 +23,7 @@ async def check_all_subscriptions_job():
         active_subscriptions: List[SubscriptionUser] = result.scalars().all()
         logger.info('Active subscription found: %d' % len(active_subscriptions))
         for subscription in active_subscriptions:
-            diff_in_days = date.diff_in_days(subscription.created_at, datetime.now())
+            diff_in_days = date.diff_in_days(subscription.activation_datetime, datetime.now())
             if abs(diff_in_days) == subscription.duration_in_days:
                 logger.info('Deactivate subscription %d for user %d' % (subscription.subscription_id, subscription.user_id))
                 subscription.active = False

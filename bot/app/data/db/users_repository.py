@@ -45,6 +45,7 @@ async def check_for_proactively_added_user(phone: str, telegram_user_id: int) ->
             proactively_subscription: SubscriptionUser = user.subscriptions[0]
             proactively_subscription.proactively_added = False
             proactively_subscription.active = True
+            proactively_subscription.activation_datetime = datetime.now()
             await session.commit()
             return True
         await session.commit()
