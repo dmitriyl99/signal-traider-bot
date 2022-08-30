@@ -20,7 +20,7 @@ def upgrade() -> None:
     op.create_table(
         'users',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('telegram_user_id', sa.Integer),
+        sa.Column('telegram_user_id', sa.BigInteger),
         sa.Column('name', sa.String(128)),
         sa.Column('phone', sa.String(12)),
         sa.Column('created_at', sa.DateTime)
