@@ -50,3 +50,10 @@ async def check_for_proactively_added_user(phone: str, telegram_user_id: int) ->
             return True
         await session.commit()
         return False
+
+
+async def verify_user(user_id: int):
+    async with async_session() as session:
+        user = await session.get(User, user_id)
+        user.verified_at = datetime.now()
+        await session.commit()

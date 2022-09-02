@@ -10,14 +10,20 @@ from app.data.models.subscription import SubscriptionUser
 from app import actions
 from app.data.db import users_repository, subscriptions_repository
 from app.helpers import date
+from app.services.otp_service import OTPService
 
-NAME, PHONE = range(2)
+NAME, PHONE, OTP = range(3)
 
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if current_user is not None:
         await update.message.reply_text(strings.hello_message % current_user.name)
+        if current_user.verified_at is None:
+            otp_service = OTPService(current_user.phone)
+            otp_service.send_otp()
+            await update.message.reply_text('Вы ещё не потвержили свой номер телефона. Мы отправили вам смс с кодом, пожалуйста, введите его')
+            return OTP
         await users_repository.check_for_proactively_added_user(current_user.phone, current_user.telegram_user_id)
         active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(current_user)
         if active_subscription is not None:
@@ -74,6 +80,26 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         del context.user_data['registration_name']
         return ConversationHandler.END
     await users_repository.save_user(context.user_data['registration_name'], phone_number, update.effective_user.id)
+    otp_service = OTPService(phone_number)
+    otp_service.send_otp()
+    await update.message.reply_text('Мы отправили вам на номер смс с кодом, пожалуйста, подтвердите свой номер телефона')
+    return OTP
+
+
+async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+    user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
+    if user is None:
+        await update.message.reply_text(strings.registration_name, reply_markup=ReplyKeyboardRemove())
+        return NAME
+    otp_service = OTPService(user.phone)
+    if not update.message.text.isnumeric():
+        await update.message.reply_text('Вы отправили неверный формат OTP')
+        return OTP
+    otp_verification_result = otp_service.verify_otp(int(update.message.text))
+    if not otp_verification_result:
+        await update.message.reply_text('Вы отправили неверный OTP')
+        return OTP
+    await users_repository.verify_user(user.id)
     await update.message.reply_text(strings.registration_finished, reply_markup=ReplyKeyboardRemove())
     await actions.send_subscription_menu_button(update, context)
     del context.user_data['registration_name']
@@ -84,7 +110,8 @@ handler = ConversationHandler(
     entry_points=[CommandHandler('start', _start)],
     states={
         NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, _name)],
-        PHONE: [MessageHandler((filters.TEXT | filters.CONTACT) & ~filters.COMMAND, _phone)]
+        PHONE: [MessageHandler((filters.TEXT | filters.CONTACT) & ~filters.COMMAND, _phone)],
+        OTP: [MessageHandler(filters.TEXT, _verify_otp)]
     },
     fallbacks=[MessageHandler(filters.TEXT, '')]
 )

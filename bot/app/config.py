@@ -17,6 +17,11 @@ class Config:
     WEBHOOK_PORT: int
     WEBHOOK_TOKEN: str
 
+    TWILIO_ACCOUNT_SID: str
+    TWILIO_AUTH_TOKEN: str
+
+    REDIS_HOST: str
+
     def __init__(self):
         self.ENV = os.getenv('ENV')
         self.TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_TOKEN')
@@ -26,6 +31,10 @@ class Config:
         self.PAYME_PAYMENT_PROVIDER_TOKEN = os.getenv('PAYME_PAYMENT_PROVIDER_TOKEN')
         self.WEBHOOK_PORT = int(os.getenv('WEBHOOK_PORT'))
         self.WEBHOOK_TOKEN = os.getenv('WEBHOOK_TOKEN')
+        self.TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+        self.TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+        self.TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
+        self.REDIS_HOST = os.getenv('REDIS_HOST')
 
 
 config = Config()
