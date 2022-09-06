@@ -2,13 +2,13 @@ import re
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
+from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, helpers
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, filters
 
 from app.resources import strings
 from app.data.models.subscription import SubscriptionUser
 from app import actions
-from app.data.db import users_repository, subscriptions_repository
+from app.data.db import users_repository, subscriptions_repository, utm_respository
 from app.helpers import date
 from app.services.otp_service import OTPService
 
@@ -16,6 +16,7 @@ NAME, PHONE, OTP = range(3)
 
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+    await _process_update_for_utm(update)
     current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if current_user is not None:
         await update.message.reply_text(strings.hello_message % current_user.name)
@@ -111,8 +112,25 @@ handler = ConversationHandler(
     states={
         NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, _name)],
         PHONE: [MessageHandler((filters.TEXT | filters.CONTACT) & ~filters.COMMAND, _phone)],
-        OTP: [MessageHandler(filters.TEXT, _verify_otp)]
+        OTP: [MessageHandler(filters.TEXT & ~filters.COMMAND, _verify_otp)]
     },
     fallbacks=[MessageHandler(filters.TEXT, '')]
 )
 
+
+async def _process_update_for_utm(update: Update):
+    text = update.message.text
+    if '/start' not in text:
+        return
+    text_split = text.split(' ')
+    if len(text_split) == 1:
+        return
+    payload = text_split[1]
+    if 'utm' not in payload:
+        return
+    utm_payload_split = payload.split('_')
+    if len(utm_payload_split) == 1:
+        return
+    utm_commands = utm_payload_split[1:]
+    for utm_command in utm_commands:
+        await utm_respository.utm_click(utm_command, update.effective_user.id)

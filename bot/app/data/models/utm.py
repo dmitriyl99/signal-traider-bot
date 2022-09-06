@@ -19,7 +19,8 @@ class UtmCommandClick(Base):
     __tablename__ = 'utm_command_clicks'
 
     id = sa.Column(sa.BigInteger, primary_key=True)
-    utm_command_id = sa.Column(sa.BigInteger, sa.ForeignKey('utm_commands.id'))
+    utm_command_id = sa.Column(sa.BigInteger, sa.ForeignKey('utm_commands.id'), nullable=True)
+    utm_command_name = sa.Column(sa.String, nullable=True)
     user_telegram_id = sa.Column(sa.BigInteger, nullable=True)
     created_at = sa.Column(sa.DateTime, default=datetime.now)
 
