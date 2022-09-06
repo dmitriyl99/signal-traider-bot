@@ -38,7 +38,7 @@
         <div class="row g-3">
           <div class="col-12 col-md-6 mb-3">
             <label for="price" class="form-label">Цена</label>
-            <input type="number" class="form-control" id="price" placeholder="Цена" v-model="price"/>
+            <input type="text" class="form-control" id="price" placeholder="Цена" v-model="price"/>
             <span id="emailHelp" class="valid-feedback" style="display: block" v-if="recommendedPrice" @click="copyRecommendedPrice">Цена с tradingview.com: {{ recommendedPrice }}</span>
           </div>
           <div class="col-12 col-md-6 mb-3">

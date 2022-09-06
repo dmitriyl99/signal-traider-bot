@@ -14,7 +14,7 @@ class ExecutionMethodEnum(str, Enum):
 class CreateSignalForm(BaseModel):
     currency_pair: str
     execution_method: ExecutionMethodEnum
-    price: int
+    price: float
     tr_1: str
     tr_2: str
     sl: str
