@@ -12,7 +12,7 @@ function sendSignal(
     let payload = {
         currency_pair: currencyPair,
         execution_method: executionMethod,
-        price: price * 100,
+        price,
         tr_1,
         tr_2,
         sl

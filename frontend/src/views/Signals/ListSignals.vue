@@ -23,7 +23,7 @@
             <td>{{ signal.id }}</td>
             <td>{{ signal.currency_pair }}</td>
             <td>{{ signal.execution_method }}</td>
-            <td>{{ signal.price / 100 }}</td>
+            <td>{{ signal.price }}</td>
             <td>{{ signal.tr_1 }}</td>
             <td>{{ signal.tr_2 }}</td>
             <td>{{ signal.sl }}</td>

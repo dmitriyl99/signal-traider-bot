@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 from enum import Enum
 
@@ -15,6 +17,6 @@ class CreateSignalForm(BaseModel):
     currency_pair: str
     execution_method: ExecutionMethodEnum
     price: float
-    tr_1: str
-    tr_2: str
-    sl: str
+    tr_1: Optional[str] = None
+    tr_2: Optional[str] = None
+    sl: Optional[str] = None

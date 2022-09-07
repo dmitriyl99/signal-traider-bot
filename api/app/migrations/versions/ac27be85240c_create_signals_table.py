@@ -22,7 +22,7 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('currency_pair', sa.String),
         sa.Column('execution_method', sa.String),
-        sa.Column('price', sa.Integer),
+        sa.Column('price', sa.Float),
         sa.Column('tr_1', sa.String),
         sa.Column('tr_2', sa.String),
         sa.Column('sl', sa.String),

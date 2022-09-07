@@ -13,18 +13,15 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository):
     logging.info(f'Send signal to {len(users)} users: {users}')
     users_chunks = array.chunks(users, 50)
 
-    text = """<b>{currency_pair}</b> <b>{execution_method}</b> <b>{price}</b>
-<b>TP 1</b>: {tr_1}
-<b>TP 2</b>: {tr_2}
-<b>SL</b>: {sl}
-    """.format(
-        currency_pair=signal.currency_pair,
-        execution_method=signal.execution_method,
-        price=int(signal.price / 100),
-        tr_1=signal.tr_1,
-        tr_2=signal.tr_2,
-        sl=signal.sl
-    )
+    text = '<b>{currency_pair}</b> <b>{execution_method}</b> <b>{price}</b>'.format(currency_pair=signal.currency_pair,
+                                                                                    execution_method=signal.execution_method,
+                                                                                    price=signal.price)
+    if signal.tr_1:
+        text += '\n<b>TP 1</b>: {tr_1}'.format(tr_1=signal.tr_1)
+    if signal.tr_2:
+        text += '\n<b>TP 2</b>: {tr_2}'.format(tr_2=signal.tr_2)
+    if signal.sl:
+        text += '\n<b>SL</b>: {sl}'.format(sl=signal.sl)
 
     for chunk in users_chunks:
         for user in chunk:

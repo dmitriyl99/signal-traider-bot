@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -15,10 +15,10 @@ class SignalsRepository:
     async def save_signal(self,
                           currency_pair: str,
                           execution_method: str,
-                          price: int,
-                          tr_1: str,
-                          tr_2: str,
-                          sl: str) -> Signal:
+                          price: float,
+                          tr_1: Optional[str],
+                          tr_2: Optional[str],
+                          sl: Optional[str]) -> Signal:
         signal = Signal(
             currency_pair=currency_pair,
             execution_method=execution_method,
