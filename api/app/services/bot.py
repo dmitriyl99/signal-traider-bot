@@ -28,6 +28,15 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository):
             send_message_to_user(user, text)
 
 
+async def send_text_distribution(text: str, user_repository: UsersRepository):
+    users = await user_repository.get_all_users_with_active_subscriptions()
+    logging.info(f'Send text message to {len(users)} users')
+    users_chunks = array.chunks(users, 50)
+    for chunk in users_chunks:
+        for user in chunk:
+            send_message_to_user(user, text)
+
+
 def send_message_to_user(user: User, text: str):
     domain = settings.telegram_bot_api_domain
     token = settings.telegram_bot_api_token

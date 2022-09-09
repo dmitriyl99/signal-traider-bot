@@ -52,6 +52,16 @@
         <span class="text-success ms-3" v-if="successText != null">{{ successText }}</span>
 
       </form>
+      <h3 class="mt-4">Кастомное сообщение</h3>
+      <form v-on:submit.prevent="onCustomMessageFormSubmit" action="" class="mt-3">
+        <div class="row g-3">
+          <div class="col-12 mb-3">
+            <textarea id="text" rows="10" class="form-control" v-model="customMessage.text"></textarea>
+          </div>
+        </div>
+        <button v-if="customMessage.sendButtonView" :disabled="customMessage.isLoading" class="btn btn-primary" type="submit" v-html="customMessage.isLoading ? 'Отправляю, подождите...' : 'Отправить сообщение'"/>
+        <span class="text-success ms-3" v-if="customMessage.successText != null">{{ customMessage.successText }}</span>
+      </form>
     </div>
   </div>
 </template>
@@ -77,6 +87,12 @@ export default {
     currencyPairsList: [],
     errorText: null,
     recommendedPrice: null,
+    customMessage: {
+      text: null,
+      sendButtonView: true,
+      isLoading: false,
+      successText: null
+    }
   }),
 
   methods: {
@@ -91,6 +107,17 @@ export default {
         }, 5000);
       }).finally(() => {
         this.isLoading = false;
+      })
+    },
+
+    onCustomMessageFormSubmit() {
+      this.customMessage.isLoading = true;
+      this.customMessage.successText = null;
+
+      signalsApi.sendCustomMessage(this.customMessage.text).then(() => {
+        this.customMessage.successText = 'Сообщение отправлено!'
+      }).finally(() => {
+        this.customMessage.isLoading = false;
       })
     },
 

@@ -20,3 +20,7 @@ class CreateSignalForm(BaseModel):
     tr_1: Optional[str] = None
     tr_2: Optional[str] = None
     sl: Optional[str] = None
+
+
+class SignalMessageForm(BaseModel):
+    text: str

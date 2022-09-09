@@ -4,7 +4,7 @@ from app.dependencies import get_signals_repository, get_user_repository, get_cu
 from app.data.db.signals_repository import SignalsRepository
 from app.data.db.users_repository import UsersRepository
 from app.data.models.admin_users import AdminUser
-from app.routers.forms.signals import CreateSignalForm
+from app.routers.forms.signals import CreateSignalForm, SignalMessageForm
 from app.services import bot, trading_view
 
 
@@ -39,6 +39,15 @@ async def create_signal(
         form.sl
     )
     await bot.send_distribution(signal, users_repository)
+
+
+@router.post('/message')
+async def send_signal_message(
+        form: SignalMessageForm = Body(),
+        users_repository: UsersRepository = Depends(get_user_repository),
+        current_user: AdminUser = Depends(get_current_user)
+):
+    await bot.send_text_distribution(form.text, users_repository)
 
 
 @router.get('/suggestion')
