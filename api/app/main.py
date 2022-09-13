@@ -19,13 +19,13 @@ app = FastAPI(title='Signal Traider Bot')
 
 @app.on_event("startup")
 def _on_app_startup():
-    scheduler.start()
+    # scheduler.start()
     pass
 
 
 @app.on_event('shutdown')
 def _on_app_shutdown():
-    scheduler.shutdown()
+    # scheduler.shutdown()
     pass
 
 
