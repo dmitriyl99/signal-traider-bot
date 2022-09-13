@@ -48,7 +48,10 @@ async def send_signal_message(
         users_repository: UsersRepository = Depends(get_user_repository),
         current_user: AdminUser = Depends(get_current_user)
 ):
-    await bot.send_text_distribution(text, [f.file for f in files], users_repository)
+    if files is not None:
+        await bot.send_text_distribution(text, [f.file for f in files], users_repository)
+    else:
+        await bot.send_text_distribution(text, None, users_repository)
 
 
 @router.get('/suggestion')
