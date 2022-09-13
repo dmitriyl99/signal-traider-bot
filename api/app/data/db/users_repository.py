@@ -66,7 +66,7 @@ class UsersRepository:
         return result.scalars().all()
 
     async def get_all_users_with_active_subscriptions(self) -> List[User]:
-        stmt = select(User).options(joinedload(User.subscription.and_(SubscriptionUser.active == True), innerjoin=True))
+        stmt = select(User).options(joinedload(User.subscription.and_(SubscriptionUser.active == True), innerjoin=True)).filter(User.telegram_user_id != None)
         result = await self._session.execute(stmt)
         return result.scalars().all()
 

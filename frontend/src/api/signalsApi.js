@@ -21,12 +21,16 @@ function sendSignal(
     return apiInstance.post('/signals', payload);
 }
 
-function sendCustomMessage(text) {
-    let payload = {
-        text
-    };
+function sendCustomMessage(text, files=null) {
+    let formData = new FormData();
+        formData.append('text', text);
+    if (files !== null) {
+        Array.from(files).forEach(file => {
+            formData.append('files', file);
+        })
+    }
 
-    return apiInstance.post('/signals/message', payload);
+    return apiInstance.post('/signals/message', formData, {headers: {"Content-Type": "multipart/form-data"}});
 }
 
 function getAllSignals() {

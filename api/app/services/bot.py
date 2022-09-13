@@ -1,5 +1,8 @@
-import requests
 import logging
+from typing import Optional, BinaryIO, List
+from io import BytesIO
+
+from aiogram import Bot, types
 
 from app.data.models.signal import Signal
 from app.data.models.users import User
@@ -25,29 +28,30 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository):
 
     for chunk in users_chunks:
         for user in chunk:
-            send_message_to_user(user, text)
+            await send_message_to_user(user, text)
 
 
-async def send_text_distribution(text: str, user_repository: UsersRepository):
+async def send_text_distribution(text: str, files: Optional[List[BinaryIO]], user_repository: UsersRepository):
     users = await user_repository.get_all_users_with_active_subscriptions()
     logging.info(f'Send text message to {len(users)} users')
     users_chunks = array.chunks(users, 50)
     for chunk in users_chunks:
         for user in chunk:
-            send_message_to_user(user, text)
+            await send_message_to_user(user, text, files)
 
 
-def send_message_to_user(user: User, text: str):
-    domain = settings.telegram_bot_api_domain
-    token = settings.telegram_bot_api_token
-
-    url = 'https://{domain}/bot{token}/sendMessage'.format(
-        domain=domain,
-        token=token
-    )
-    payload = {
-        'chat_id': user.telegram_user_id,
-        'text': text,
-        'parse_mode': 'HTML'
-    }
-    requests.post(url, payload)
+async def send_message_to_user(user: User, text: str, files: Optional[List[BinaryIO]] = None):
+    bot = Bot(settings.telegram_bot_api_token)
+    if files is not None:
+        await bot.send_media_group(
+            user.telegram_user_id,
+            media=types.MediaGroup(
+                medias=[
+                    types.InputMediaPhoto(
+                        types.InputFile(
+                            BytesIO(
+                                f.read()
+                            )
+                        ), caption=text if idx == 1 else None, parse_mode=types.ParseMode.HTML) for idx, f in enumerate(files)]))
+        return
+    await bot.send_message(user.telegram_user_id, text, parse_mode=types.ParseMode.HTML)

@@ -29,6 +29,6 @@ async def check_all_subscriptions_job():
                 subscription.active = False
                 await session.commit()
                 subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
-                bot.send_message_to_user(subscription.user, 'Ваша подписка {name} деактивирована. Отправьте команду /start чтобы приобрести подписку заново'.format(
+                await bot.send_message_to_user(subscription.user, 'Ваша подписка {name} деактивирована. Отправьте команду /start чтобы приобрести подписку заново'.format(
                     name=subscription_entity.name)
                 )

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Body, HTTPException
+from fastapi import APIRouter, Depends, Body, HTTPException, UploadFile, Form
 
 from app.dependencies import get_signals_repository, get_user_repository, get_current_user
 from app.data.db.signals_repository import SignalsRepository
@@ -43,11 +43,12 @@ async def create_signal(
 
 @router.post('/message')
 async def send_signal_message(
-        form: SignalMessageForm = Body(),
+        text: str = Form(default="hello"),
+        files: list[UploadFile] | None = None,
         users_repository: UsersRepository = Depends(get_user_repository),
         current_user: AdminUser = Depends(get_current_user)
 ):
-    await bot.send_text_distribution(form.text, users_repository)
+    await bot.send_text_distribution(text, [f.file for f in files], users_repository)
 
 
 @router.get('/suggestion')
