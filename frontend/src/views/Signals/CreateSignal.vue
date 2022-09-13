@@ -61,7 +61,7 @@
             <textarea id="text" rows="10" class="form-control" v-model="customMessage.text"></textarea>
           </div>
         </div>
-        <DropZone @drop.prevent="drop"/>
+        <DropZone @drop.prevent="drop" @change="drop"/>
         <div v-if="dropzoneFiles !== null">
           <div v-for="dropzoneFile in dropzoneFiles" :key="dropzoneFile.name">{{ dropzoneFile.name }}</div>
         </div>
@@ -87,7 +87,12 @@ export default {
     let dropzoneFiles = ref(null);
 
     const drop = (e) => {
-      dropzoneFiles.value = e.dataTransfer.files;
+      if (e.dataTransfer == null) {
+        const input = document.querySelector('.dropzone input');
+        dropzoneFiles.value = input.files
+      } else {
+        dropzoneFiles.value = e.dataTransfer.files;
+      }
     };
 
     return { dropzoneFiles, drop }
