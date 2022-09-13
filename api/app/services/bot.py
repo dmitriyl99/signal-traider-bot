@@ -1,3 +1,4 @@
+import aiogram.utils.exceptions
 import logging
 from typing import Optional, BinaryIO, List
 from io import BytesIO
@@ -43,15 +44,22 @@ async def send_text_distribution(text: str, files: Optional[List[BinaryIO]], use
 async def send_message_to_user(user: User, text: str, files: Optional[List[BinaryIO]] = None):
     bot = Bot(settings.telegram_bot_api_token)
     if files is not None:
-        await bot.send_media_group(
-            user.telegram_user_id,
-            media=types.MediaGroup(
-                medias=[
-                    types.InputMediaPhoto(
-                        types.InputFile(
-                            BytesIO(
-                                f.read()
-                            )
-                        ), caption=text if idx == 1 else None, parse_mode=types.ParseMode.HTML) for idx, f in enumerate(files)]))
+        try:
+            await bot.send_media_group(
+                user.telegram_user_id,
+                media=types.MediaGroup(
+                    medias=[
+                        types.InputMediaPhoto(
+                            types.InputFile(
+                                BytesIO(
+                                    f.read()
+                                )
+                            ), caption=text if idx == 1 else None, parse_mode=types.ParseMode.HTML) for idx, f in
+                        enumerate(files)]))
+        except aiogram.utils.exceptions.ChatNotFound:
+            return
         return
-    await bot.send_message(user.telegram_user_id, text, parse_mode=types.ParseMode.HTML)
+    try:
+        await bot.send_message(user.telegram_user_id, text, parse_mode=types.ParseMode.HTML)
+    except aiogram.utils.exceptions.ChatNotFound:
+        return
