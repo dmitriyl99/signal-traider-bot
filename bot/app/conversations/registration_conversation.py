@@ -65,13 +65,13 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         phone_number = update.message.contact.phone_number
         phone_number = phone_number.replace('+', '')
     else:
-        regex = r'\+*998\s*\d{2}\s*\d{3}\s*\d{2}\s*\d{2}'
-        pattern = re.compile(regex)
-        match = re.search(pattern, update.message.text)
-        if match is None:
-            await update.message.reply_text(strings.validation_phone_message)
-            return PHONE
-        dirty_phone_number = match.group(0)
+        # regex = r'\+*998\s*\d{2}\s*\d{3}\s*\d{2}\s*\d{2}'
+        # pattern = re.compile(regex)
+        # match = re.search(pattern, update.message.text)
+        # if match is None:
+        #     await update.message.reply_text(strings.validation_phone_message)
+        #     return PHONE
+        dirty_phone_number = update.message.text
         un_spaced_phone_number = dirty_phone_number.replace(' ', '')
         phone_number = un_spaced_phone_number.replace('+', '')
     proactively_check_result = await users_repository.check_for_proactively_added_user(phone_number, update.effective_user.id)
