@@ -140,6 +140,8 @@ export default {
       console.log(this.dropzoneFiles);
       signalsApi.sendCustomMessage(this.customMessage.text, this.dropzoneFiles).then(() => {
         this.customMessage.successText = 'Сообщение отправлено!'
+        this.customMessage.text = null;
+        this.dropzoneFiles = ref(null)
       }).finally(() => {
         this.customMessage.isLoading = false;
       })
