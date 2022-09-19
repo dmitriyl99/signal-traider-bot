@@ -52,7 +52,7 @@ async def send_message_to_user(user: User, text: str, files: Optional[List[Binar
                 logging.info(f'File length: {bio.getbuffer().nbytes} b')
                 await bot.send_photo(
                     chat_id=user.telegram_user_id,
-                    photo=types.InputFile(BytesIO(file.read())),
+                    photo=types.InputFile(bio),
                     caption=text,
                     parse_mode=types.ParseMode.HTML
                 )
