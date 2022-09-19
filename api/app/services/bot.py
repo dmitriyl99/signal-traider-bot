@@ -45,17 +45,26 @@ async def send_message_to_user(user: User, text: str, files: Optional[List[Binar
     bot = Bot(settings.telegram_bot_api_token)
     if files is not None:
         try:
-            await bot.send_media_group(
-                user.telegram_user_id,
-                media=types.MediaGroup(
-                    medias=[
-                        types.InputMediaPhoto(
-                            types.InputFile(
-                                BytesIO(
-                                    f.read()
-                                )
-                            ), caption=text if idx == 1 else None, parse_mode=types.ParseMode.HTML) for idx, f in
-                        enumerate(files)]))
+            if len(files) == 1:
+                file = files[0]
+                await bot.send_photo(
+                    chat_id=user.telegram_user_id,
+                    photo=types.InputFile(BytesIO(file.read())),
+                    caption=text,
+                    parse_mode=types.ParseMode.HTML
+                )
+            else:
+                await bot.send_media_group(
+                    user.telegram_user_id,
+                    media=types.MediaGroup(
+                        medias=[
+                            types.InputMediaPhoto(
+                                types.InputFile(
+                                    BytesIO(
+                                        f.read()
+                                    )
+                                ), caption=text if idx == 1 else None, parse_mode=types.ParseMode.HTML) for idx, f in
+                            enumerate(files)]))
         except aiogram.utils.exceptions.ChatNotFound:
             return
         return
