@@ -33,6 +33,21 @@ def trading_view_scan(currency_pair_name: str) -> Optional[TradingViewScanRespon
         ]
     }
 
+    if currency_pair_name == 'XAUUSD':
+        url = 'https://scanner.tradingview.com/cfd/scan'
+        payload = {
+            'symbols': {
+                'tickers': [
+                    f"TVC:GOLD"
+                ]
+            },
+            'columns': [
+                'name',
+                'close',
+                'Recommend.All'
+            ]
+        }
+
     response = requests.post(url, json=payload)
     if response.status_code == 200:
         response_data = response.json()
