@@ -104,11 +104,7 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
 
         return PHONE
 
-    user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
-    if user is None:
-        await update.message.reply_text(strings.registration_name, reply_markup=ReplyKeyboardRemove())
-        return NAME
-    otp_service = OTPService(user.phone)
+    otp_service = OTPService(context.user_data['registration_phone'])
     if not update.message.text.isnumeric():
         await update.message.reply_text('Вы отправили неверный формат OTP')
         return OTP
@@ -116,6 +112,7 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
     if not otp_verification_result:
         await update.message.reply_text('Вы отправили неверный OTP')
         return OTP
+    user = await users_repository.find_user_by_phone(context.user_data['registration_phone'])
     await users_repository.verify_user(user.id)
     await users_repository.activate_proactively_added_user(context.user_data['registration_phone'], update.effective_user.id)
     await update.message.reply_text(strings.registration_finished, reply_markup=ReplyKeyboardRemove())
