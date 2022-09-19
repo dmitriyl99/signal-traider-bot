@@ -78,7 +78,7 @@ import signalsApi from "../../api/signalsApi";
 import currencyPairsApi from "../../api/currencyPairsApi";
 import Select2 from 'vue3-select2-component';
 import DropZone from "../../components/DropZone";
-import { ref } from 'vue';
+import {ref} from 'vue';
 
 export default {
   name: "CreateSignal",
@@ -96,7 +96,7 @@ export default {
       }
     };
 
-    return { dropzoneFiles, drop }
+    return {dropzoneFiles, drop}
   },
   data: () => ({
     currency_pair: null,
