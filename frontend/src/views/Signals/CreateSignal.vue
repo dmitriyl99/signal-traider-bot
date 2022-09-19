@@ -89,6 +89,7 @@ export default {
     const drop = (e) => {
       if (e.dataTransfer == null) {
         const input = document.querySelector('.dropzone input');
+        console.log(input.files)
         dropzoneFiles.value = input.files
       } else {
         dropzoneFiles.value = e.dataTransfer.files;
@@ -141,7 +142,7 @@ export default {
       signalsApi.sendCustomMessage(this.customMessage.text, this.dropzoneFiles).then(() => {
         this.customMessage.successText = 'Сообщение отправлено!'
         this.customMessage.text = null;
-        this.dropzoneFiles = ref(null)
+        this.dropzoneFiles = null;
       }).finally(() => {
         this.customMessage.isLoading = false;
       })
