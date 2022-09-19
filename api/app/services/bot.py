@@ -49,7 +49,6 @@ async def send_message_to_user(user: User, text: str, files: Optional[List[Binar
                 file = files[0]
                 file.seek(0)
                 bio = BytesIO(file.read())
-                logging.info(f'File length: {bio.getbuffer().nbytes} b')
                 await bot.send_photo(
                     chat_id=user.telegram_user_id,
                     photo=types.InputFile(bio),
@@ -59,8 +58,10 @@ async def send_message_to_user(user: User, text: str, files: Optional[List[Binar
             else:
                 media_group = types.MediaGroup()
                 for idx, f in enumerate(files):
+                    f.seek(0)
+                    bio = BytesIO(f.read())
                     media_group.attach_photo(
-                        types.InputFile(BytesIO(f.read())),
+                        types.InputFile(bio),
                         caption=text if idx == 0 else None,
                         parse_mode=types.ParseMode.HTML
                     )
