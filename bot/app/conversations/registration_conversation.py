@@ -116,7 +116,21 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
     await users_repository.verify_user(user.id)
     await users_repository.activate_proactively_added_user(context.user_data['registration_phone'], update.effective_user.id)
     await update.message.reply_text(strings.registration_finished, reply_markup=ReplyKeyboardRemove())
-    await actions.send_subscription_menu_button(update, context)
+    active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(user)
+    if active_subscription is None:
+        await actions.send_subscription_menu_button(update, context)
+    else:
+        subscription = await subscriptions_repository.get_subscription_by_id(active_subscription.subscription_id)
+        now = datetime.now()
+        subscription_end_date: datetime = active_subscription.created_at + relativedelta(
+            days=active_subscription.duration_in_days)
+        diff_days = date.diff_in_days(now, subscription_end_date)
+        await update.message.reply_text(strings.active_subscription.format(
+            name=subscription.name,
+            to_date=subscription_end_date.strftime('%d.%m.%Y'),
+            days=diff_days
+        ),
+        )
     del context.user_data['registration_name']
     return ConversationHandler.END
 
