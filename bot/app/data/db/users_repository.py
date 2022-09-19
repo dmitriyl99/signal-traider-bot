@@ -24,15 +24,24 @@ async def save_user(name: str, phone: str, telegram_user_id: int) -> User:
                 phone=phone,
             )
             session.add(user)
-        user.telegram_user_id = telegram_user_id
-        user.registration_date = datetime.now()
-        await session.commit()
+            user.telegram_user_id = telegram_user_id
+            user.registration_date = datetime.now()
+            await session.commit()
 
     return user
 
 
-async def check_for_proactively_added_user(phone: str, telegram_user_id: int) -> bool:
-    stmt = select(User).options(joinedload(User.subscriptions.and_(SubscriptionUser.proactively_added == True))).filter(User.phone == phone)
+async def find_user_by_phone(phone: str) -> User:
+    stmt = select(User).filter(User.phone == phone)
+    async with async_session() as session:
+        result = await session.execute(stmt)
+        user = result.scalars().first()
+        return user
+
+
+async def activate_proactively_added_user(phone: str, telegram_user_id: int) -> bool:
+    stmt = select(User).options(joinedload(User.subscriptions.and_(SubscriptionUser.proactively_added == True))).filter(
+        User.phone == phone)
     async with async_session() as session:
         result = await session.execute(stmt)
         user = result.scalars().first()

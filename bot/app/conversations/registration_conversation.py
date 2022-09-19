@@ -25,7 +25,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
             otp_service.send_otp()
             await update.message.reply_text('Вы ещё не потвержили свой номер телефона. Мы отправили вам смс с кодом, пожалуйста, введите его')
             return OTP
-        await users_repository.check_for_proactively_added_user(current_user.phone, current_user.telegram_user_id)
+        await users_repository.activate_proactively_added_user(current_user.phone, current_user.telegram_user_id)
         active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(current_user)
         if active_subscription is not None:
             subscription = await subscriptions_repository.get_subscription_by_id(active_subscription.subscription_id)
@@ -74,12 +74,12 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         dirty_phone_number = update.message.text
         un_spaced_phone_number = dirty_phone_number.replace(' ', '')
         phone_number = un_spaced_phone_number.replace('+', '')
-    proactively_check_result = await users_repository.check_for_proactively_added_user(phone_number, update.effective_user.id)
-    if proactively_check_result is True:
-        await update.message.reply_text(strings.registration_proactively.format(name=context.user_data['registration_name']))
-        await update.message.reply_text(strings.registration_finished, reply_markup=ReplyKeyboardRemove())
-        del context.user_data['registration_name']
-        return ConversationHandler.END
+    existed_user = await users_repository.find_user_by_phone(phone_number)
+    if existed_user is not None:
+        if existed_user.telegram_user_id is not None:
+            await update.message.reply_text('Пользовтаель с этим номером телефона уже существует')
+            return
+
     await users_repository.save_user(context.user_data['registration_name'], phone_number, update.effective_user.id)
     otp_service = OTPService(phone_number)
     otp_service.send_otp()
@@ -88,6 +88,7 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         'Мы отправили вам на номер смс с кодом, пожалуйста, подтвердите свой номер телефона',
         reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     )
+    context.user_data['registration_phone'] = phone_number
     return OTP
 
 
@@ -116,6 +117,7 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
         await update.message.reply_text('Вы отправили неверный OTP')
         return OTP
     await users_repository.verify_user(user.id)
+    await users_repository.activate_proactively_added_user(context.user_data['registration_phone'], update.effective_user.id)
     await update.message.reply_text(strings.registration_finished, reply_markup=ReplyKeyboardRemove())
     await actions.send_subscription_menu_button(update, context)
     del context.user_data['registration_name']
