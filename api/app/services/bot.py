@@ -47,6 +47,9 @@ async def send_message_to_user(user: User, text: str, files: Optional[List[Binar
         try:
             if len(files) == 1:
                 file = files[0]
+                file.seek(0)
+                bio = BytesIO(file.read())
+                logging.info(f'File length: {bio.getbuffer().nbytes} b')
                 await bot.send_photo(
                     chat_id=user.telegram_user_id,
                     photo=types.InputFile(BytesIO(file.read())),
