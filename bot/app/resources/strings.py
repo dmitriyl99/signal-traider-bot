@@ -9,6 +9,7 @@ choose_subscription_text = 'Выбрать подписку'
 hello_message = 'Здравствуйте, %s!'
 
 send_phone_button_text = 'Отправить номер'
+wrong_number_button_text = 'Неправильный номер'
 
 validation_phone_message = 'Неправильный формат номера'
 

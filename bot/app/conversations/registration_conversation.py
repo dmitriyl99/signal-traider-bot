@@ -83,11 +83,26 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     await users_repository.save_user(context.user_data['registration_name'], phone_number, update.effective_user.id)
     otp_service = OTPService(phone_number)
     otp_service.send_otp()
-    await update.message.reply_text('Мы отправили вам на номер смс с кодом, пожалуйста, подтвердите свой номер телефона')
+    keyboard = [[KeyboardButton(text=strings.wrong_number_button_text)]]
+    await update.message.reply_text(
+        'Мы отправили вам на номер смс с кодом, пожалуйста, подтвердите свой номер телефона',
+        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    )
     return OTP
 
 
 async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+    if update.message.text == strings.wrong_number_button_text:
+        keyboard = [[KeyboardButton(text=strings.send_phone_button_text, request_contact=True)]]
+
+        await update.message.reply_text(
+            strings.registration_phone,
+            reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True),
+            parse_mode='HTML'
+        )
+
+        return PHONE
+
     user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if user is None:
         await update.message.reply_text(strings.registration_name, reply_markup=ReplyKeyboardRemove())
