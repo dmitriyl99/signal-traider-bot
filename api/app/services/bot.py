@@ -54,17 +54,17 @@ async def send_message_to_user(user: User, text: str, files: Optional[List[Binar
                     parse_mode=types.ParseMode.HTML
                 )
             else:
+                media_group = types.MediaGroup()
+                for idx, f in enumerate(files):
+                    media_group.attach_photo(
+                        types.InputFile(BytesIO(f.read())),
+                        caption=text if idx == 0 else None,
+                        parse_mode=types.ParseMode.HTML
+                    )
                 await bot.send_media_group(
                     user.telegram_user_id,
-                    media=types.MediaGroup(
-                        medias=[
-                            types.InputMediaPhoto(
-                                types.InputFile(
-                                    BytesIO(
-                                        f.read()
-                                    )
-                                ), caption=text if idx == 1 else None, parse_mode=types.ParseMode.HTML) for idx, f in
-                            enumerate(files)]))
+                    media=media_group,
+                )
         except aiogram.utils.exceptions.ChatNotFound:
             return
         return
