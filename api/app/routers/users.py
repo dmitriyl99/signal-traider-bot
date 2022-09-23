@@ -5,6 +5,8 @@ from app.data.db.users_repository import UsersRepository
 from app.data.db.subscriptions_repository import SubscriptionsRepository
 from app.data.models.admin_users import AdminUser
 
+from app.services import bot
+
 from app.routers.forms.users import CreateUserForm, UpdateUserForm
 
 router = APIRouter(prefix='/users', tags=['Users'])
@@ -36,7 +38,8 @@ async def create_user(
             form.subscription_id,
             form.subscription_duration_in_days,
             form.subscription_condition_id,
-            proactively_added=True
+            proactively_added=True,
+            active=False
         )
 
     return user
@@ -71,12 +74,14 @@ async def update_user(
             detail='User not found'
         )
     if form.subscription_id and (form.subscription_condition_id or form.subscription_duration_in_days):
-        await subscription_repository.add_subscription_to_user(
+        user_subscription = await subscription_repository.add_subscription_to_user(
             user,
             form.subscription_id,
             form.subscription_duration_in_days,
             form.subscription_condition_id,
-            proactively_added=True
+            proactively_added=False,
+            active=True
         )
+        await bot.send_message_to_user(user, f'Вам добавлена подписка на {user_subscription.duration_in_days} дней!')
 
     return user

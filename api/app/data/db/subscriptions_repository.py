@@ -28,7 +28,8 @@ class SubscriptionsRepository:
             subscription_id: int,
             duration_in_days: Optional[int] = None,
             subscription_condition_id: Optional[int] = None,
-            proactively_added=True
+            proactively_added=True,
+            active=False
     ) -> SubscriptionUser:
         current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user.id)
         result = await self._session.execute(current_subscription_user_stmt)
@@ -47,7 +48,7 @@ class SubscriptionsRepository:
         subscription_user.duration_in_days = duration_in_days
         subscription_user.proactively_added = proactively_added
         subscription_user.user_id = user.id
-        subscription_user.active = False
+        subscription_user.active = active
         self._session.add(subscription_user)
         await self._session.commit()
 
