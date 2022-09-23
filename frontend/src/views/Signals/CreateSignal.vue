@@ -124,11 +124,20 @@ export default {
       this.isLoading = true;
       this.successText = null;
       signalsApi.sendSignal(this.currency_pair, this.execution_method, this.price, this.tr_1, this.tr_2, this.sl).then(() => {
-        this.successText = 'Сигнал успешно отправлен';
-        this.sendButtonView = false;
-        setTimeout(() => {
+        this.currency_pair = null;
+        this.execution_method = null;
+        this.price = null;
+        this.tr_2 = null;
+        this.tr_1 = null;
+        this.sl = null;
+        this.recommendedPrice = null;
+        this.$swal({
+          icon: 'success',
+          text: 'Сигнал отправлен'
+        }).then(() => {
           this.$router.push({name: 'ListSignals'});
-        }, 5000);
+        })
+        this.sendButtonView = false;
       }).finally(() => {
         this.isLoading = false;
       })
