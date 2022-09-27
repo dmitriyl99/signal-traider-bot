@@ -41,8 +41,10 @@ async def get_subscription_condition(subscription_id: int) -> List[SubscriptionC
 async def add_subscription_to_user(subscription_id: int, subscription_condition_id: int, user_id: int) -> None:
     async with async_session() as session:
         user: User = (await session.execute(select(User).filter(User.telegram_user_id == user_id))).scalars().first()
-        subscription_user: SubscriptionUser = (await session.execute(select(SubscriptionUser).filter(SubscriptionUser.user_id == user.id))).scalars().first()
-        subscription_condition: SubscriptionCondition = await session.get(SubscriptionCondition, subscription_condition_id)
+        subscription_user: SubscriptionUser = (await session.execute(
+            select(SubscriptionUser).filter(SubscriptionUser.user_id == user.id))).scalars().first()
+        subscription_condition: SubscriptionCondition = await session.get(SubscriptionCondition,
+                                                                          subscription_condition_id)
 
         if subscription_user is None:
             subscription_user = SubscriptionUser()
@@ -58,6 +60,28 @@ async def add_subscription_to_user(subscription_id: int, subscription_condition_
         subscription_user.active = True
         subscription_user.activation_datetime = now_datetime
         await session.commit()
+
+
+async def add_subscription_with_days_to_user(
+        user: User,
+        subscription_id: int,
+        duration_in_days: int,
+) -> SubscriptionUser:
+    current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user.id)
+    async with async_session() as session:
+        result = await session.execute(current_subscription_user_stmt)
+        subscription_user: SubscriptionUser = result.scalars().first()
+        if subscription_user is None:
+            subscription_user = SubscriptionUser()
+        subscription_user.subscription_id = subscription_id
+        subscription_user.duration_in_days = duration_in_days
+        subscription_user.proactively_added = False
+        subscription_user.user_id = user.id
+        subscription_user.active = True
+        session.add(subscription_user)
+        await session.commit()
+
+        return subscription_user
 
 
 async def get_subscription_by_id(subscription_id: int) -> Subscription:

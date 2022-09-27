@@ -1,4 +1,4 @@
-import re
+from typing import Optional
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -7,37 +7,39 @@ from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, M
 
 from app.resources import strings
 from app.data.models.subscription import SubscriptionUser
+from app.data.models.users import User
 from app import actions
 from app.data.db import users_repository, subscriptions_repository, utm_respository
 from app.helpers import date
 from app.services.otp_service import OTPService
+from app.services import masspay
 
 NAME, PHONE, OTP = range(3)
 
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     await _process_update_for_utm(update)
+    hash_command_user = await _process_update_for_hash_command(update, context)
+    if hash_command_user:
+        active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(
+            hash_command_user)
+        if active_subscription is not None:
+            await actions.send_current_subscription_information(active_subscription, update)
+            return ConversationHandler.END
     current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if current_user is not None:
         await update.message.reply_text(strings.hello_message % current_user.name)
         if current_user.verified_at is None:
             otp_service = OTPService(current_user.phone)
             otp_service.send_otp()
-            await update.message.reply_text('Вы ещё не потвержили свой номер телефона. Мы отправили вам смс с кодом, пожалуйста, введите его')
+            await update.message.reply_text(
+                'Вы ещё не потвердили свой номер телефона. Мы отправили вам смс с кодом, пожалуйста, введите его')
             return OTP
         await users_repository.activate_proactively_added_user(current_user.phone, current_user.telegram_user_id)
-        active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(current_user)
+        active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(
+            current_user)
         if active_subscription is not None:
-            subscription = await subscriptions_repository.get_subscription_by_id(active_subscription.subscription_id)
-            now = datetime.now()
-            subscription_end_date: datetime = active_subscription.created_at + relativedelta(days=active_subscription.duration_in_days)
-            diff_days = date.diff_in_days(now, subscription_end_date)
-            await update.message.reply_text(strings.active_subscription.format(
-                name=subscription.name,
-                to_date=subscription_end_date.strftime('%d.%m.%Y'),
-                days=diff_days
-                ),
-            )
+            await actions.send_current_subscription_information(active_subscription, update)
             return ConversationHandler.END
         await actions.send_subscription_menu_button(update, context)
         return ConversationHandler.END
@@ -57,6 +59,17 @@ async def _name(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         parse_mode='HTML'
     )
 
+    if 'registration_phone' in context.user_data:
+        if 'hash_command_subscription_id' in context.user_data:
+            user = await users_repository.save_user(context.user_data['registration_name'],
+                                                    context.user_data['registration_phone'], update.effective_user.id)
+            await users_repository.verify_user(user.id)
+            subscription = (await subscriptions_repository.get_subscriptions())[0]
+            active_subscription = await subscriptions_repository.add_subscription_with_days_to_user(user,
+                                                                                                    subscription.id,
+                                                                                                    context.user_data[
+                                                                                                        'hash_command_subscription_days'])
+            await actions.send_current_subscription_information(active_subscription, update)
     return PHONE
 
 
@@ -117,23 +130,14 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
         return OTP
     user = await users_repository.find_user_by_phone(context.user_data['registration_phone'])
     await users_repository.verify_user(user.id)
-    await users_repository.activate_proactively_added_user(context.user_data['registration_phone'], update.effective_user.id)
+    await users_repository.activate_proactively_added_user(context.user_data['registration_phone'],
+                                                           update.effective_user.id)
     await update.message.reply_text(strings.registration_finished, reply_markup=ReplyKeyboardRemove())
     active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(user)
     if active_subscription is None:
         await actions.send_subscription_menu_button(update, context)
     else:
-        subscription = await subscriptions_repository.get_subscription_by_id(active_subscription.subscription_id)
-        now = datetime.now()
-        subscription_end_date: datetime = active_subscription.created_at + relativedelta(
-            days=active_subscription.duration_in_days)
-        diff_days = date.diff_in_days(now, subscription_end_date)
-        await update.message.reply_text(strings.active_subscription.format(
-            name=subscription.name,
-            to_date=subscription_end_date.strftime('%d.%m.%Y'),
-            days=diff_days
-        ),
-        )
+        await actions.send_current_subscription_information(active_subscription, update)
     del context.user_data['registration_name']
     return ConversationHandler.END
 
@@ -165,3 +169,37 @@ async def _process_update_for_utm(update: Update):
     utm_commands = utm_payload_split[1:]
     for utm_command in utm_commands:
         await utm_respository.utm_click(utm_command, update.effective_user.id)
+
+
+async def _process_update_for_hash_command(update: Update, context: CallbackContext.DEFAULT_TYPE) -> Optional[User]:
+    text = update.message.text
+    if '/start' not in text:
+        return None
+    text_split = text.split(' ')
+    if len(text_split) == 1:
+        return None
+    payload = text_split[1]
+    if 'hash' not in payload:
+        return None
+    hash_payload_split = payload.split('_')
+    if len(hash_payload_split) == 1:
+        return None
+    hash_command = hash_payload_split[1]
+    result: masspay.CheckHashCommandResult = masspay.check_hash_command(hash_command)
+    if result is None:
+        return None
+
+    subscriptions = await subscriptions_repository.get_subscriptions()
+    subscription = subscriptions[0]
+    existing_user_by_phone = await users_repository.find_user_by_phone(result.user_phone_number)
+    if existing_user_by_phone:
+        if update.effective_user.id != existing_user_by_phone.telegram_user_id:
+            return None
+        await subscriptions_repository.add_subscription_with_days_to_user(existing_user_by_phone, subscription.id,
+                                                                          result.subscription_days)
+        return existing_user_by_phone
+    context.user_data['registration_phone'] = result.user_phone_number
+    context.user_data['hash_command_subscription_id'] = subscription.id
+    context.user_data['hash_command_subscription_days'] = result.subscription_days
+
+    return None

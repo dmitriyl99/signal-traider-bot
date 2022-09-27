@@ -22,6 +22,8 @@ class Config:
 
     REDIS_HOST: str
 
+    MASSPAY_HOST: str
+
     def __init__(self):
         self.ENV = os.getenv('ENV')
         self.TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_TOKEN')
@@ -35,6 +37,7 @@ class Config:
         self.TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
         self.TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
         self.REDIS_HOST = os.getenv('REDIS_HOST')
+        self.MASSPAY_HOST = os.getenv('MASSPAY_HOST')
 
 
 config = Config()
