@@ -48,7 +48,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
 
 async def _name(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     text = update.message.text
-    context.user_data['registration_name'] = text
+    context.user_data['registration_name'] = text.strip().replace('\n', '')
     keyboard = [[KeyboardButton(text=strings.send_phone_button_text, request_contact=True)]]
 
     await update.message.reply_text(
@@ -74,6 +74,9 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         dirty_phone_number = update.message.text
         un_spaced_phone_number = dirty_phone_number.replace(' ', '')
         phone_number = un_spaced_phone_number.replace('+', '')
+        if not phone_number.isnumeric():
+            await update.message.reply_text(strings.validation_phone_message)
+            return PHONE
     existed_user = await users_repository.find_user_by_phone(phone_number)
     if existed_user is not None:
         if existed_user.telegram_user_id is not None:
