@@ -1,6 +1,5 @@
 from typing import Optional
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+import logging
 
 from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, helpers
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, filters
@@ -53,12 +52,6 @@ async def _name(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     context.user_data['registration_name'] = text.strip().replace('\n', '')
     keyboard = [[KeyboardButton(text=strings.send_phone_button_text, request_contact=True)]]
 
-    await update.message.reply_text(
-        strings.registration_phone,
-        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True),
-        parse_mode='HTML'
-    )
-
     if 'registration_phone' in context.user_data:
         if 'hash_command_subscription_id' in context.user_data:
             user = await users_repository.save_user(context.user_data['registration_name'],
@@ -69,7 +62,17 @@ async def _name(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
                                                                                                     subscription.id,
                                                                                                     context.user_data[
                                                                                                         'hash_command_subscription_days'])
+            await update.message.reply_text(
+                text='Вы активировали бонусную подписку!'
+            )
             await actions.send_current_subscription_information(active_subscription, update)
+            return ConversationHandler.END
+
+    await update.message.reply_text(
+        strings.registration_phone,
+        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True),
+        parse_mode='HTML'
+    )
     return PHONE
 
 
@@ -154,6 +157,7 @@ handler = ConversationHandler(
 
 
 async def _process_update_for_utm(update: Update):
+    logging.info(f'Process for UTM: {update.message.text}')
     text = update.message.text
     if '/start' not in text:
         return
@@ -172,6 +176,7 @@ async def _process_update_for_utm(update: Update):
 
 
 async def _process_update_for_hash_command(update: Update, context: CallbackContext.DEFAULT_TYPE) -> Optional[User]:
+    logging.info(f'Process for hash command: {update.message.text}')
     text = update.message.text
     if '/start' not in text:
         return None
@@ -181,6 +186,7 @@ async def _process_update_for_hash_command(update: Update, context: CallbackCont
     payload = text_split[1]
     if 'hash' not in payload:
         return None
+    logging.info(f'Hash found for user {update.effective_user.id}')
     hash_payload_split = payload.split('_')
     if len(hash_payload_split) == 1:
         return None
