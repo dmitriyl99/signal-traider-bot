@@ -17,7 +17,12 @@
           <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
               v-for="utm_command in utm_commands" :key="utm_command.id">
             {{ utm_command.name }}
-            <span class="badge bg-danger rounded-pill p-2" @click="deleteUtmCommand(utm_command.id, utm_command.name)"><i class="fe fe-trash"></i></span>
+            <div>
+              <span class="badge bg-primary rounded-pill p-3 me-2" @click="generateLink(utm_command.name)"><i
+                  class="fe fe-link"></i></span>
+              <span class="badge bg-danger rounded-pill p-3"
+                    @click="deleteUtmCommand(utm_command.id, utm_command.name)"><i class="fe fe-trash"></i></span>
+            </div>
           </li>
         </ul>
       </div>
@@ -43,6 +48,15 @@ export default {
       })
     },
 
+    generateLink(utm_name) {
+      const botUrl = `https://t.me/https://t.me/masspower_vipbot?start=utm_${utm_name}`
+      navigator.clipboard.writeText(botUrl);
+      this.$swal({
+        icon: 'success',
+        html: `<a href="${botUrl}">Ссылка на бот</a> вместе с UTM меткой была скопирована в буфер обмена`
+      })
+    },
+
     saveUtmCommand() {
       if (this.utmCommandName != null && this.utmCommandName.trim() !== '') {
         utmApi.saveUtmCommand(this.utmCommandName).then(response => {
@@ -57,35 +71,35 @@ export default {
             })
           }
         }).catch(error => {
-           this.$swal({
-             icon: 'error',
-             text: error.response.data.detail
-           })
-         }).finally(() => {
-           this.utmCommandName = '';
-         })
+          this.$swal({
+            icon: 'error',
+            text: error.response.data.detail
+          })
+        }).finally(() => {
+          this.utmCommandName = '';
+        })
       }
     },
 
     deleteUtmCommand(utm_id, utm_name) {
-     this.$swal({
-       icon: 'question',
-       title: 'Подумайте',
-       text: `Вы уверены, что хотите удалить метку ${utm_name}? При этом её данные сохраняться`,
-       showCancelButton: true,
-       confirmButtonText: 'Я подумал',
-       cancelButtonText: 'Я передумал'
-     }).then((result) => {
-       if (result.isConfirmed) {
-         utmApi.deleteUtmCommand(utm_id).then(() => {
-           this.getUtmCommands();
-           this.$swal({
-             icon: 'success',
-             text: 'UTM-метка удалена'
-           })
-         })
-       }
-     })
+      this.$swal({
+        icon: 'question',
+        title: 'Подумайте',
+        text: `Вы уверены, что хотите удалить метку ${utm_name}? При этом её данные сохраняться`,
+        showCancelButton: true,
+        confirmButtonText: 'Я подумал',
+        cancelButtonText: 'Я передумал'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          utmApi.deleteUtmCommand(utm_id).then(() => {
+            this.getUtmCommands();
+            this.$swal({
+              icon: 'success',
+              text: 'UTM-метка удалена'
+            })
+          })
+        }
+      })
     }
   },
 
