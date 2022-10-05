@@ -1,10 +1,12 @@
 from typing import List, Optional
 
+from sqlalchemy import func, select as sync_select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.data.models.utm import UtmCommand, UtmCommandClick
+from app.data.db import Session
 
 
 class UtmRepository:
@@ -40,3 +42,12 @@ class UtmRepository:
         utm_command = await self._session.get(UtmCommand, utm_command_id)
         await self._session.delete(utm_command)
         await self._session.commit()
+
+    def get_utm_commands_statistics(self):
+        with Session() as session:
+            return session.query(
+                UtmCommandClick.utm_command_name,
+                func.count(UtmCommandClick.utm_command_name).label("clicks_count")
+            ).group_by(
+                UtmCommandClick.utm_command_name
+            ).all()

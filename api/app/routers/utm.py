@@ -17,6 +17,14 @@ async def get_utm_commands(
     return await utm_repository.get_all_utm_commands()
 
 
+@router.get('/commands/statistics')
+async def get_utm_commands(
+        utm_repository: UtmRepository = Depends(get_utm_repository),
+        current_user: AdminUser = Depends(get_current_user),
+):
+    return utm_repository.get_utm_commands_statistics()
+
+
 @router.get('/commands/{utm_command_id}')
 async def get_utm_command_by_id(
         utm_command_id: int,

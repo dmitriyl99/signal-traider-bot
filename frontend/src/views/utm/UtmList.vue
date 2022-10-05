@@ -25,6 +25,10 @@
             </div>
           </li>
         </ul>
+        <div style="width: 400px; height: 400px">
+          <Bar :chart-data="chartData" :width="width"
+    :height="height"/>
+        </div>
       </div>
     </div>
   </div>
@@ -33,12 +37,32 @@
 <script>
 import utmApi from "../../api/utmApi";
 
+import { Bar } from 'vue-chartjs';
+import { Chart, registerables } from "chart.js";
+
+Chart.register(...registerables);
+
 export default {
   name: "UtmList",
+  components: {Bar},
+  props: {
+    width: {
+      type: Number,
+      default: 400
+    },
+    height: {
+      type: Number,
+      default: 400
+    },
+  },
   data: () => ({
     utm_commands: [],
     modalDialogOpened: false,
-    utmCommandName: ''
+    utmCommandName: '',
+    chartData: {
+        labels: [ 'January', 'February', 'March' ],
+        datasets: [ { data: [40, 20, 12] } ]
+      },
   }),
 
   methods: {
@@ -48,12 +72,26 @@ export default {
       })
     },
 
+    loadUtmStatistics() {
+      utmApi.getUtmStatistics().then(response => {
+        let apiData = response.data;
+        let labels = [];
+        let data = [];
+        apiData.forEach(i => {
+          labels.push(i.utm_command_name);
+          data.push(i.clicks_count);
+        });
+        this.chartData.labels = labels;
+        this.chartData.datasets[0].data = data;
+      })
+    },
+
     generateLink(utm_name) {
-      const botUrl = `https://t.me/https://t.me/masspower_vipbot?start=utm_${utm_name}`
+      const botUrl = `https://t.me/masspower_vipbot?start=utm_${utm_name}`
       navigator.clipboard.writeText(botUrl);
       this.$swal({
         icon: 'success',
-        html: `<a href="${botUrl}">Ссылка на бот</a> вместе с UTM меткой была скопирована в буфер обмена`
+        html: `<a href="${botUrl}" target=”_blank” >Ссылка на бот</a> вместе с UTM меткой была скопирована в буфер обмена`
       })
     },
 
@@ -105,6 +143,7 @@ export default {
 
   created() {
     this.getUtmCommands();
+    this.loadUtmStatistics()
   }
 }
 </script>

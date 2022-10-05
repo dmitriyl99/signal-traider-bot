@@ -49,3 +49,4 @@ uvicorn==0.18.1
 wrapt==1.14.1
 yarl==1.7.2
 aiogram
+psycopg2-binary
