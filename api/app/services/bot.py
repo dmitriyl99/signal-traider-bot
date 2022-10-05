@@ -81,3 +81,8 @@ async def send_message_to_user(user: User, text: str, files: Optional[List[Binar
         await bot.send_message(user.telegram_user_id, text, parse_mode=types.ParseMode.HTML)
     except aiogram.utils.exceptions.ChatNotFound:
         return
+    except aiogram.utils.exceptions.BotBlocked:
+        return
+    except Exception as e:
+        await bot.send_message(76777495, f"Error while sending message to user {user.id}: {e}")
+        return
