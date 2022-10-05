@@ -39,7 +39,13 @@ async def store_utm_command(
         current_user: AdminUser = Depends(get_current_user),
         form: CreateUtmCommand = Body()
 ):
-    return await utm_repository.create_utm_command(form.name)
+    try:
+        return await utm_repository.create_utm_command(form.name)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
 @router.delete('/commands/{utm_command_id}')

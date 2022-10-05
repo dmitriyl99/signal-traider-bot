@@ -42,6 +42,11 @@
                 <i class="fe fe-dollar-sign"></i> Валютные пары
               </router-link>
             </li>
+            <li class="nav-item">
+              <router-link class="nav-link" :to="{name: 'UtmList'}">
+                <i class="fe fe-git-commit"></i> UTM-метки
+              </router-link>
+            </li>
           </ul>
 
           <!-- Push content down -->

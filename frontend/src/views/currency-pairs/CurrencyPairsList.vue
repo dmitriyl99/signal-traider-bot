@@ -30,7 +30,6 @@ export default {
   name: "CurrencyPairsList",
   data: () => ({
     currency_pairs: [],
-    modalDialogOpened: false,
     currency_pair_name: null
   }),
 

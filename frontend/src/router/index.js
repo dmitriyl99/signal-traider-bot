@@ -7,6 +7,7 @@ import PaymentsList from "../views/payments/PaymentsList";
 import ListSignals from "../views/Signals/ListSignals";
 import CreateSignal from "../views/Signals/CreateSignal";
 import CurrencyPairsList from "../views/currency-pairs/CurrencyPairsList";
+import UtmList from "../views/utm/UtmList";
 import Login from "../views/auth/Login";
 import auth from "./middleware/auth";
 import guest from "./middleware/guest";
@@ -96,6 +97,17 @@ const routes = [
         path: '/currency-pairs',
         component: CurrencyPairsList,
         name: 'CurrencyPairsList',
+        meta: {
+            layout: 'AppLayoutAdmin',
+            middleware: [
+                auth
+            ]
+        }
+    },
+    {
+        path: '/utm',
+        component: UtmList,
+        name: 'UtmList',
         meta: {
             layout: 'AppLayoutAdmin',
             middleware: [

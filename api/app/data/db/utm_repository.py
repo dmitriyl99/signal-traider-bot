@@ -24,6 +24,11 @@ class UtmRepository:
         return result.scalars().first()
 
     async def create_utm_command(self, name: str) -> UtmCommand:
+        stmt = select(UtmCommand).filter(UtmCommand.name == name)
+        result = await self._session.execute(stmt)
+        exists_utm_command = result.scalars().first()
+        if exists_utm_command:
+            raise Exception(f'UTM command {name} already exists')
         utm_command = UtmCommand(name=name)
         self._session.add(utm_command)
         await self._session.commit()
@@ -34,3 +39,4 @@ class UtmRepository:
     async def delete_utm_command(self, utm_command_id: int):
         utm_command = await self._session.get(UtmCommand, utm_command_id)
         await self._session.delete(utm_command)
+        await self._session.commit()
