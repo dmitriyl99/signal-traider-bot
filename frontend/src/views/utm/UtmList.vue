@@ -25,7 +25,7 @@
             </div>
           </li>
         </ul>
-        <div style="width: 400px; height: 400px">
+        <div v-if="utm_commands.length > 0" style="width: 400px; height: 400px">
           <Bar :chart-data="chartData" :width="width"
     :height="height"/>
         </div>
