@@ -4,7 +4,8 @@ const authModule = {
     state: () => ({
         jwt_token: loadValue('jwt_token'),
         current_user: loadObject('current_user'),
-        permissions: loadObject('permissions')
+        permissions: loadObject('permissions'),
+        roles: loadObject('roles')
     }),
     mutations: {
         setJwtToken(state, {jwtToken}) {
@@ -17,18 +18,24 @@ const authModule = {
         },
 
         setPermissions(state, {permissions}) {
-            console.log(permissions);
             state.permissions = permissions;
             saveObject('permissions', permissions)
+        },
+
+        setRoles(state, {roles}) {
+            state.roles = roles;
+            saveObject('roles', roles)
         },
 
         logout(state) {
             state.jwt_token = null;
             state.current_user = null;
             state.permissions = null;
+            state.roles = null;
             localStorage.removeItem('jwt_token');
             localStorage.removeItem('current_user')
             localStorage.removeItem('permissions');
+            localStorage.removeItem('roles');
         }
     },
     actions: {
@@ -37,21 +44,25 @@ const authModule = {
                 authApi.getJwtToken(username, password).then(response => {
                     let accessToken = response.data.access_token;
                     context.commit('setJwtToken', {jwtToken: accessToken})
-                    authApi.getCurrentUser(accessToken).then(response => {
-                        context.commit('setCurrentUser', {currentUser: response.data})
-                        authApi.getPermissions(accessToken).then(response => {
-                            context.commit('setPermissions', {permissions: response.data})
-                            resolve(true)
-                        }, error => {
-                            reject(error)
-                        })
-                    }, error => {
-                        reject(error)
-                    })
+                    resolve(true);
                 }, error => {
                     reject(error)
                 })
             })
+        },
+        fetchUser(context) {
+            let accessToken = context.state.jwt_token;
+            authApi.getCurrentUser(accessToken).then(response => {
+                context.commit('setCurrentUser', {currentUser: response.data})
+                authApi.getPermissions(accessToken).then(response => {
+                    context.commit('setPermissions', {permissions: response.data})
+                    authApi.getRoles(accessToken).then(response => {
+                        context.commit('setRoles', {roles: response.data})
+                    })
+                })
+            })
+
+            return accessToken;
         },
         logout(context) {
             context.commit('logout')
@@ -65,7 +76,13 @@ const authModule = {
             return state.current_user
         },
         isLoggedIn(state) {
-            return state.jwt_token != null && state.current_user != null
+            return state.jwt_token != null;
+        },
+        userPermissions(state) {
+            return state.permissions
+        },
+        userRoles(state) {
+            return state.roles
         }
     }
 };

@@ -47,6 +47,11 @@
                 <i class="fe fe-git-commit"></i> UTM-метки
               </router-link>
             </li>
+            <li class="nav-item" v-if="currentUserHasAdminRole">
+              <router-link class="nav-link" :to="{name: 'admin-users.list'}">
+                <i class="fe fe-user-check"></i> Администраторы
+              </router-link>
+            </li>
           </ul>
 
           <!-- Push content down -->
@@ -90,6 +95,13 @@ export default {
   }),
   created() {
     console.log(this.$router.currentRoute.value.name)
+  },
+  computed: {
+    currentUserHasAdminRole() {
+      if (this.$store.state.auth.roles != null)
+        return this.$store.state.auth.roles.filter(role => role.name === 'Admin').length;
+      return false;
+    }
   },
   methods: {
     logout() {

@@ -8,6 +8,7 @@ import ListSignals from "../views/Signals/ListSignals";
 import CreateSignal from "../views/Signals/CreateSignal";
 import CurrencyPairsList from "../views/currency-pairs/CurrencyPairsList";
 import UtmList from "../views/utm/UtmList";
+import AdminUsersList from "../views/AdminUsers/AdminUsersList";
 import Login from "../views/auth/Login";
 import auth from "./middleware/auth";
 import guest from "./middleware/guest";
@@ -108,6 +109,17 @@ const routes = [
         path: '/utm',
         component: UtmList,
         name: 'UtmList',
+        meta: {
+            layout: 'AppLayoutAdmin',
+            middleware: [
+                auth
+            ]
+        }
+    },
+    {
+        path: '/admin-users',
+        component: AdminUsersList,
+        name: 'admin-users.list',
         meta: {
             layout: 'AppLayoutAdmin',
             middleware: [

@@ -18,6 +18,10 @@ class AdminUsersRepository(BaseRepository):
         pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         return pwd_context.hash(plain_password)
 
+    async def get_all_admin_users(self) -> List[AdminUser]:
+        result = await self._session.execute(select(AdminUser))
+        return result.scalars().all()
+
     async def authenticate_user(self, username: str, password: str) -> AdminUser | None:
         result = await self._session.execute(select(AdminUser).filter(AdminUser.username == username))
         user = result.scalars().first()
@@ -42,7 +46,9 @@ class AdminUsersRepository(BaseRepository):
         return user
 
     async def get_admin_user_by_id(self, user_id: int) -> AdminUser:
-        return await self._session.get(AdminUser, user_id)
+        Session = sessionmaker(sync_engine)
+        with Session() as session:
+            return session.query(AdminUser).get(user_id)
 
     async def add_role_to_admin_user(self, admin_user_id: int, role: str | int):
         if role is str:
@@ -69,3 +75,25 @@ class AdminUsersRepository(BaseRepository):
                 permissions_via_roles += role.permissions
 
         return direct_permissions + permissions_via_roles
+
+    def get_admin_roles(self, admin_user: AdminUser) -> List[Role]:
+        Session = sessionmaker(sync_engine)
+        with Session() as session:
+            admin_user = session.query(AdminUser).get(admin_user.id)
+            return admin_user.roles
+
+    def check_if_user_has_role(self, admin_user: AdminUser, role: str | int) -> bool:
+        Session = sessionmaker(sync_engine)
+        with Session() as session:
+            admin_user = session.query(AdminUser).get(admin_user.id)
+            if type(role) is int:
+                role_entity = session.query(Role).get(role)
+            else:
+                role_entity = session.query(Role).filter(Role.name == role).first()
+            if role_entity is None:
+                raise Exception(f"Role {role} not found")
+            admin_users_role_names = list(map(lambda x: x.name, admin_user.roles))
+            if role_entity.name not in admin_users_role_names:
+                return False
+            return True
+

@@ -16,8 +16,15 @@ function getPermissions(token) {
     })
 }
 
+function getRoles(token) {
+    return apiInstance.get('/auth/me/roles', {
+        headers: {'Authorization': `Bearer ${token}`}
+    })
+}
+
 export default {
     getJwtToken,
     getCurrentUser,
     getPermissions,
+    getRoles
 }
