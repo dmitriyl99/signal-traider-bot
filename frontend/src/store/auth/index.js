@@ -3,7 +3,8 @@ import authApi from "../../api/authApi";
 const authModule = {
     state: () => ({
         jwt_token: loadValue('jwt_token'),
-        current_user: loadObject('current_user')
+        current_user: loadObject('current_user'),
+        permissions: loadObject('permissions')
     }),
     mutations: {
         setJwtToken(state, {jwtToken}) {
@@ -15,11 +16,19 @@ const authModule = {
             saveObject('current_user', currentUser);
         },
 
+        setPermissions(state, {permissions}) {
+            console.log(permissions);
+            state.permissions = permissions;
+            saveObject('permissions', permissions)
+        },
+
         logout(state) {
             state.jwt_token = null;
             state.current_user = null;
+            state.permissions = null;
             localStorage.removeItem('jwt_token');
             localStorage.removeItem('current_user')
+            localStorage.removeItem('permissions');
         }
     },
     actions: {
@@ -30,7 +39,12 @@ const authModule = {
                     context.commit('setJwtToken', {jwtToken: accessToken})
                     authApi.getCurrentUser(accessToken).then(response => {
                         context.commit('setCurrentUser', {currentUser: response.data})
-                        resolve(true)
+                        authApi.getPermissions(accessToken).then(response => {
+                            context.commit('setPermissions', {permissions: response.data})
+                            resolve(true)
+                        }, error => {
+                            reject(error)
+                        })
                     }, error => {
                         reject(error)
                     })

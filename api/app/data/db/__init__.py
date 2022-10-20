@@ -20,3 +20,10 @@ async def get_session() -> AsyncSession:
     )
     async with async_session() as session:
         yield session
+
+
+class BaseRepository:
+    _session: AsyncSession
+
+    def __init__(self, session: AsyncSession):
+        self._session = session

@@ -2,7 +2,7 @@ import asyncio
 
 import click
 
-from app.data.db.users_repository import UsersRepository
+from app.data.db.admin_users_repository import AdminUsersRepository
 from app.data.db import async_session
 
 
@@ -15,7 +15,7 @@ async def create_super_user():
         return
     """Command to create admin user"""
     async with async_session() as session:
-        repository = UsersRepository(session)
+        repository = AdminUsersRepository(session)
         await repository.create_admin_user(username, password)
         click.echo('Admin user %s created!' % username)
 

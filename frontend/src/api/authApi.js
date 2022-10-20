@@ -10,7 +10,14 @@ function getCurrentUser(token) {
     })
 }
 
+function getPermissions(token) {
+    return apiInstance.get('/auth/me/permissions', {
+        headers: {'Authorization': `Bearer ${token}`}
+    })
+}
+
 export default {
     getJwtToken,
-    getCurrentUser
+    getCurrentUser,
+    getPermissions,
 }

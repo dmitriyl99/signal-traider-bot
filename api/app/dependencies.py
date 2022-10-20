@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt, JWTError
 
+from app.data.db.admin_users_repository import AdminUsersRepository
 from app.data.db.users_repository import UsersRepository
 from app.data.db.payments_repository import PaymentsRepository
 from app.data.db.signals_repository import SignalsRepository
@@ -22,6 +23,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def get_user_repository(session: AsyncSession = Depends(get_session)):
     return UsersRepository(session)
+
+
+def get_admin_users_repository(session: AsyncSession = Depends(get_session)):
+    return AdminUsersRepository(session)
 
 
 def get_payments_repository(session: AsyncSession = Depends(get_session)):
@@ -50,7 +55,7 @@ def get_utm_repository(session: AsyncSession = Depends(get_session)):
 
 async def get_current_user(
         token: str = Depends(oauth2_scheme),
-        user_repository: UsersRepository = Depends(get_user_repository)
+        user_repository: AdminUsersRepository = Depends(get_admin_users_repository)
 ) -> AdminUser:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

@@ -4,14 +4,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from jose import JWTError, jwt
 
-from app.data.db.users_repository import UsersRepository
 from app.data.models.admin_users import AdminUser
-from app.dependencies import get_user_repository, get_current_user
+from app.dependencies import get_current_user, get_admin_users_repository
 from app.config import settings
 
 from .forms.auth import LoginForm
 from .responses.auth import Token, User
-
+from ..data.db.admin_users_repository import AdminUsersRepository
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
 
@@ -30,7 +29,7 @@ def _create_access_token(data: dict, expires_delta: timedelta | None = None):
 @router.post('/token', response_model=Token)
 async def token(
         form_data: LoginForm,
-        user_repository: UsersRepository = Depends(get_user_repository)
+        user_repository: AdminUsersRepository = Depends(get_admin_users_repository)
 ):
     user = await user_repository.authenticate_user(form_data.username, form_data.password)
     if not user:
@@ -54,3 +53,11 @@ async def get_me(current_user: AdminUser = Depends(get_current_user)):
         id=current_user.id,
         username=current_user.username,
     )
+
+
+@router.get('/me/permissions')
+async def get_current_user_permissions(
+        admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository),
+        current_user: AdminUser = Depends(get_current_user)
+):
+    return await admin_users_repository.get_all_admin_user_permissions(current_user)
