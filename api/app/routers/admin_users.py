@@ -38,12 +38,26 @@ async def create_admin_user(
             status_code=422,
             detail='Wrong password confirmation'
         )
-    created_user = await admin_users_repository.create_admin_user(
+    created_user = admin_users_repository.create_admin_user(
         form.username,
-        form.password
+        form.password,
+        form.roles
     )
 
     return created_user
+
+
+@router.get('/roles')
+def get_roles(
+        current_user: AdminUser = Depends(get_current_user),
+        admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository),
+):
+    if not admin_users_repository.check_if_user_has_role(current_user, 'Admin'):
+        raise HTTPException(
+            status_code=401,
+            detail='Unauthenticated'
+        )
+    return admin_users_repository.get_roles()
 
 
 @router.get('/{admin_user_id}')
@@ -90,19 +104,6 @@ def change_password(
     return {
         "detail": "Пароль изменён"
     }
-
-
-@router.get('/roles')
-def get_roles(
-        current_user: AdminUser = Depends(get_current_user),
-        admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository),
-):
-    if not admin_users_repository.check_if_user_has_role(current_user, 'Admin'):
-        raise HTTPException(
-            status_code=401,
-            detail='Unauthenticated'
-        )
-    return admin_users_repository.get_roles()
 
 
 @router.get('/permissions')

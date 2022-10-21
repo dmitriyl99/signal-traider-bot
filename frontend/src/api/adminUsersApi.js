@@ -17,9 +17,14 @@ function changePassword(adminUserId, password, password_confirmation) {
     return apiInstance.post(`admin-users/${adminUserId}/change-password`, {password, password_confirmation})
 }
 
+function getRoles() {
+    return apiInstance.get('admin-users/roles');
+}
+
 export default {
     getAdminUsersList,
     createAdminUser,
     getAdminUserById,
-    changePassword
+    changePassword,
+    getRoles
 }

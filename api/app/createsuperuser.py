@@ -16,7 +16,7 @@ async def create_super_user():
     """Command to create admin user"""
     async with async_session() as session:
         repository = AdminUsersRepository(session)
-        await repository.create_admin_user(username, password)
+        repository.create_admin_user(username, password, [1])
         click.echo('Admin user %s created!' % username)
 
 

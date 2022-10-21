@@ -31,18 +31,23 @@ class AdminUsersRepository(BaseRepository):
             return None
         return user
 
-    async def create_admin_user(self, username: str, password: str) -> AdminUser:
-        result = await self._session.execute(select(AdminUser).filter(AdminUser.username == username))
-        user = result.scalars().first()
-        if user:
-            return user
-        user = AdminUser(
-            username=username,
-            password=self._create_password(password)
-        )
-        self._session.add(user)
-        await self._session.commit()
-        await self._session.refresh(user)
+    def create_admin_user(self, username: str, password: str, roles: List[int] = None) -> AdminUser:
+        with Session() as session:
+            user = session.query(AdminUser).filter(AdminUser.username == username).first()
+            if user:
+                return user
+            user = AdminUser(
+                username=username,
+                password=self._create_password(password)
+            )
+            if roles is not None:
+                for role_id in roles:
+                    role_entity = session.query(Role).get(role_id)
+                    if role_entity is None:
+                        continue
+                    user.roles.append(role_entity)
+                session.add(user)
+                session.commit()
         return user
 
     def get_admin_user_by_id(self, user_id: int) -> AdminUser:
@@ -74,6 +79,7 @@ class AdminUsersRepository(BaseRepository):
             def _(permission):
                 permission.from_role = role.name
                 return permission
+
             return _
 
         with Session() as session:
