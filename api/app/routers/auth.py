@@ -47,9 +47,17 @@ async def token(
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-@router.get('/me')
-async def get_me(current_user: AdminUser = Depends(get_current_user)):
-    return current_user
+@router.get('/me', response_model=User)
+async def get_me(
+        current_user: AdminUser = Depends(get_current_user),
+        admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository)
+):
+    return User(
+        id=current_user.id,
+        username=current_user.username,
+        roles=current_user.roles,
+        permissions=admin_users_repository.get_all_admin_user_permissions(current_user)
+    )
 
 
 @router.get('/me/permissions')
@@ -57,7 +65,7 @@ async def get_current_user_permissions(
         admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository),
         current_user: AdminUser = Depends(get_current_user)
 ):
-    return await admin_users_repository.get_all_admin_user_permissions(current_user)
+    return admin_users_repository.get_all_admin_user_permissions(current_user)
 
 
 @router.get('/me/roles')

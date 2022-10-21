@@ -9,3 +9,5 @@ class Token(BaseModel):
 class User(BaseModel):
     id: int
     username: str
+    roles: list = []
+    permissions: list = []

@@ -98,8 +98,8 @@ export default {
   },
   computed: {
     currentUserHasAdminRole() {
-      if (this.$store.state.auth.roles != null)
-        return this.$store.state.auth.roles.filter(role => role.name === 'Admin').length;
+      if (this.$store.state.auth.current_user != null)
+        return this.$store.state.auth.current_user.roles.filter(role => role.name === 'Admin').length;
       return false;
     }
   },

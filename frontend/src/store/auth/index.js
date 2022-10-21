@@ -54,12 +54,6 @@ const authModule = {
             let accessToken = context.state.jwt_token;
             authApi.getCurrentUser(accessToken).then(response => {
                 context.commit('setCurrentUser', {currentUser: response.data})
-                authApi.getPermissions(accessToken).then(response => {
-                    context.commit('setPermissions', {permissions: response.data})
-                    authApi.getRoles(accessToken).then(response => {
-                        context.commit('setRoles', {roles: response.data})
-                    })
-                })
             })
 
             return accessToken;

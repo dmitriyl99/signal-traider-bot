@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card-header">
-      <h3>Добавить нового пользователя административной панели</h3>
+      <h3>Редактивровать пользователя административной панели</h3>
     </div>
     <div class="card-body">
       <div class="row g-3">
@@ -27,6 +27,15 @@
         <button :disabled="isLoading" class="btn btn-primary mt-3" type="submit"
                 v-html="isLoading ? 'Меняю, подождите...' : 'Сменить пароль'"/>
       </form>
+      <h3 class="mt-5 border-bottom pb-3">Доступы</h3>
+      <h4 class="mt-5 pb-3">Роли</h4>
+      <div class="d-flex flex-column">
+        <span v-for="role in roles" :key="role.id">{{ role.name }}</span>
+      </div>
+      <h4 class="mt-5 pb-3">Разрешения (все)</h4>
+      <div class="d-flex flex-column">
+        <span v-for="permission in permissions" :key="permission.id">{{ permission.name }} <span v-if="permission.from_role !== undefined">({{ permission.from_role }})</span></span>
+      </div>
     </div>
   </div>
 </template>
@@ -50,6 +59,8 @@ export default {
     loadUser() {
       adminUsersApi.getAdminUserById(this.$route.params.id).then(response => {
         this.username = response.data.username
+        this.roles = response.data.roles
+        this.permissions = response.data.permissions
       })
     },
 

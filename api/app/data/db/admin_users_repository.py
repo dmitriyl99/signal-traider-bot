@@ -2,11 +2,11 @@ from typing import List
 
 from passlib.context import CryptContext
 
-from . import BaseRepository, sync_engine
+from . import BaseRepository, Session
 from ..models.admin_users import AdminUser
 from app.data.models.roles_and_permissions import Role, Permission
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.future import select
+from sqlalchemy.orm import subqueryload
 
 
 class AdminUsersRepository(BaseRepository):
@@ -46,9 +46,11 @@ class AdminUsersRepository(BaseRepository):
         return user
 
     def get_admin_user_by_id(self, user_id: int) -> AdminUser:
-        Session = sessionmaker(sync_engine)
         with Session() as session:
-            return session.query(AdminUser).get(user_id)
+            return session.query(AdminUser). \
+                options(subqueryload(AdminUser.roles), subqueryload(AdminUser.permissions)). \
+                filter(AdminUser.id == user_id). \
+                first()
 
     async def add_role_to_admin_user(self, admin_user_id: int, role: str | int):
         if role is str:
@@ -65,25 +67,29 @@ class AdminUsersRepository(BaseRepository):
         admin_user.roles += [role_model]
         await self._session.commit()
 
-    async def get_all_admin_user_permissions(self, admin_user: AdminUser) -> List[Permission]:
-        Session = sessionmaker(sync_engine)
+    def get_all_admin_user_permissions(self, admin_user: AdminUser) -> List[Permission]:
         permissions_via_roles = []
+
+        def mark_permission_from_role(role):
+            def _(permission):
+                permission.from_role = role.name
+                return permission
+            return _
+
         with Session() as session:
             admin_user = session.query(AdminUser).get(admin_user.id)
             direct_permissions = admin_user.permissions
             for role in admin_user.roles:
-                permissions_via_roles += role.permissions
+                permissions_via_roles += list(map(mark_permission_from_role(role), role.permissions))
 
         return direct_permissions + permissions_via_roles
 
     def get_admin_roles(self, admin_user: AdminUser) -> List[Role]:
-        Session = sessionmaker(sync_engine)
         with Session() as session:
             admin_user = session.query(AdminUser).get(admin_user.id)
             return admin_user.roles
 
     def check_if_user_has_role(self, admin_user: AdminUser, role: str | int) -> bool:
-        Session = sessionmaker(sync_engine)
         with Session() as session:
             admin_user = session.query(AdminUser).get(admin_user.id)
             if type(role) is int:
@@ -98,9 +104,15 @@ class AdminUsersRepository(BaseRepository):
             return True
 
     def change_password(self, admin_user_id: int, password: str):
-        Session = sessionmaker(sync_engine)
         with Session() as session:
             admin_user: AdminUser = session.query(AdminUser).get(admin_user_id)
             admin_user.password = self._create_password(password)
             session.commit()
 
+    def get_roles(self) -> List[Role]:
+        with Session() as session:
+            return session.query(Role).join(Role.permissions).all()
+
+    def get_permissions(self) -> List[Permission]:
+        with Session() as session:
+            return session.query(Permission).all()

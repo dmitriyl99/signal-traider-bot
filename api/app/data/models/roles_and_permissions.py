@@ -32,7 +32,7 @@ class Role(Base):
     name = sa.Column('name', sa.String(255))
 
     users = relationship("AdminUser", secondary=role_user_association_table, back_populates='roles')
-    permissions = relationship('Permission', secondary=permission_role_association_table)
+    permissions = relationship('Permission', secondary=permission_role_association_table, back_populates='roles')
 
 
 class Permission(Base):
@@ -42,3 +42,4 @@ class Permission(Base):
     name = sa.Column('name', sa.String(255))
 
     users = relationship("AdminUser", secondary=permission_user_association_table, back_populates='permissions')
+    roles = relationship("Role", secondary=permission_role_association_table, back_populates='permissions')
