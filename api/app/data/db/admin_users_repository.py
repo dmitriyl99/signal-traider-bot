@@ -45,7 +45,7 @@ class AdminUsersRepository(BaseRepository):
         await self._session.refresh(user)
         return user
 
-    async def get_admin_user_by_id(self, user_id: int) -> AdminUser:
+    def get_admin_user_by_id(self, user_id: int) -> AdminUser:
         Session = sessionmaker(sync_engine)
         with Session() as session:
             return session.query(AdminUser).get(user_id)
@@ -59,7 +59,7 @@ class AdminUsersRepository(BaseRepository):
         else:
             raise ValueError(f"Unexpected type of role: {type(role)}")
 
-        admin_user = await self.get_admin_user_by_id(admin_user_id)
+        admin_user = self.get_admin_user_by_id(admin_user_id)
         if admin_user is None:
             raise Exception("Admin user not found")
         admin_user.roles += [role_model]
@@ -96,4 +96,11 @@ class AdminUsersRepository(BaseRepository):
             if role_entity.name not in admin_users_role_names:
                 return False
             return True
+
+    def change_password(self, admin_user_id: int, password: str):
+        Session = sessionmaker(sync_engine)
+        with Session() as session:
+            admin_user: AdminUser = session.query(AdminUser).get(admin_user_id)
+            admin_user.password = self._create_password(password)
+            session.commit()
 

@@ -9,6 +9,8 @@ import CreateSignal from "../views/Signals/CreateSignal";
 import CurrencyPairsList from "../views/currency-pairs/CurrencyPairsList";
 import UtmList from "../views/utm/UtmList";
 import AdminUsersList from "../views/AdminUsers/AdminUsersList";
+import AdminUserCreate from "../views/AdminUsers/AdminUserCreate";
+import AdminUserEdit from "../views/AdminUsers/AdminUserEdit";
 import Login from "../views/auth/Login";
 import auth from "./middleware/auth";
 import guest from "./middleware/guest";
@@ -120,6 +122,28 @@ const routes = [
         path: '/admin-users',
         component: AdminUsersList,
         name: 'admin-users.list',
+        meta: {
+            layout: 'AppLayoutAdmin',
+            middleware: [
+                auth
+            ]
+        }
+    },
+    {
+        path: '/admin-users/create',
+        component: AdminUserCreate,
+        name: 'admin-users.create',
+        meta: {
+            layout: 'AppLayoutAdmin',
+            middleware: [
+                auth
+            ]
+        }
+    },
+    {
+        path: '/admin-users/:id',
+        component: AdminUserEdit,
+        name: 'admin-users.edit',
         meta: {
             layout: 'AppLayoutAdmin',
             middleware: [

@@ -3,7 +3,7 @@
     <div class="card-header">
       <div class="row align-items-center">
         <div class="d-flex justify-content-end">
-          <router-link :to="{name: 'CreateUser'}" class="btn btn-primary lift">
+          <router-link :to="{name: 'admin-users.create'}" class="btn btn-primary lift">
               Добавить пользователя
             </router-link>
         </div>
@@ -17,16 +17,16 @@
             <tr>
               <th>ID</th>
               <th>Имя пользователя</th>
-              <th>Действия</th>
+              <th class="text-center">Действия</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="user in admin_users" :key="user.id">
               <td>{{ user.id }}</td>
               <td>{{ user.username }}</td>
-              <td><div class="d-flex">
-                <router-link class="btn btn-warning" :to="{name: 'UpdateUser', params: {id: user.id}}"><span class="fe fe-edit"></span></router-link>
-                <span class="fe fe-trash"></span>
+              <td><div class="d-flex justify-content-center">
+                <router-link class="btn btn-warning" :to="{name: 'admin-users.edit', params: {id: user.id}}"><span class="fe fe-edit"></span></router-link>
+                <button class="btn btn-danger ms-3"><span class="fe fe-trash"></span></button>
               </div></td>
             </tr>
           </tbody>

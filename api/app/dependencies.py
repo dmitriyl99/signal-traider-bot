@@ -71,7 +71,7 @@ async def get_current_user(
     except JWTError as e:
         logging.error('Error with jwt: ' + str(e))
         raise credentials_exception
-    user = await user_repository.get_admin_user_by_id(int(user_id))
+    user = user_repository.get_admin_user_by_id(int(user_id))
     if user is None:
         logging.info('User with id %s not found' % user_id)
         raise credentials_exception
