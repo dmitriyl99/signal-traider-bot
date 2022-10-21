@@ -16,6 +16,7 @@ class SignalsRepository:
                           currency_pair: str,
                           execution_method: str,
                           price: float,
+                          admin_user_id: int,
                           tr_1: Optional[str],
                           tr_2: Optional[str],
                           sl: Optional[str]) -> Signal:
@@ -25,7 +26,8 @@ class SignalsRepository:
             price=price,
             tr_1=tr_1,
             tr_2=tr_2,
-            sl=sl
+            sl=sl,
+            admin_user_id=admin_user_id
         )
 
         self._session.add(signal)

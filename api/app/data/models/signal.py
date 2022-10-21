@@ -14,5 +14,6 @@ class Signal(Base):
     tr_1 = sa.Column(sa.String, nullable=True)
     tr_2 = sa.Column(sa.String, nullable=True)
     sl = sa.Column(sa.String, nullable=True)
+    admin_user_id = sa.Column(sa.Integer, nullable=True)
 
     created_at = sa.Column(sa.DateTime, default=datetime.now)

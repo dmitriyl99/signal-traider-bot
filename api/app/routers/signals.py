@@ -34,6 +34,7 @@ async def create_signal(
         form.currency_pair,
         form.execution_method,
         form.price,
+        current_user.id,
         form.tr_1,
         form.tr_2,
         form.sl
