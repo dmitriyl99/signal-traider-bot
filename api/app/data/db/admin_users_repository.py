@@ -31,7 +31,7 @@ class AdminUsersRepository(BaseRepository):
             return None
         return user
 
-    def create_admin_user(self, username: str, password: str, roles: List[int] = None) -> AdminUser:
+    def create_admin_user(self, username: str, password: str, roles: List[int] = None) -> tuple[AdminUser, bool]:
         with Session() as session:
             user = session.query(AdminUser).filter(AdminUser.username == username).first()
             if user:
@@ -40,15 +40,18 @@ class AdminUsersRepository(BaseRepository):
                 username=username,
                 password=self._create_password(password)
             )
+            need_to_divide_users = False
             if roles is not None:
                 for role_id in roles:
                     role_entity = session.query(Role).get(role_id)
                     if role_entity is None:
                         continue
                     user.roles.append(role_entity)
+                    if role_entity.name == 'Analyst':
+                        need_to_divide_users = True
                 session.add(user)
                 session.commit()
-        return user
+        return user, need_to_divide_users
 
     def get_admin_user_by_id(self, user_id: int) -> AdminUser:
         with Session() as session:

@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 
 from app.data.models.admin_users import AdminUser
-from app.dependencies import get_current_user, get_admin_users_repository
+from app.dependencies import get_current_user, get_admin_users_repository, get_user_repository
 from app.data.db.admin_users_repository import AdminUsersRepository
+from app.data.db.users_repository import UsersRepository
 from app.routers.forms.admin_users import CreateAdminUserForm, ChangePasswordForm
 from app.routers.responses.auth import User
 
@@ -26,6 +27,7 @@ async def list_admin_users(
 async def create_admin_user(
         current_user: AdminUser = Depends(get_current_user),
         admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository),
+        users_repository: UsersRepository = Depends(get_user_repository),
         form: CreateAdminUserForm = Body()
 ):
     if not admin_users_repository.check_if_user_has_role(current_user, 'Admin'):
@@ -38,11 +40,13 @@ async def create_admin_user(
             status_code=422,
             detail='Wrong password confirmation'
         )
-    created_user = admin_users_repository.create_admin_user(
+    created_user, need_to_divide_users = admin_users_repository.create_admin_user(
         form.username,
         form.password,
         form.roles
     )
+    if need_to_divide_users:
+        users_repository.divide_users_between_analytics()
 
     return created_user
 

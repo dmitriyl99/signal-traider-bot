@@ -1,12 +1,15 @@
-from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.orm import selectinload, joinedload, subqueryload
+from sqlalchemy import update
 from typing import List, Optional
+import random
 
 from app.data.models.admin_users import AdminUser
+from app.data.db import Session
 from app.data.models.subscription import SubscriptionUser
 from app.data.models.users import User
+from app.helpers import array
 
 
 class UsersRepository:
@@ -31,6 +34,24 @@ class UsersRepository:
         stmt = select(User).options(joinedload(User.subscription.and_(SubscriptionUser.active == True), innerjoin=True)).filter(User.telegram_user_id != None)
         result = await self._session.execute(stmt)
         return result.scalars().all()
+
+    def divide_users_between_analytics(self):
+        with Session() as session:
+            admin_users: List[AdminUser] = session.query(AdminUser).options(
+                subqueryload(AdminUser.roles)
+            ).all()
+            analysts_users = []
+            for admin_user in admin_users:
+                if len(list(filter(lambda x: x.name == 'Analyst', admin_user.roles))) > 0:
+                    analysts_users.append(admin_user)
+            session.execute(update(User).where(User.analyst_id != None).values(analyst_id=None))
+            all_users = session.query(User).all()
+            chunk_size = round(len(all_users) / len(analysts_users)) + 1
+            chunked_users = array.chunks(all_users, chunk_size)
+            for idx, users in enumerate(chunked_users):
+                for user in users:
+                    user.analyst_id = analysts_users[idx].id
+            session.commit()
 
     async def create_user(self, name: str, phone: str) -> User:
         user = User(
