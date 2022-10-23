@@ -7,13 +7,17 @@ from aiogram import Bot, types
 
 from app.data.models.signal import Signal
 from app.data.models.users import User
+from app.data.models.admin_users import AdminUser
 from app.data.db.users_repository import UsersRepository
 from app.config import settings
 from app.helpers import array
 
 
-async def send_distribution(signal: Signal, user_repository: UsersRepository):
-    users = await user_repository.get_all_users_with_active_subscriptions()
+async def send_distribution(signal: Signal, user_repository: UsersRepository, admin_user: AdminUser):
+    if len(list(filter(lambda x: x.name == 'Analyst', admin_user.roles))) > 0:
+        users = await user_repository.get_all_users_with_active_subscriptions(admin_user.id)
+    else:
+        users = await user_repository.get_all_users_with_active_subscriptions()
     logging.info(f'Send signal to {len(users)} users: {users}')
     users_chunks = array.chunks(users, 50)
 

@@ -32,8 +32,10 @@ class UsersRepository:
         result = await self._session.execute(stmt)
         return result.scalars().all()
 
-    async def get_all_users_with_active_subscriptions(self) -> List[User]:
+    async def get_all_users_with_active_subscriptions(self, analyst_id: int = None) -> List[User]:
         stmt = select(User).options(joinedload(User.subscription.and_(SubscriptionUser.active == True), innerjoin=True)).filter(User.telegram_user_id != None)
+        if analyst_id is not None:
+            stmt = stmt.filter(User.analyst_id == analyst_id)
         result = await self._session.execute(stmt)
         return result.scalars().all()
 

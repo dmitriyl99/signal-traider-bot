@@ -39,7 +39,7 @@ async def create_signal(
         form.tr_2,
         form.sl
     )
-    await bot.send_distribution(signal, users_repository)
+    await bot.send_distribution(signal, users_repository, current_user)
 
 
 @router.post('/message')
