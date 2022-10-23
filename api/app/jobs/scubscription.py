@@ -2,7 +2,7 @@ from typing import List
 from datetime import datetime
 import logging
 
-from sqlalchemy.future import select
+from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
 from app.data.db import async_session
@@ -28,7 +28,7 @@ async def check_all_subscriptions_job():
                 logger.info('Deactivate subscription %d for user %d' % (subscription.subscription_id, subscription.user_id))
                 subscription.active = False
                 await session.commit()
-                subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
-                await bot.send_message_to_user(subscription.user, 'Ваша подписка {name} деактивирована. Отправьте команду /start чтобы приобрести подписку заново'.format(
-                    name=subscription_entity.name)
-                )
+                # subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
+                # await bot.send_message_to_user(subscription.user, 'Ваша подписка {name} деактивирована. Отправьте команду /start чтобы приобрести подписку заново'.format(
+                #     name=subscription_entity.name)
+                # )
