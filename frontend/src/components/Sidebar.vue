@@ -33,6 +33,11 @@
           <!-- Navigation -->
           <ul class="navbar-nav">
             <li class="nav-item">
+              <router-link :to="{name: 'UsersList'}" class="nav-link">
+                <i class="fe fe-users"></i> Пользователи Telegram
+              </router-link>
+            </li>
+            <li class="nav-item">
               <router-link :to="{name: 'ListSignals'}" class="nav-link">
                 <i class="fe fe-bell"></i> Сигналы
               </router-link>
@@ -45,6 +50,11 @@
             <li class="nav-item">
               <router-link class="nav-link" :to="{name: 'UtmList'}">
                 <i class="fe fe-git-commit"></i> UTM-метки
+              </router-link>
+            </li>
+            <li class="nav-item" v-if="currentUserHasAdminRole">
+              <router-link class="nav-link" :to="{name: 'PaymentsList'}">
+                <i class="fe fe-credit-card"></i> Платежи
               </router-link>
             </li>
             <li class="nav-item" v-if="currentUserHasAdminRole">
