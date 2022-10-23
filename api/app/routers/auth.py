@@ -40,7 +40,7 @@ async def token(
         )
     access_token_expires = timedelta(settings.jwt_ttl)
     access_token = _create_access_token(
-        data={'sub': str(user.id)},
+        data={'sub': str(user.id), 'pass': user.password},
         expires_delta=access_token_expires
     )
 

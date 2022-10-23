@@ -65,13 +65,14 @@ async def get_current_user(
     try:
         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
         user_id: str = payload.get("sub")
-        if user_id is None:
+        password: str = payload.get("pass")
+        if user_id is None or password is None:
             logging.info("JWT doesn't have user id")
             raise credentials_exception
     except JWTError as e:
         logging.error('Error with jwt: ' + str(e))
         raise credentials_exception
-    user = user_repository.get_admin_user_by_id(int(user_id))
+    user = user_repository.get_admin_user_by_id_and_password(int(user_id), password)
     if user is None:
         logging.info('User with id %s not found' % user_id)
         raise credentials_exception

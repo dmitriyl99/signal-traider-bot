@@ -60,6 +60,14 @@ class AdminUsersRepository(BaseRepository):
                 filter(AdminUser.id == user_id). \
                 first()
 
+    def get_admin_user_by_id_and_password(self, user_id: int, password: str) -> AdminUser:
+        with Session() as session:
+            return session.query(AdminUser). \
+                options(subqueryload(AdminUser.roles), subqueryload(AdminUser.permissions)). \
+                filter(AdminUser.id == user_id). \
+                filter(AdminUser.password == password). \
+                first()
+
     async def add_role_to_admin_user(self, admin_user_id: int, role: str | int):
         if role is str:
             query = select(Role).filter(Role.name == role)
