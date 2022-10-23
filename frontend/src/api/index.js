@@ -11,7 +11,7 @@ apiInstance.interceptors.response.use(function (response) {
 }, function (error) {
     if (error.response.status === 401) {
         store.dispatch('logout')
-        router.push({ name: 'Login' })
+        router.push({ name: 'auth.login' })
     }
     return Promise.reject(error)
 })
