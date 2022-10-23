@@ -17,7 +17,10 @@ async def get_users_list(
         user_repository: UsersRepository = Depends(get_user_repository),
         current_user: AdminUser = Depends(get_current_user)
 ):
-    users = await user_repository.get_all_users()
+    if len(list(filter(lambda x: x.name == 'Analyst', current_user.roles))) > 0:
+        users = await user_repository.get_all_users(current_user.id)
+    else:
+        users = await user_repository.get_all_users()
     return users
 
 
@@ -32,6 +35,7 @@ async def create_user(
         form.name,
         form.phone,
     )
+    user_repository.divide_users_between_analytics()
     if form.subscription_id and (form.subscription_condition_id or form.subscription_duration_in_days):
         await subscription_repository.add_subscription_to_user(
             user,

@@ -23,10 +23,12 @@ class UsersRepository:
         result = await self._session.execute(stmt)
         return result.scalars().first()
 
-    async def get_all_users(self) -> List[User]:
+    async def get_all_users(self, analyst_id: int = None) -> List[User]:
         stmt = select(User).options(selectinload(User.subscription).options(
             joinedload(SubscriptionUser.subscription)
         ))
+        if analyst_id is not None:
+            stmt = stmt.filter(User.analyst_id == analyst_id)
         result = await self._session.execute(stmt)
         return result.scalars().all()
 
