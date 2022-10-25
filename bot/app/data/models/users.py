@@ -18,6 +18,7 @@ class User(Base):
     created_at = sa.Column(sa.DateTime, default=datetime.now)
     registration_date = sa.Column(sa.DateTime)
     verified_at = sa.Column(sa.DateTime, nullable=True)
+    analyst_id = sa.Column(sa.Integer, nullable=True)
 
     subscriptions = relationship(SubscriptionUser, back_populates='user')
     payments = relationship(Payment, back_populates='user')
