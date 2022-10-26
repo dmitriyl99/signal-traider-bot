@@ -99,7 +99,6 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
             await update.message.reply_text('Пользовтаель с этим номером телефона уже существует')
             return
 
-    await users_repository.save_user(context.user_data['registration_name'], phone_number, update.effective_user.id)
     otp_service = OTPService(phone_number)
     otp_service.send_otp()
     keyboard = [[KeyboardButton(text=strings.wrong_number_button_text)]]
@@ -131,7 +130,8 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
     if not otp_verification_result:
         await update.message.reply_text('Вы отправили неверный OTP')
         return OTP
-    user = await users_repository.find_user_by_phone(context.user_data['registration_phone'])
+
+    user = await users_repository.save_user(context.user_data['registration_name'], context.user_data['registration_phone'], update.effective_user.id)
     await users_repository.verify_user(user.id)
     await users_repository.activate_proactively_added_user(context.user_data['registration_phone'],
                                                            update.effective_user.id)
@@ -145,6 +145,11 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
     return ConversationHandler.END
 
 
+async def _fallbacks_text(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    await update.message.reply_text("Что-то пошло не так. Отправьте команду /start, чтобы перезапустить бота")
+    return ConversationHandler.END
+
+
 handler = ConversationHandler(
     entry_points=[CommandHandler('start', _start)],
     states={
@@ -152,7 +157,10 @@ handler = ConversationHandler(
         PHONE: [MessageHandler((filters.TEXT | filters.CONTACT) & ~filters.COMMAND, _phone)],
         OTP: [MessageHandler(filters.TEXT & ~filters.COMMAND, _verify_otp)]
     },
-    fallbacks=[MessageHandler(filters.TEXT, '')]
+    fallbacks=[
+        CommandHandler('start', _start),
+        MessageHandler(filters.TEXT, _fallbacks_text)
+    ]
 )
 
 
