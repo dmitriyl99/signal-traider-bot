@@ -132,7 +132,9 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
         await update.message.reply_text('Вы отправили неверный OTP')
         return OTP
 
-    user = await users_repository.save_user(context.user_data['registration_name'], context.user_data['registration_phone'], update.effective_user.id)
+    user = await users_repository.find_user_by_phone(context.user_data['registration_phone'])
+    if user is None:
+        user = await users_repository.save_user(context.user_data['registration_name'], context.user_data['registration_phone'], update.effective_user.id)
     await users_repository.verify_user(user.id)
     await users_repository.activate_proactively_added_user(context.user_data['registration_phone'],
                                                            update.effective_user.id)
