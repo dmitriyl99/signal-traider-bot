@@ -31,6 +31,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         if current_user.verified_at is None:
             otp_service = OTPService(current_user.phone)
             otp_service.send_otp()
+            context.user_data['registration_phone'] = current_user.phone
             await update.message.reply_text(
                 'Вы ещё не потвердили свой номер телефона. Мы отправили вам смс с кодом, пожалуйста, введите его')
             return OTP
