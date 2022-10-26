@@ -43,6 +43,8 @@ async def _action_subscribe(update: Update, context: CallbackContext.DEFAULT_TYP
     )
     if 'invoice_message_id' in context.user_data:
         await context.bot.delete_message(update.effective_chat.id, context.user_data['invoice_message_id'])
+    if 'back_message_id' in context.user_data:
+        await context.bot.delete_message(update.effective_chat.id, context.user_data['back_message_id'])
     await update.message.reply_text('Подписка куплена!')
 
 

@@ -1,14 +1,14 @@
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, ConversationHandler, CallbackQueryHandler, MessageHandler, filters
 
-from app.payments import providers as payment_providers
+from app.payments import providers as payment_providers, handlers
 from app.data.db import subscriptions_repository
 from app.helpers import array
 
 from app.services import currency_exchange as currency_exchange_service
 
 
-CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION,SELECT_PAYMENT_PROVIDER = range(3)
+CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION, SELECT_PAYMENT_PROVIDER, BACK = range(4)
 
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
@@ -99,10 +99,41 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
         currency='UZS',
         prices=[
             LabeledPrice('%d месяцев' % subscription_condition.duration_in_month, int(exchanged_price) * 100)
-        ]
+        ],
     )
     context.user_data['invoice_message_id'] = message.message_id
+    back_message = await context.bot.send_message(update.effective_chat.id, 'Для отмены нажмите кнопку "Назад"', reply_markup=ReplyKeyboardMarkup([['Назад']]))
+    context.user_data['back_message_id'] = back_message.message_id
 
+    return BACK
+
+
+async def _back_handler(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    subscription_id = context.user_data['subscription:id']
+    subscription_condition_id = context.user_data['subscription:condition_id']
+    subscription = await subscriptions_repository.get_subscription_by_id(subscription_id)
+    subscription_condition = list(filter(lambda sc: sc.id == subscription_condition_id, subscription.conditions))[0]
+    providers = payment_providers.get_payment_providers()
+    keyboard_buttons = list(map(
+        lambda provider: InlineKeyboardButton(provider.name,
+                                              callback_data='subscription:payment_provider:' + provider.name),
+        providers))
+    await update.message.reply_text(text='<b>Подписка:</b> {}\n<b>Срок:</b> {}\n<b>Цена:</b> ${}'.format(
+        subscription.name,
+        subscription_condition.duration_in_month,
+        int(subscription_condition.price / 100)
+    ), reply_markup=InlineKeyboardMarkup([keyboard_buttons]), parse_mode='HTML')
+    if 'invoice_message_id' in context.user_data:
+        await context.bot.delete_message(update.effective_chat.id, context.user_data['invoice_message_id'])
+    if 'back_message_id' in context.user_data:
+        await context.bot.delete_message(update.effective_chat.id, context.user_data['back_message_id'])
+
+    return SELECT_PAYMENT_PROVIDER
+
+
+async def _fallbacks_handler(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    if update.pre_checkout_query:
+        await handlers._pre_checkout_subscription(update, context)
     return ConversationHandler.END
 
 
@@ -111,8 +142,9 @@ handler = ConversationHandler(
     states={
         CHOOSE_SUBSCRIPTION: [CallbackQueryHandler(_choose_subscription, pattern=r'^subscription_id:\d')],
         CHOOSE_CONDITION: [CallbackQueryHandler(_choose_condition, pattern=r'^subscription_condition_id:\d')],
-        SELECT_PAYMENT_PROVIDER: [CallbackQueryHandler(_select_payment_provider, pattern=r'^subscription:payment_provider:*')]
+        SELECT_PAYMENT_PROVIDER: [CallbackQueryHandler(_select_payment_provider, pattern=r'^subscription:payment_provider:*')],
+        BACK: [MessageHandler(filters.TEXT, _back_handler)]
     },
-    fallbacks=[MessageHandler(filters.TEXT, '')]
+    fallbacks=[MessageHandler(filters.TEXT, _fallbacks_handler)]
 )
 
