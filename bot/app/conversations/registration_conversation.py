@@ -144,7 +144,8 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
         await actions.send_subscription_menu_button(update, context)
     else:
         await actions.send_current_subscription_information(active_subscription, update)
-    del context.user_data['registration_name']
+    if 'registration_name' in context.user_data:
+        del context.user_data['registration_name']
     return ConversationHandler.END
 
 
