@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
@@ -17,3 +17,14 @@ class PaymentsRepository:
         stmt = select(Payment).options(joinedload(Payment.subscription), joinedload(Payment.subscription_condition))
         result = await self._session.execute(stmt)
         return result.scalars().all()
+
+    async def get_payment_by_order_id(self, order_id) -> Optional[Payment]:
+        stmt = select(Payment).filter(Payment.order_id == order_id)
+        result = await self._session.execute(stmt)
+        return result.scalars().first()
+
+    async def set_status_for_payment_by_order_id(self, order_id, status):
+        payment = await self.get_payment_by_order_id(order_id)
+        payment.status = status
+        await self._session.commit()
+

@@ -1,11 +1,14 @@
 from app.config import config
 
+import uuid
+
 from typing import List
 
 
 class PaymentProvider:
     name: str
     provider_token: str
+    params: dict
 
     def __init__(self, name: str, provider_token: str):
         self.name = name
@@ -28,5 +31,14 @@ def get_payment_provider_by_name(name: str) -> PaymentProvider | None:
     if len(found_providers) > 0:
         return found_providers[0]
     return None
+
+
+def get_click_payment_url(amount: float):
+    service_id = config.CLICK_SERVICE_ID
+    merchant_id = config.CLICK_MERCHANT_ID
+    transaction_param = uuid.uuid4()
+    url = f"https://my.click.uz/services/pay?service_id={service_id}&merchant_id={merchant_id}&amount={int(amount)}&transaction_param={transaction_param}"
+
+    return url
 
 

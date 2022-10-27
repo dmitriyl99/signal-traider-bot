@@ -12,6 +12,11 @@ class Config:
     PAYMENT_PROVIDERS: list
 
     CLICK_PAYMENT_PROVIDER_TOKEN: str
+    CLICK_SERVICE_ID: str
+    CLICK_MERCHANT_ID: str
+    CLICK_SECRET_KEY: str
+    CLICK_MERCHANT_USER_ID: str
+
     PAYME_PAYMENT_PROVIDER_TOKEN: str
 
     WEBHOOK_PORT: int
@@ -30,6 +35,10 @@ class Config:
         self.DATABASE_URL = os.getenv('DATABASE_URL')
         self.PAYMENT_PROVIDERS = os.getenv('PAYMENT_PROVIDERS').split(',')
         self.CLICK_PAYMENT_PROVIDER_TOKEN = os.getenv('CLICK_PAYMENT_PROVIDER_TOKEN')
+        self.CLICK_SERVICE_ID = os.getenv('CLICK_SERVICE_ID')
+        self.CLICK_MERCHANT_ID = os.getenv('CLICK_MERCHANT_ID')
+        self.CLICK_SECRET_KEY = os.getenv('CLICK_SECRET_KEY')
+        self.CLICK_MERCHANT_USER_ID = os.getenv('CLICK_MERCHANT_USER_ID')
         self.PAYME_PAYMENT_PROVIDER_TOKEN = os.getenv('PAYME_PAYMENT_PROVIDER_TOKEN')
         self.WEBHOOK_PORT = int(os.getenv('WEBHOOK_PORT'))
         self.WEBHOOK_TOKEN = os.getenv('WEBHOOK_TOKEN')

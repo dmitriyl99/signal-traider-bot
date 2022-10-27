@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     telegram_bot_api_domain: str
     telegram_bot_api_token: str
 
+    click_service_id: int
+    click_merchant_id: int
+    click_secret_key: str
+    click_merchant_user_id: int
+
     redis_host: str
     redis_port: int
 

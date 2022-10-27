@@ -14,8 +14,17 @@ class Payment(Base):
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'))
     subscription_id = sa.Column(sa.Integer, sa.ForeignKey('subscriptions.id'))
     subscription_condition_id = sa.Column(sa.Integer, sa.ForeignKey('subscription_conditions.id'))
+    order_id = sa.Column(sa.Text, nullable=True)
+    status = sa.Column(sa.Integer, default=1)
     created_at = sa.Column(sa.DateTime, default=datetime.now)
 
     user = relationship('User', back_populates='payments')
     subscription = relationship('Subscription')
     subscription_condition = relationship('SubscriptionCondition')
+
+
+class PaymentStatus:
+    CREATED = 1
+    WAITING = 2
+    REJECTED = 3
+    CONFIRMED = 4
