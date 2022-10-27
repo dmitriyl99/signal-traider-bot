@@ -11,6 +11,8 @@ from app.helpers import date, array
 from app.payments import providers as payment_providers
 from app.services import currency_exchange as currency_exchange_service
 
+import uuid
+
 
 def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAULT_TYPE):
     return update.message.reply_text(
@@ -74,11 +76,12 @@ async def send_payment_providers(update: Update, context: CallbackContext.DEFAUL
     subscription = await subscriptions_repository.get_subscription_by_id(subscription_id)
     subscription_condition = list(filter(lambda sc: sc.id == subscription_condition_id, subscription.conditions))[0]
     exchanged_price = currency_exchange_service.convert_usd_to_uzs(subscription_condition.price / 100)
-    keyboard_buttons = [InlineKeyboardButton('CLICK', url=payment_providers.get_click_payment_url(exchanged_price))]
+    order_id = uuid.uuid4()
+    keyboard_buttons = [InlineKeyboardButton('CLICK', url=payment_providers.get_click_payment_url(exchanged_price, order_id))]
     await query.edit_message_text(text='<b>Подписка:</b> {}\n<b>Срок:</b> {}\n<b>Цена:</b> ${}'.format(
         subscription.name,
         subscription_condition.duration_in_month,
         int(subscription_condition.price / 100)
     ), reply_markup=InlineKeyboardMarkup([keyboard_buttons, [InlineKeyboardButton('Назад', callback_data='back')]]), parse_mode='HTML')
 
-    return exchanged_price
+    return exchanged_price, order_id

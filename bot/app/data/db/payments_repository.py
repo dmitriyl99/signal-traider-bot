@@ -7,6 +7,7 @@ async def save_payment(
         amount: int,
         provider: str,
         user_id: int,
+        order_id: str,
         subscription_id: int,
         subscription_condition_id: int
 ) -> Payment:
@@ -14,6 +15,7 @@ async def save_payment(
         amount=amount,
         provider=provider,
         user_id=user_id,
+        order_id=order_id,
         subscription_id=subscription_id,
         subscription_condition_id=subscription_condition_id
     )

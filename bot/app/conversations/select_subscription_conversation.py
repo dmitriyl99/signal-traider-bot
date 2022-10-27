@@ -38,12 +38,13 @@ async def _choose_condition(update: Update, context: CallbackContext.DEFAULT_TYP
     subscription_condition_id = int(callback_data.split(':')[1])
     context.user_data['subscription:condition_id'] = subscription_condition_id
     subscription_id = context.user_data['subscription:id']
-    exchanged_price = await send_payment_providers(update, context, subscription_id, subscription_condition_id)
+    exchanged_price, order_id = await send_payment_providers(update, context, subscription_id, subscription_condition_id)
     user = await users_repository.get_user_by_telegram_id(int(query.from_user.id))
     await payments_repository.save_payment(
         exchanged_price,
         'external',
         user.id,
+        str(order_id),
         int(subscription_id),
         int(subscription_condition_id)
     )
