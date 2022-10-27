@@ -99,7 +99,7 @@ async def click_complete_payment(
     if form.error is not None and int(form.error) < 0:
         await payment_repository.set_status_for_payment_by_order_id(order_id, PaymentStatus.REJECTED)
     if form.error == '0':
-        await payment_repository.set_status_for_payment_by_order_id(order_id, PaymentStatus.CONFIRMED)
+        await payment_repository.complete_payment(order_id, 'click')
 
     result['click_trans_id'] = form.click_trans_id
     result['merchant_trans_id'] = form.merchant_trans_id

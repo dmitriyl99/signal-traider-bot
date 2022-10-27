@@ -71,7 +71,6 @@ async def send_subscription_conditions(update: Update, subscription_id: int):
 
 async def send_payment_providers(update: Update, context: CallbackContext.DEFAULT_TYPE, subscription_id, subscription_condition_id):
     query = update.callback_query
-    providers = payment_providers.get_payment_providers()
     subscription = await subscriptions_repository.get_subscription_by_id(subscription_id)
     subscription_condition = list(filter(lambda sc: sc.id == subscription_condition_id, subscription.conditions))[0]
     exchanged_price = currency_exchange_service.convert_usd_to_uzs(subscription_condition.price / 100)
@@ -81,3 +80,5 @@ async def send_payment_providers(update: Update, context: CallbackContext.DEFAUL
         subscription_condition.duration_in_month,
         int(subscription_condition.price / 100)
     ), reply_markup=InlineKeyboardMarkup([keyboard_buttons, [InlineKeyboardButton('Назад', callback_data='back')]]), parse_mode='HTML')
+
+    return exchanged_price

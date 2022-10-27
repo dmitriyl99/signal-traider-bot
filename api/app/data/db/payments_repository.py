@@ -4,7 +4,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.data.models.payments import Payment
+from app.data.models.payments import Payment, PaymentStatus
 
 
 class PaymentsRepository:
@@ -28,3 +28,8 @@ class PaymentsRepository:
         payment.status = status
         await self._session.commit()
 
+    async def complete_payment(self, order_id, payment_provider):
+        payment = await self.get_payment_by_order_id(order_id)
+        payment.status = PaymentStatus.CONFIRMED
+        payment.provider = payment_provider
+        await self._session.commit()

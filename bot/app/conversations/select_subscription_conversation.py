@@ -2,7 +2,7 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, Labeled
 from telegram.ext import CallbackContext, ConversationHandler, CallbackQueryHandler, MessageHandler, filters
 
 from app.payments import providers as payment_providers, handlers
-from app.data.db import subscriptions_repository
+from app.data.db import subscriptions_repository, payments_repository, users_repository
 from app.helpers import array
 
 from app.services import currency_exchange as currency_exchange_service
@@ -38,7 +38,15 @@ async def _choose_condition(update: Update, context: CallbackContext.DEFAULT_TYP
     subscription_condition_id = int(callback_data.split(':')[1])
     context.user_data['subscription:condition_id'] = subscription_condition_id
     subscription_id = context.user_data['subscription:id']
-    await send_payment_providers(update, context, subscription_id, subscription_condition_id)
+    exchanged_price = await send_payment_providers(update, context, subscription_id, subscription_condition_id)
+    user = await users_repository.get_user_by_telegram_id(int(query.from_user.id))
+    await payments_repository.save_payment(
+        exchanged_price,
+        'external',
+        user.id,
+        int(subscription_id),
+        int(subscription_condition_id)
+    )
 
     return SELECT_PAYMENT_PROVIDER
 
