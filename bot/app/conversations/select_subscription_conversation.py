@@ -75,7 +75,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
         ],
     )
     context.user_data['invoice_message_id'] = message.message_id
-    back_message = await context.bot.send_message(update.effective_chat.id, 'Для отмены нажмите кнопку "Назад"', reply_markup=ReplyKeyboardMarkup([['Назад']]))
+    back_message = await context.bot.send_message(update.effective_chat.id, 'Для отмены нажмите кнопку "Назад"', reply_markup=ReplyKeyboardMarkup([['Назад']], resize_keyboard=True))
     context.user_data['back_message_id'] = back_message.message_id
 
     return BACK
