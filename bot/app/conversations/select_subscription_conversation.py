@@ -116,7 +116,10 @@ async def _fallbacks_handler(update: Update, context: CallbackContext.DEFAULT_TY
 
 handler = ConversationHandler(
     allow_reentry=True,
-    entry_points=[MessageHandler(filters.Regex(strings.choose_subscription_text), _subscription_start)],
+    entry_points=[MessageHandler(
+        filters.Regex(strings.get_string('choose_subscription_text', 'ru')) |
+        filters.Regex(strings.get_string('choose_subscription_text', 'uz')),
+        _subscription_start)],
     states={
         CHOOSE_SUBSCRIPTION: [MessageHandler(filters.TEXT, _choose_subscription)],
         CHOOSE_CONDITION: [MessageHandler(filters.TEXT, _choose_condition)],

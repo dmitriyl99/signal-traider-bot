@@ -2,34 +2,34 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from app.data.db import subscriptions_repository
 
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import CallbackContext
 
 from app.data.models.subscription import SubscriptionUser
+from app.data.models.users import User
 from app.resources import strings
 from app.helpers import date, array
 from app.payments import providers as payment_providers
 
 
-def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAULT_TYPE):
-    print('STEP: send_subscription_menu_button')
+def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAULT_TYPE, user: User):
     return update.message.reply_text(
-        strings.subscription_menu_message,
+        strings.get_string('subscription_menu_message', user.language),
         reply_markup=ReplyKeyboardMarkup(
             [
-                [KeyboardButton(strings.choose_subscription_text, callback_data='choose_subscription')]
+                [KeyboardButton(strings.get_string('choose_subscription_text', user.language), callback_data='choose_subscription')]
             ], resize_keyboard=True
         )
     )
 
 
-async def send_current_subscription_information(active_subscription: SubscriptionUser, update: Update):
+async def send_current_subscription_information(active_subscription: SubscriptionUser, update: Update, user: User):
     subscription = await subscriptions_repository.get_subscription_by_id(active_subscription.subscription_id)
     now = datetime.now()
     subscription_end_date: datetime = active_subscription.created_at + relativedelta(
         days=active_subscription.duration_in_days)
     diff_days = date.diff_in_days(now, subscription_end_date)
-    await update.message.reply_text(strings.active_subscription.format(
+    await update.message.reply_text(strings.get_string('active_subscription', user.language).format(
         name=subscription.name,
         to_date=subscription_end_date.strftime('%d.%m.%Y'),
         days=diff_days
