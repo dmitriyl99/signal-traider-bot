@@ -78,51 +78,51 @@ strings_data = {
 
     'subscription_not_found': {
         'ru': 'Такая подписка не найдена',
-        'uz': 'Такая подписка не найдена'
+        'uz': 'Bunday obuna topilmadi'
     },
     'subscription_condition_wrong': {
         'ru': 'Выбрано не праивльное условие подписки',
-        'uz': 'Выбрано не праивльное условие подписки'
+        'uz': "Noto'g'ri obuna bo’lish sharti tanlangan"
     },
     'back_button': {
         'ru': 'Назад',
-        'uz': 'Назад'
+        'uz': 'Orqaga'
     },
     'subscription_name': {
         'ru': '%s месяц',
-        'uz': '%s месяц '
+        'uz': '%s oy'
     },
     'subscription_month': {
         'ru': 'месяц',
-        'uz': 'месяц'
+        'uz': 'oy'
     },
     'provider_provider_not_supported': {
         'ru': 'Выбран провайдер, которого мы не поддерживаем',
-        'uz': 'Выбран провайдер, которого мы не поддерживаем'
+        'uz': "Biz qo'llab-quvvatlamaydigan provayder tanlangan"
     },
     'payment_pay_subscription': {
         'ru': 'Оплатить подписку',
-        'uz': 'Оплатить подписку'
+        'uz': "Obuna uchun to'lash"
     },
     'payment_subscription_info': {
         'ru': '%s на %d месяцев за $%d',
-        'uz': '%s на %d месяцев за $%d'
+        'uz': '%s %d oy davomida $%d'
     },
     'payment_cancelation_button': {
         'ru': 'Для отмены нажмите кнопку "Назад"',
-        'uz': 'Для отмены нажмите кнопку "Назад"'
+        'uz': 'Bekor qilish uchun orqaga tugmasini bosing'
     },
     'subscription_select_condition': {
         'ru': 'Выберите срок подписки',
-        'uz': 'Выберите срок подписки'
+        'uz': 'Obuna muddatini tanlang'
     },
     'subscription_full_info': {
         'ru': '<b>Подписка:</b> {}\n<b>Срок:</b> {}\n<b>Цена:</b> ${}',
-        'uz': '<b>Подписка:</b> {}\n<b>Срок:</b> {}\n<b>Цена:</b> ${}'
+        'uz': '<b>Obuna:</b> {}\n<b>Muddat:</b> {}\n<b>Narx:</b> ${}'
     },
     'subscription_purchased': {
         'ru': 'Подписка куплена!',
-        'uz': 'Подписка куплена!'
+        'uz': 'Obuna sotib olindi!'
     }
 }
 
