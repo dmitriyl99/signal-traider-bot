@@ -26,13 +26,12 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
             return ConversationHandler.END
     current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if current_user is not None:
-        await update.message.reply_text(strings.get_string('hello_message') % current_user.name, current_user.language)
+        await update.message.reply_text(strings.get_string('hello_message', current_user.language) % current_user.name)
         if current_user.verified_at is None:
             otp_service = OTPService(current_user.phone)
             otp_service.send_otp()
             context.user_data['registration_phone'] = current_user.phone
-            await update.message.reply_text(
-                'Вы ещё не потвердили свой номер телефона. Мы отправили вам смс с кодом, пожалуйста, введите его')
+            await update.message.reply_text(strings.get_string('registration_phone_not_verified', current_user.language))
             return OTP
         await users_repository.activate_proactively_added_user(current_user.phone, current_user.telegram_user_id)
         active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(
@@ -54,7 +53,7 @@ async def _language(update: Update, context: CallbackContext.DEFAULT_TYPE):
         "🇺🇿 O'zbek": 'uz'
     }
     if text not in languages:
-        await update.message.reply_text('Выбран неправильный язык')
+        await update.message.reply_text(strings.get_string('registration_language_wrong'))
         return LANGUAGE
     context.user_data['registration_language'] = languages[text]
     await update.message.reply_text(strings.get_string('registration_name', context.user_data['registration_language']), reply_markup=ReplyKeyboardRemove())
@@ -79,7 +78,7 @@ async def _name(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
                                                                                                     context.user_data[
                                                                                                         'hash_command_subscription_days'])
             await update.message.reply_text(
-                text='Вы активировали бонусную подписку!'
+                text=strings.get_string('registration_bonus_activated', user.language)
             )
             await actions.send_current_subscription_information(active_subscription, update, user)
             return ConversationHandler.END
@@ -112,7 +111,7 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     existed_user = await users_repository.find_user_by_phone(phone_number)
     if existed_user is not None:
         if existed_user.telegram_user_id is not None:
-            await update.message.reply_text('Пользовтаель с этим номером телефона уже существует')
+            await update.message.reply_text(strings.get_string('registration_phone_user_exists', context.user_data['registration_language']))
             return
 
     otp_service = OTPService(phone_number)
@@ -124,7 +123,7 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         ]
     ]
     await update.message.reply_text(
-        'Мы отправили вам на номер смс с кодом, пожалуйста, подтвердите свой номер телефона',
+        strings.get_string('registration_phone_otp_sent', context.user_data['registration_language']),
         reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     )
     context.user_data['registration_phone'] = phone_number
@@ -145,11 +144,11 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
 
     otp_service = OTPService(context.user_data['registration_phone'])
     if not update.message.text.isnumeric():
-        await update.message.reply_text('Вы отправили неверный формат OTP')
+        await update.message.reply_text(strings.get_string('registration_phone_otp_wrong_format',  context.user_data['registration_language']))
         return OTP
     otp_verification_result = otp_service.verify_otp(int(update.message.text))
     if not otp_verification_result:
-        await update.message.reply_text('Вы отправили неверный OTP')
+        await update.message.reply_text(strings.get_string('registration_phone_otp_wrong', context.user_data['registration_language']))
         return OTP
 
     user = await users_repository.find_user_by_phone(context.user_data['registration_phone'])

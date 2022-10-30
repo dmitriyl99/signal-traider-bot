@@ -37,7 +37,7 @@ async def send_current_subscription_information(active_subscription: Subscriptio
     )
 
 
-async def send_subscriptions(update: Update):
+async def send_subscriptions(update: Update, user: User):
     subscriptions = await subscriptions_repository.get_subscriptions()
     chunked_subscriptions = array.chunks(subscriptions, 2)
     keyboard = []
@@ -47,10 +47,10 @@ async def send_subscriptions(update: Update):
             buttons.append(
                 KeyboardButton(subscription.name))
         keyboard.append(buttons)
-    await update.message.reply_text('Выберите подписку', reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
+    await update.message.reply_text(strings.get_string('choose_subscription_text', user.language), reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
 
 
-async def send_subscription_conditions(update: Update, subscription_id: int):
+async def send_subscription_conditions(update: Update, subscription_id: int, user: User):
     subscription_conditions = await subscriptions_repository.get_subscription_condition(subscription_id)
     chunked_conditions = array.chunks(subscription_conditions, 2)
     keyboard = []
@@ -60,11 +60,11 @@ async def send_subscription_conditions(update: Update, subscription_id: int):
             buttons.append(
                 KeyboardButton('%s месяц' % condition.duration_in_month))
         keyboard.append(buttons)
-    keyboard.append([KeyboardButton('Назад')])
-    await update.message.reply_text('Выберите срок подписки', reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
+    keyboard.append([KeyboardButton(strings.get_string('back_button', user.language))])
+    await update.message.reply_text(strings.get_string('subscription_select_condition', user.language), reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
 
 
-async def send_payment_providers(update: Update, context: CallbackContext.DEFAULT_TYPE, subscription_id, subscription_condition_id):
+async def send_payment_providers(update: Update, context: CallbackContext.DEFAULT_TYPE, subscription_id, subscription_condition_id,  user: User):
     message = update.message
     providers = payment_providers.get_payment_providers()
     subscription = await subscriptions_repository.get_subscription_by_id(subscription_id)
@@ -72,8 +72,8 @@ async def send_payment_providers(update: Update, context: CallbackContext.DEFAUL
     keyboard_buttons = list(map(
         lambda provider: KeyboardButton(provider.name,),
         providers))
-    await message.reply_text(text='<b>Подписка:</b> {}\n<b>Срок:</b> {}\n<b>Цена:</b> ${}'.format(
+    await message.reply_text(text=strings.get_string('subscription_full_info').format(
         subscription.name,
         subscription_condition.duration_in_month,
         int(subscription_condition.price / 100)
-    ), reply_markup=ReplyKeyboardMarkup([keyboard_buttons, [KeyboardButton('Назад')]], resize_keyboard=True), parse_mode='HTML')
+    ), reply_markup=ReplyKeyboardMarkup([keyboard_buttons, [KeyboardButton(strings.get_string('back_button', user.language))]], resize_keyboard=True), parse_mode='HTML')
