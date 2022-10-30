@@ -22,5 +22,9 @@ class CreateSignalForm(BaseModel):
     sl: Optional[str] = None
 
 
+class ReplySignalForm(BaseModel):
+    text: str
+
+
 class SignalMessageForm(BaseModel):
     text: str

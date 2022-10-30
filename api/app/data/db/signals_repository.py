@@ -1,9 +1,11 @@
 from typing import List, Optional
 
+from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.data.models.signal import Signal
+from app.data.models.signal import Signal, signal_chat_message_mapper_table
+from app.data.db import Session, sync_engine
 
 
 class SignalsRepository:
@@ -40,3 +42,19 @@ class SignalsRepository:
         stmt = select(Signal)
         result = await self._session.execute(stmt)
         return result.scalars().all()
+
+    def save_mapper_for_signal(self, signal: Signal, chat_message_mapper: dict):
+        data = []
+        for chat_id, message_id in chat_message_mapper.items():
+            data.append({
+                'signal_id': signal.id,
+                'chat_id': chat_id,
+                'message_id': message_id
+            })
+        with sync_engine.connect() as conn:
+            conn.execute(insert(signal_chat_message_mapper_table), data)
+
+    async def get_mapper_for_signal(self, signal_id: int):
+        with Session() as session:
+            stmt = select(signal_chat_message_mapper_table).where(signal_chat_message_mapper_table.c.signal_id == signal_id)
+            return list(session.execute(stmt))

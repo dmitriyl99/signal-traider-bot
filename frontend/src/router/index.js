@@ -5,6 +5,7 @@ import CreateUser from "../views/Users/CreateUser";
 import UpdateUser from "../views/Users/UpdateUser";
 import PaymentsList from "../views/payments/PaymentsList";
 import ListSignals from "../views/Signals/ListSignals";
+import SendReplySignal from "../views/Signals/SendReplySignal";
 import CreateSignal from "../views/Signals/CreateSignal";
 import CurrencyPairsList from "../views/currency-pairs/CurrencyPairsList";
 import UtmList from "../views/utm/UtmList";
@@ -95,6 +96,17 @@ const routes = [
                 auth
             ]
         },
+    },
+    {
+        path: '/signals/:id/reply',
+        name: 'signals.reply',
+        component: SendReplySignal,
+        meta: {
+            layout: 'AppLayoutAdmin',
+            middleware: [
+                auth
+            ]
+        }
     },
     {
         path: '/currency-pairs',

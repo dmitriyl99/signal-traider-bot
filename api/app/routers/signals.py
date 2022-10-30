@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, Body, HTTPException, UploadFile, Form
+from fastapi import APIRouter, Depends, Body, HTTPException, UploadFile, Form, BackgroundTasks
 
 from app.dependencies import get_signals_repository, get_user_repository, get_current_user
 from app.data.db.signals_repository import SignalsRepository
 from app.data.db.users_repository import UsersRepository
 from app.data.models.admin_users import AdminUser
-from app.routers.forms.signals import CreateSignalForm, SignalMessageForm
+from app.helpers import array
+from app.routers.forms.signals import CreateSignalForm, ReplySignalForm
 from app.services import bot, trading_view
 
 
@@ -25,10 +26,11 @@ async def get_all_signals(
 
 @router.post('/')
 async def create_signal(
+        background_tasks: BackgroundTasks,
         form: CreateSignalForm = Body(),
         signals_repository: SignalsRepository = Depends(get_signals_repository),
         users_repository: UsersRepository = Depends(get_user_repository),
-        current_user: AdminUser = Depends(get_current_user)
+        current_user: AdminUser = Depends(get_current_user),
 ):
     signal = await signals_repository.save_signal(
         form.currency_pair,
@@ -39,7 +41,31 @@ async def create_signal(
         form.tr_2,
         form.sl
     )
-    await bot.send_distribution(signal, users_repository, current_user)
+    background_tasks.add_task(bot.send_distribution, signal, users_repository, signals_repository, current_user)
+    return {
+        'details': 'Signal added to background tasks'
+    }
+
+
+@router.post('/{signal_id}/reply')
+async def reply_to_signal_message(
+        signal_id: int,
+        background_tasks: BackgroundTasks,
+        form: ReplySignalForm = Body(),
+        signals_repository: SignalsRepository = Depends(get_signals_repository),
+):
+    async def send_reply_distribution(mapper):
+        mapper_chunks = array.chunks(mapper, 50)
+        for chunk in mapper_chunks:
+            for mapper in chunk:
+                telegram_user_id = mapper[1]
+                reply_to_message_id = mapper[2]
+                await bot.send_message_to_user(telegram_user_id, form.text, reply_to_message_id=reply_to_message_id)
+    signal_mapper = await signals_repository.get_mapper_for_signal(signal_id)
+    background_tasks.add_task(send_reply_distribution, signal_mapper)
+    return {
+        'details': 'Reply messages added to background tasks'
+    }
 
 
 @router.post('/message')

@@ -86,6 +86,6 @@ async def update_user(
             proactively_added=False,
             active=True
         )
-        await bot.send_message_to_user(user, f'Вам добавлена подписка на {user_subscription.duration_in_days} дней!')
+        await bot.send_message_to_user(user.telegram_user_id, f'Вам добавлена подписка на {user_subscription.duration_in_days} дней!')
 
     return user
