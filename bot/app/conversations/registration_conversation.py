@@ -17,6 +17,7 @@ NAME, PHONE, OTP = range(3)
 
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+    print('STEP: START')
     await _process_update_for_utm(update)
     hash_command_user = await _process_update_for_hash_command(update, context)
     if hash_command_user:
@@ -42,6 +43,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
             await actions.send_current_subscription_information(active_subscription, update)
             return ConversationHandler.END
         await actions.send_subscription_menu_button(update, context)
+        print('STEP: end conversation')
         return ConversationHandler.END
     await update.message.reply_text(strings.registration_name, reply_markup=ReplyKeyboardRemove())
 

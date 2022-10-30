@@ -12,6 +12,7 @@ from app.payments import providers as payment_providers
 
 
 def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    print('STEP: send_subscription_menu_button')
     return update.message.reply_text(
         strings.subscription_menu_message,
         reply_markup=ReplyKeyboardMarkup(

@@ -16,12 +16,14 @@ CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION, SELECT_PAYMENT_PROVIDER, BACK = range(4)
 
 
 async def _subscription_start(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    print('STEP: Subscription start')
     await send_subscriptions(update)
 
     return CHOOSE_SUBSCRIPTION
 
 
 async def _choose_subscription(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    print('STEP: CHOOSESUBSCRIPTION')
     subscription = await subscriptions_repository.get_subscription_by_name(update.message.text)
     if subscription is None:
         await update.message.reply_text("Такая подписка не найдена")
@@ -33,6 +35,7 @@ async def _choose_subscription(update: Update, context: CallbackContext.DEFAULT_
 
 
 async def _choose_condition(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    print('STEP: choosecondition')
     async def error():
         await update.message.reply_text('Выбрано не праивльное условие подписки')
         return CHOOSE_CONDITION
@@ -112,6 +115,7 @@ async def _fallbacks_handler(update: Update, context: CallbackContext.DEFAULT_TY
 
 
 handler = ConversationHandler(
+    allow_reentry=True,
     entry_points=[MessageHandler(filters.Regex(strings.choose_subscription_text), _subscription_start)],
     states={
         CHOOSE_SUBSCRIPTION: [MessageHandler(filters.TEXT, _choose_subscription)],
