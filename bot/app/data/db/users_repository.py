@@ -18,6 +18,14 @@ async def get_user_by_telegram_id(telegram_user_id: int) -> User:
         return result.scalars().first()
 
 
+async def set_user_language(telegram_user_id: int, language) -> User:
+    async with async_session() as session:
+        result = await session.execute(select(User).filter(User.telegram_user_id == telegram_user_id))
+        user = result.scalars().first()
+        user.language = language
+        await session.commit()
+
+
 def divide_users_between_analytics():
     with Session() as session:
         admin_users: List[AdminUser] = session.query(AdminUser).options(

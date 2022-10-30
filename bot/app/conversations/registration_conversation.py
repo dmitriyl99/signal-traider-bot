@@ -21,17 +21,30 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     if hash_command_user:
         active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(
             hash_command_user)
+        if hash_command_user.language is None:
+            await update.message.reply_text(strings.get_string('registration_language'),
+                                            reply_markup=ReplyKeyboardMarkup(
+                                                keyboard=[['🇷🇺 Русский', "🇺🇿 O'zbek"]]))
+
+            return LANGUAGE
         if active_subscription is not None:
             await actions.send_current_subscription_information(active_subscription, update, hash_command_user)
             return ConversationHandler.END
     current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if current_user is not None:
+        if current_user.language is None:
+            await update.message.reply_text(strings.get_string('registration_language'),
+                                            reply_markup=ReplyKeyboardMarkup(
+                                                keyboard=[['🇷🇺 Русский', "🇺🇿 O'zbek"]]))
+
+            return LANGUAGE
         await update.message.reply_text(strings.get_string('hello_message', current_user.language) % current_user.name)
         if current_user.verified_at is None:
             otp_service = OTPService(current_user.phone)
             otp_service.send_otp()
             context.user_data['registration_phone'] = current_user.phone
-            await update.message.reply_text(strings.get_string('registration_phone_not_verified', current_user.language))
+            await update.message.reply_text(
+                strings.get_string('registration_phone_not_verified', current_user.language))
             return OTP
         await users_repository.activate_proactively_added_user(current_user.phone, current_user.telegram_user_id)
         active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(
@@ -41,7 +54,8 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
             return ConversationHandler.END
         await actions.send_subscription_menu_button(update, context, current_user)
         return ConversationHandler.END
-    await update.message.reply_text(strings.get_string('registration_language'), reply_markup=ReplyKeyboardMarkup(keyboard=[['🇷🇺 Русский', "🇺🇿 O'zbek"]]))
+    await update.message.reply_text(strings.get_string('registration_language'),
+                                    reply_markup=ReplyKeyboardMarkup(keyboard=[['🇷🇺 Русский', "🇺🇿 O'zbek"]]))
 
     return LANGUAGE
 
@@ -55,8 +69,13 @@ async def _language(update: Update, context: CallbackContext.DEFAULT_TYPE):
     if text not in languages:
         await update.message.reply_text(strings.get_string('registration_language_wrong'))
         return LANGUAGE
+    current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
+    if current_user is not None:
+        await users_repository.set_user_language(update.effective_user.id, languages[text])
+        return await _start(update, context)
     context.user_data['registration_language'] = languages[text]
-    await update.message.reply_text(strings.get_string('registration_name', context.user_data['registration_language']), reply_markup=ReplyKeyboardRemove())
+    await update.message.reply_text(strings.get_string('registration_name', context.user_data['registration_language']),
+                                    reply_markup=ReplyKeyboardRemove())
 
     return NAME
 
@@ -64,7 +83,9 @@ async def _language(update: Update, context: CallbackContext.DEFAULT_TYPE):
 async def _name(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     text = update.message.text
     context.user_data['registration_name'] = text.strip().replace('\n', '')
-    keyboard = [[KeyboardButton(text=strings.get_string('send_phone_button_text', language=context.user_data['registration_language']), request_contact=True)]]
+    keyboard = [[KeyboardButton(
+        text=strings.get_string('send_phone_button_text', language=context.user_data['registration_language']),
+        request_contact=True)]]
 
     if 'registration_phone' in context.user_data:
         if 'hash_command_subscription_id' in context.user_data:
@@ -106,12 +127,14 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         un_spaced_phone_number = dirty_phone_number.replace(' ', '')
         phone_number = un_spaced_phone_number.replace('+', '')
         if not phone_number.isnumeric():
-            await update.message.reply_text(strings.get_string('validation_phone_message', context.user_data['registration_language']))
+            await update.message.reply_text(
+                strings.get_string('validation_phone_message', context.user_data['registration_language']))
             return PHONE
     existed_user = await users_repository.find_user_by_phone(phone_number)
     if existed_user is not None:
         if existed_user.telegram_user_id is not None:
-            await update.message.reply_text(strings.get_string('registration_phone_user_exists', context.user_data['registration_language']))
+            await update.message.reply_text(
+                strings.get_string('registration_phone_user_exists', context.user_data['registration_language']))
             return
 
     otp_service = OTPService(phone_number)
@@ -131,8 +154,11 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
 
 
 async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
-    if update.message.text == strings.get_string('wrong_number_button_text', context.user_data['registration_language']):
-        keyboard = [[KeyboardButton(text=strings.get_string('send_phone_button_text', context.user_data['registration_language']), request_contact=True)]]
+    if update.message.text == strings.get_string('wrong_number_button_text',
+                                                 context.user_data['registration_language']):
+        keyboard = [[KeyboardButton(
+            text=strings.get_string('send_phone_button_text', context.user_data['registration_language']),
+            request_contact=True)]]
 
         await update.message.reply_text(
             strings.get_string('registration_phone', context.user_data['registration_language']),
@@ -144,11 +170,13 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
 
     otp_service = OTPService(context.user_data['registration_phone'])
     if not update.message.text.isnumeric():
-        await update.message.reply_text(strings.get_string('registration_phone_otp_wrong_format',  context.user_data['registration_language']))
+        await update.message.reply_text(
+            strings.get_string('registration_phone_otp_wrong_format', context.user_data['registration_language']))
         return OTP
     otp_verification_result = otp_service.verify_otp(int(update.message.text))
     if not otp_verification_result:
-        await update.message.reply_text(strings.get_string('registration_phone_otp_wrong', context.user_data['registration_language']))
+        await update.message.reply_text(
+            strings.get_string('registration_phone_otp_wrong', context.user_data['registration_language']))
         return OTP
 
     user = await users_repository.find_user_by_phone(context.user_data['registration_phone'])
@@ -162,7 +190,8 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
     await users_repository.verify_user(user.id)
     await users_repository.activate_proactively_added_user(context.user_data['registration_phone'],
                                                            update.effective_user.id)
-    await update.message.reply_text(strings.get_string('registration_finished', user.language), reply_markup=ReplyKeyboardRemove())
+    await update.message.reply_text(strings.get_string('registration_finished', user.language),
+                                    reply_markup=ReplyKeyboardRemove())
     active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(user)
     if active_subscription is None:
         await actions.send_subscription_menu_button(update, context, user)
