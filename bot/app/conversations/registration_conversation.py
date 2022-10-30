@@ -13,7 +13,7 @@ from app.helpers import date
 from app.services.otp_service import OTPService
 from app.services import masspay
 
-NAME, PHONE, OTP = range(3)
+LANGUAGE, NAME, PHONE, OTP = range(4)
 
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
@@ -45,6 +45,21 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         await actions.send_subscription_menu_button(update, context)
         print('STEP: end conversation')
         return ConversationHandler.END
+    await update.message.reply_text(strings.registration_language, reply_markup=ReplyKeyboardMarkup(keyboard=[['🇷🇺 Русский', "🇺🇿 O'zbek"]]))
+
+    return LANGUAGE
+
+
+async def _language(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    text = update.message.text
+    languages = {
+        '🇷🇺 Русский': 'ru',
+        "🇺🇿 O'zbek": 'uz'
+    }
+    if text not in languages:
+        await update.message.reply_text('Выбран неправильный язык')
+        return LANGUAGE
+    context.user_data['registration_language'] = languages[text]
     await update.message.reply_text(strings.registration_name, reply_markup=ReplyKeyboardRemove())
 
     return NAME
@@ -58,7 +73,8 @@ async def _name(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     if 'registration_phone' in context.user_data:
         if 'hash_command_subscription_id' in context.user_data:
             user = await users_repository.save_user(context.user_data['registration_name'],
-                                                    context.user_data['registration_phone'], update.effective_user.id)
+                                                    context.user_data['registration_phone'], update.effective_user.id,
+                                                    language=context.user_data['registration_language'])
             await users_repository.verify_user(user.id)
             subscription = (await subscriptions_repository.get_subscriptions())[0]
             active_subscription = await subscriptions_repository.add_subscription_with_days_to_user(user,
@@ -136,7 +152,12 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
 
     user = await users_repository.find_user_by_phone(context.user_data['registration_phone'])
     if user is None:
-        user = await users_repository.save_user(context.user_data['registration_name'], context.user_data['registration_phone'], update.effective_user.id)
+        user = await users_repository.save_user(
+            context.user_data['registration_name'],
+            context.user_data['registration_phone'],
+            update.effective_user.id,
+            context.user_data['registration_language']
+        )
     await users_repository.verify_user(user.id)
     await users_repository.activate_proactively_added_user(context.user_data['registration_phone'],
                                                            update.effective_user.id)
@@ -159,6 +180,7 @@ async def _fallbacks_text(update: Update, context: CallbackContext.DEFAULT_TYPE)
 handler = ConversationHandler(
     entry_points=[CommandHandler('start', _start)],
     states={
+        LANGUAGE: [MessageHandler(filters.TEXT & ~filters.COMMAND, _language)],
         NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, _name)],
         PHONE: [MessageHandler((filters.TEXT | filters.CONTACT) & ~filters.COMMAND, _phone)],
         OTP: [MessageHandler(filters.TEXT & ~filters.COMMAND, _verify_otp)]

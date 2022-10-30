@@ -37,7 +37,7 @@ def divide_users_between_analytics():
         session.commit()
 
 
-async def save_user(name: str, phone: str, telegram_user_id: int) -> User:
+async def save_user(name: str, phone: str, telegram_user_id: int, language: str) -> User:
     stmt = select(User).filter(User.phone == phone)
     async with async_session() as session:
         result = await session.execute(stmt)
@@ -46,6 +46,7 @@ async def save_user(name: str, phone: str, telegram_user_id: int) -> User:
             user = User(
                 name=name,
                 phone=phone,
+                language=language,
             )
             session.add(user)
             user.telegram_user_id = telegram_user_id

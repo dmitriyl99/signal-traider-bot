@@ -19,6 +19,7 @@ class User(Base):
     registration_date = sa.Column(sa.DateTime)
     verified_at = sa.Column(sa.DateTime, nullable=True)
     analyst_id = sa.Column(sa.Integer, nullable=True)
+    language = sa.Column(sa.String, nullable=True)
 
     subscriptions = relationship(SubscriptionUser, back_populates='user')
     payments = relationship(Payment, back_populates='user')
