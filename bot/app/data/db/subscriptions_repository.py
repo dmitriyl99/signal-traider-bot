@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -87,3 +87,18 @@ async def add_subscription_with_days_to_user(
 async def get_subscription_by_id(subscription_id: int) -> Subscription:
     async with async_session() as session:
         return await session.get(Subscription, subscription_id)
+
+
+async def get_subscription_by_name(subscription_name: str) -> Optional[Subscription]:
+    async with async_session() as session:
+        stmt = select(Subscription).filter(Subscription.name == subscription_name)
+        result = await session.execute(stmt)
+        return result.scalars().first()
+
+
+async def find_condition_by_subscription_id_and_duration(subscription_id: int, duration: int) -> Optional[SubscriptionCondition]:
+    async with async_session() as session:
+        stmt = select(SubscriptionCondition).filter(SubscriptionCondition.subscription_id == subscription_id,
+                                                    SubscriptionCondition.duration_in_month == duration)
+        result = await session.execute(stmt)
+        return result.scalars().first()
