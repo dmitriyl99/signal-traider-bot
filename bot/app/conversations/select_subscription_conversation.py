@@ -6,6 +6,7 @@ from app.payments import providers as payment_providers, handlers
 from app.data.db import subscriptions_repository
 from app.helpers import array
 from app.resources import strings
+from app.conversations.registration_conversation import _start
 
 from app.services import currency_exchange as currency_exchange_service
 from app.actions import send_subscriptions, send_subscription_conditions, send_payment_providers
@@ -14,7 +15,7 @@ from app.actions import send_subscriptions, send_subscription_conditions, send_p
 CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION, SELECT_PAYMENT_PROVIDER, BACK = range(4)
 
 
-async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
+async def _subscription_start(update: Update, context: CallbackContext.DEFAULT_TYPE):
     await send_subscriptions(update)
 
     return CHOOSE_SUBSCRIPTION
@@ -111,7 +112,7 @@ async def _fallbacks_handler(update: Update, context: CallbackContext.DEFAULT_TY
 
 
 handler = ConversationHandler(
-    entry_points=[MessageHandler(filters.Regex(strings.choose_subscription_text), _start)],
+    entry_points=[MessageHandler(filters.Regex(strings.choose_subscription_text), _subscription_start)],
     states={
         CHOOSE_SUBSCRIPTION: [MessageHandler(filters.TEXT, _choose_subscription)],
         CHOOSE_CONDITION: [MessageHandler(filters.TEXT, _choose_condition)],
