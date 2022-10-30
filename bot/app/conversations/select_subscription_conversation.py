@@ -1,5 +1,6 @@
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice, ReplyKeyboardMarkup
-from telegram.ext import CallbackContext, ConversationHandler, CallbackQueryHandler, MessageHandler, filters
+from telegram.ext import CallbackContext, ConversationHandler, CallbackQueryHandler, MessageHandler, filters, \
+    CommandHandler
 
 from app.payments import providers as payment_providers, handlers
 from app.data.db import subscriptions_repository
@@ -117,6 +118,6 @@ handler = ConversationHandler(
         SELECT_PAYMENT_PROVIDER: [MessageHandler(filters.TEXT, _select_payment_provider)],
         BACK: [MessageHandler(filters.TEXT, _back_handler)]
     },
-    fallbacks=[MessageHandler(filters.TEXT, _fallbacks_handler)]
+    fallbacks=[CommandHandler('start', _start), MessageHandler(filters.TEXT, _fallbacks_handler)]
 )
 
