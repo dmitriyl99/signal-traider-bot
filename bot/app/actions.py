@@ -17,7 +17,7 @@ def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAU
         reply_markup=ReplyKeyboardMarkup(
             [
                 [KeyboardButton(strings.choose_subscription_text, callback_data='choose_subscription')]
-            ]
+            ], resize_keyboard=True
         )
     )
 
@@ -46,7 +46,7 @@ async def send_subscriptions(update: Update):
             buttons.append(
                 KeyboardButton(subscription.name))
         keyboard.append(buttons)
-    await update.message.reply_text('Выберите подписку', reply_markup=ReplyKeyboardMarkup(keyboard))
+    await update.message.reply_text('Выберите подписку', reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
 
 
 async def send_subscription_conditions(update: Update, subscription_id: int):
@@ -60,7 +60,7 @@ async def send_subscription_conditions(update: Update, subscription_id: int):
                 KeyboardButton('%s месяц' % condition.duration_in_month))
         keyboard.append(buttons)
     keyboard.append([KeyboardButton('Назад')])
-    await update.message.reply_text('Выберите срок подписки', reply_markup=ReplyKeyboardMarkup(keyboard))
+    await update.message.reply_text('Выберите срок подписки', reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
 
 
 async def send_payment_providers(update: Update, context: CallbackContext.DEFAULT_TYPE, subscription_id, subscription_condition_id):
@@ -75,4 +75,4 @@ async def send_payment_providers(update: Update, context: CallbackContext.DEFAUL
         subscription.name,
         subscription_condition.duration_in_month,
         int(subscription_condition.price / 100)
-    ), reply_markup=ReplyKeyboardMarkup([keyboard_buttons, [KeyboardButton('Назад')]]), parse_mode='HTML')
+    ), reply_markup=ReplyKeyboardMarkup([keyboard_buttons, [KeyboardButton('Назад')]], resize_keyboard=True), parse_mode='HTML')
