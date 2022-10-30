@@ -6,7 +6,6 @@ from io import BytesIO
 from aiogram import Bot, types
 
 from app.data.models.signal import Signal
-from app.data.models.users import User
 from app.data.models.admin_users import AdminUser
 from app.data.db.users_repository import UsersRepository
 from app.data.db.signals_repository import SignalsRepository
@@ -36,13 +35,14 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository, si
 
     for chunk in users_chunks:
         for user in chunk:
-            message = await send_message_to_user(user, text)
+            message = await send_message_to_user(user.telegram_user_id, text)
             if message is list:
                 continue
             if message is None:
                 continue
             chat_message_mapper[user.telegram_user_id] = message.message_id
-    await signals_repository.save_mapper_for_signal(signal, chat_message_mapper)
+    print('chat_message_mapper: ', chat_message_mapper)
+    signals_repository.save_mapper_for_signal(signal, chat_message_mapper)
 
 
 async def send_text_distribution(text: str, files: Optional[List[BinaryIO]], user_repository: UsersRepository):
@@ -51,10 +51,10 @@ async def send_text_distribution(text: str, files: Optional[List[BinaryIO]], use
     users_chunks = array.chunks(users, 50)
     for chunk in users_chunks:
         for user in chunk:
-            await send_message_to_user(user, text, files)
+            await send_message_to_user(user.telegram_user_id, text, files)
 
 
-async def send_message_to_user(user: User, text: str, files: Optional[List[BinaryIO]] = None) -> Optional[types.Message] | Optional[List[types.Message]]:
+async def send_message_to_user(telegram_user_id: int, text: str, files: Optional[List[BinaryIO]] = None, reply_to_message_id: int = None) -> Optional[types.Message] | Optional[List[types.Message]]:
     bot = Bot(settings.telegram_bot_api_token)
     if files is not None:
         try:
@@ -63,10 +63,11 @@ async def send_message_to_user(user: User, text: str, files: Optional[List[Binar
                 file.seek(0)
                 bio = BytesIO(file.read())
                 return await bot.send_photo(
-                    chat_id=user.telegram_user_id,
+                    chat_id=telegram_user_id,
                     photo=types.InputFile(bio),
                     caption=text,
-                    parse_mode=types.ParseMode.HTML
+                    parse_mode=types.ParseMode.HTML,
+                    reply_to_message_id=reply_to_message_id
                 )
             else:
                 media_group = types.MediaGroup()
@@ -76,24 +77,26 @@ async def send_message_to_user(user: User, text: str, files: Optional[List[Binar
                     media_group.attach_photo(
                         types.InputFile(bio),
                         caption=text if idx == 0 else None,
-                        parse_mode=types.ParseMode.HTML
+                        parse_mode=types.ParseMode.HTML,
                     )
                 return await bot.send_media_group(
-                    user.telegram_user_id,
+                    telegram_user_id,
                     media=media_group,
+                    reply_to_message_id=reply_to_message_id
                 )
         except aiogram.utils.exceptions.ChatNotFound:
             return None
         except aiogram.utils.exceptions.BotBlocked:
             return None
         except Exception as e:
-            return await bot.send_message(76777495, f"Error while sending message to user {user.id}: {e}")
+            return await bot.send_message(76777495, f"Error while sending message to user {telegram_user_id}: {e}")
     try:
-        return await bot.send_message(user.telegram_user_id, text, parse_mode=types.ParseMode.HTML)
+        message = await bot.send_message(telegram_user_id, text, parse_mode=types.ParseMode.HTML, reply_to_message_id=reply_to_message_id)
+        return message
     except aiogram.utils.exceptions.ChatNotFound:
         return None
     except aiogram.utils.exceptions.BotBlocked:
         return None
     except Exception as e:
-        await bot.send_message(76777495, f"Error while sending message to user {user.id}: {e}")
+        await bot.send_message(76777495, f"Error while sending message to user {telegram_user_id}: {e}")
         return None

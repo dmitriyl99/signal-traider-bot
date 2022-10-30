@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.data.models.signal import Signal, signal_chat_message_mapper_table
+from app.data.db import Session, sync_engine
 
 
 class SignalsRepository:
@@ -42,7 +43,7 @@ class SignalsRepository:
         result = await self._session.execute(stmt)
         return result.scalars().all()
 
-    async def save_mapper_for_signal(self, signal: Signal, chat_message_mapper: dict):
+    def save_mapper_for_signal(self, signal: Signal, chat_message_mapper: dict):
         data = []
         for chat_id, message_id in chat_message_mapper.items():
             data.append({
@@ -50,4 +51,10 @@ class SignalsRepository:
                 'chat_id': chat_id,
                 'message_id': message_id
             })
-        await self._session.execute(insert, data)
+        with sync_engine.connect() as conn:
+            conn.execute(insert(signal_chat_message_mapper_table), data)
+
+    async def get_mapper_for_signal(self, signal_id: int):
+        with Session() as session:
+            stmt = select(signal_chat_message_mapper_table).where(signal_chat_message_mapper_table.c.signal_id == signal_id)
+            return list(session.execute(stmt))

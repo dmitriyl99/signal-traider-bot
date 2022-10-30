@@ -57,7 +57,6 @@ export default {
   },
   data: () => ({
     utm_commands: [],
-    modalDialogOpened: false,
     utmCommandName: '',
     chartData: {
         labels: [ 'January', 'February', 'March' ],

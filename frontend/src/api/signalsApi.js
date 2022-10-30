@@ -21,6 +21,10 @@ function sendSignal(
     return apiInstance.post('/signals', payload);
 }
 
+function sendReply(signal_id, text) {
+    return apiInstance.post(`/signals/${signal_id}/reply`, {text})
+}
+
 function sendCustomMessage(text, files=null) {
     let formData = new FormData();
         formData.append('text', text);
@@ -42,5 +46,5 @@ function getSuggestion(currencyPair) {
 }
 
 export default {
-    sendSignal, getAllSignals, getSuggestion, sendCustomMessage
+    sendSignal, getAllSignals, getSuggestion, sendCustomMessage, sendReply
 }

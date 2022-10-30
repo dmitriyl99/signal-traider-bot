@@ -16,6 +16,7 @@
             <th>TP 2</th>
             <th>SL</th>
             <th>Дата</th>
+            <th>Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -28,6 +29,7 @@
             <td>{{ signal.tr_2 }}</td>
             <td>{{ signal.sl }}</td>
             <td>{{ (new Date(signal.created_at)).toLocaleDateString() }}</td>
+            <td><router-link :to="{name: 'signals.reply', params: {id: signal.id}}" class="btn btn-primary"><span class="fe fe-corner-up-left"></span> сообщение</router-link></td>
           </tr>
         </tbody>
       </table>
