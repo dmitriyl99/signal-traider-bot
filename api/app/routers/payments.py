@@ -12,7 +12,7 @@ import hashlib
 router = APIRouter(prefix='/payments', tags=['Payments'])
 
 
-def check_click_webhook(form: ClickForm, payment_repository: PaymentsRepository):
+async def check_click_webhook(form: ClickForm, payment_repository: PaymentsRepository):
     merchant_prepare_id = form.merchant_prepare_id if form.action is not None and form.action == '1' else ''
     sign_string = '{}{}{}{}{}{}{}{}'.format(
         form.click_trans_id, settings.click_service_id, settings.click_secret_key, form.merchant_trans_id,
@@ -81,7 +81,7 @@ async def click_prepare(
         form: ClickForm = Body(...)
 ):
     payment_id = form.merchant_trans_id
-    result = check_click_webhook(form, payment_repository)
+    result = await check_click_webhook(form, payment_repository)
     if result['error'] == '0':
         await payment_repository.set_payment_status(payment_id, PaymentStatus.WAITING)
     result['click_trans_id'] = form.click_trans_id
