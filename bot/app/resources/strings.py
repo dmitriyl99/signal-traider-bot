@@ -123,6 +123,10 @@ strings_data = {
     'subscription_purchased': {
         'ru': 'Подписка куплена!',
         'uz': 'Obuna sotib olindi!'
+    },
+    'subscription_pay': {
+        'ru': '💳 Оплатить',
+        'uz': '💳 Оплатить'
     }
 }
 

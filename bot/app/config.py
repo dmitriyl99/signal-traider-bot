@@ -12,7 +12,15 @@ class Config:
     PAYMENT_PROVIDERS: list
 
     CLICK_PAYMENT_PROVIDER_TOKEN: str
+    CLICK_SERVICE_ID: str
+    CLICK_MERCHANT_ID: str
+    CLICK_SECRET_KEY: str
+    CLICK_MERCHANT_USER_ID: int
+
     PAYME_PAYMENT_PROVIDER_TOKEN: str
+    PAYME_MERCHANT_ID: str
+    PAYME_KEY: str
+    PAYME_TEST_KEY: str
 
     WEBHOOK_PORT: int
     WEBHOOK_TOKEN: str
@@ -30,7 +38,14 @@ class Config:
         self.DATABASE_URL = os.getenv('DATABASE_URL')
         self.PAYMENT_PROVIDERS = os.getenv('PAYMENT_PROVIDERS').split(',')
         self.CLICK_PAYMENT_PROVIDER_TOKEN = os.getenv('CLICK_PAYMENT_PROVIDER_TOKEN')
+        self.CLICK_SERVICE_ID = os.getenv('CLICK_SERVICE_ID')
+        self.CLICK_MERCHANT_ID = os.getenv('CLICK_MERCHANT_ID')
+        self.CLICK_SECRET_KEY = os.getenv('CLICK_SECRET_KEY')
+        self.CLICK_MERCHANT_USER_ID = os.getenv('CLICK_MERCHANT_USER_ID')
         self.PAYME_PAYMENT_PROVIDER_TOKEN = os.getenv('PAYME_PAYMENT_PROVIDER_TOKEN')
+        self.PAYME_MERCHANT_ID = os.getenv('PAYME_MERCHANT_ID')
+        self.PAYME_KEY = os.getenv('PAYME_KEY')
+        self.PAYME_TEST_KEY = os.getenv('PAYME_TEST_KEY')
         self.WEBHOOK_PORT = int(os.getenv('WEBHOOK_PORT'))
         self.WEBHOOK_TOKEN = os.getenv('WEBHOOK_TOKEN')
         self.TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
