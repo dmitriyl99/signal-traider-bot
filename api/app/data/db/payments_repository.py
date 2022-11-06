@@ -1,3 +1,4 @@
+from asyncpg.exceptions import DataError
 from typing import List, Optional
 
 from sqlalchemy.future import select
@@ -19,9 +20,12 @@ class PaymentsRepository:
         return result.scalars().all()
 
     async def get_payment_by_id(self, payment_id) -> Optional[Payment]:
-        return await self._session.get(Payment, payment_id)
+        try:
+            return await self._session.get(Payment, payment_id)
+        except Exception:
+            return None
 
     async def set_payment_status(self, payment_id, status):
-        payment = self.get_payment_by_id(payment_id)
+        payment = await self.get_payment_by_id(payment_id)
         payment.status = status
         await self._session.commit()
