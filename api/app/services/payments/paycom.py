@@ -4,6 +4,8 @@ from typing import Any
 
 from app.data.db.paycom_transactions_repository import PaycomTransactionsRepository
 from app.data.db.payments_repository import PaymentsRepository
+from app.data.db.subscriptions_repository import SubscriptionsRepository
+from app.data.db.users_repository import UsersRepository
 from app.data.models.payments import PaymentStatus
 from app.routers.forms.payments import PaymeForm
 from app.data.models.payme_transaction import PaymeTransactionStates, PaymeTransaction, PaymeTransactionReasons
@@ -13,15 +15,21 @@ class PaycomPaymentHandler:
     data: PaymeForm
     transaction_repository: PaycomTransactionsRepository
     payments_repository: PaymentsRepository
+    subscriptions_repository: SubscriptionsRepository
+    users_repository: UsersRepository
 
     def __init__(self,
                  data: PaymeForm,
                  transactions_repository: PaycomTransactionsRepository,
-                 payments_repository: PaymentsRepository
+                 payments_repository: PaymentsRepository,
+                 subscriptions_repository: SubscriptionsRepository,
+                 users_repository: UsersRepository
                  ):
         self.data = data
         self.transaction_repository = transactions_repository
         self.payments_repository = payments_repository
+        self.users_repository = users_repository
+        self.subscriptions_repository = subscriptions_repository
 
     async def handle(self):
         method_maps = {
@@ -148,6 +156,9 @@ class PaycomPaymentHandler:
         if transaction.state == PaymeTransactionStates.STATE_CREATED:
             await self.payments_repository.set_payment_status(transaction.payment_id, PaymentStatus.CONFIRMED)
             self.transaction_repository.perform_transaction(transaction.id)
+            payment = await self.payments_repository.get_payment_by_id(transaction.payment_id)
+            user = await self.users_repository.get_user_by_id(payment.user_id)
+            await self.subscriptions_repository.add_subscription_to_user(user, payment.subscription_id, subscription_condition_id=payment.subscription_condition_id)
 
             return {
                 'transaction': transaction.id,
