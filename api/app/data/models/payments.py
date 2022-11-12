@@ -23,7 +23,7 @@ class Payment(Base):
 
 
 class PaymentStatus:
-    NEW = 'new'
-    CONFIRMED = 'confirmed'
-    REJECTED = 'rejected'
-    WAITING = 'waiting'
+    NEW = 'NEW'
+    CONFIRMED = 'CONFIRMED'
+    REJECTED = 'REJECTED'
+    WAITING = 'WAITING'
