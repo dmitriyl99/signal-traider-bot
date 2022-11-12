@@ -78,7 +78,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     subscription_condition = list(filter(lambda sc: sc.id == subscription_condition_id, subscription.conditions))[0]
     payment_provider_name = message.text
     payment_provider = payment_providers.get_payment_provider_by_name(payment_provider_name)
-    exchanged_price = currency_exchange_service.convert_usd_to_uzs(subscription_condition.price)
+    exchanged_price = currency_exchange_service.convert_usd_to_uzs(subscription_condition.price / 100)
     if payment_provider is None:
         await update.message.reply_text(strings.get_string('provider_provider_not_supported', user.language))
         return SELECT_PAYMENT_PROVIDER
