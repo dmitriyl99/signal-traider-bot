@@ -38,7 +38,7 @@ class PaymePaymentProvider(PaymentProvider):
         self.test_key = test_key
 
     def get_payment_url(self, amount, title, payment_id):
-        if config.ENV != 'local':
+        if config.ENV == 'local':
             host = 'https://checkout.test.paycom.uz'
         else:
             host = 'https://checkout.paycom.uz'
