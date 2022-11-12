@@ -46,7 +46,7 @@ class PaycomPaymentHandler:
     async def _validate_payment(self):
         payment = None
         if 'order_id' in self.data.params['account']:
-            payment = await self.payments_repository.get_payment_by_id(self.data.params['account']['order_id'])
+            payment = await self.payments_repository.get_payment_by_id(int(self.data.params['account']['order_id']))
         if not payment:
             raise PaycomException(
                 self.data.id,
