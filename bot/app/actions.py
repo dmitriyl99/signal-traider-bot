@@ -2,7 +2,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from app.data.db import subscriptions_repository
 
-from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
+from telegram import Update, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from telegram.ext import CallbackContext
 
 from app.data.models.subscription import SubscriptionUser
@@ -32,8 +32,8 @@ async def send_current_subscription_information(active_subscription: Subscriptio
     await update.message.reply_text(strings.get_string('active_subscription', user.language).format(
         name=subscription.name,
         to_date=subscription_end_date.strftime('%d.%m.%Y'),
-        days=diff_days
-        )
+        days=diff_days,
+        ), reply_markup=ReplyKeyboardRemove()
     )
 
 
