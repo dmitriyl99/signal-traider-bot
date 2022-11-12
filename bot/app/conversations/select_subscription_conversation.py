@@ -4,7 +4,7 @@ from telegram.ext import CallbackContext, ConversationHandler, CallbackQueryHand
 
 from app.data.models.users import User
 from app.payments import providers as payment_providers, handlers
-from app.data.db import subscriptions_repository, users_repository
+from app.data.db import subscriptions_repository, users_repository, payments_repository
 from app.helpers import array
 from app.resources import strings
 from app.conversations.registration_conversation import _start
@@ -81,22 +81,19 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     if payment_provider is None:
         await update.message.reply_text(strings.get_string('provider_provider_not_supported', user.language))
         return SELECT_PAYMENT_PROVIDER
-    message = await context.bot.send_invoice(
-        chat_id=update.effective_chat.id,
-        title=strings.get_string('payment_pay_subscription', user.language),
-        description=strings.get_string('payment_subscription_info', user.language) % (
-            subscription.name,
-            subscription_condition.duration_in_month,
-            subscription_condition.price / 100
-        ),
-        payload='subscription:%d:%d:%d:%s' % (update.effective_user.id, subscription_id, subscription_condition_id, payment_provider_name),
-        provider_token=payment_provider.provider_token,
-        currency='UZS',
-        prices=[
-            LabeledPrice('%d месяцев' % subscription_condition.duration_in_month, int(exchanged_price) * 100)
-        ],
+    payment = await payments_repository.save_payment(
+        int(exchanged_price),
+        payment_provider.name,
+        user.id,
+        subscription_id,
+        subscription_condition_id
     )
-    context.user_data['invoice_message_id'] = message.message_id
+    try:
+        payment_provider.create_invoice(int(exchanged_price), user.phone, payment.id)
+        await update.message.reply_text(f'Вам выставлен счёт в системе {payment_provider.name}. Оплатите его и вам будет оформлена подписка')
+    except Exception as e:
+        await update.message.reply_text(f'Ошибка при создании платежа в системе {payment_provider.name}. Обратитесь к разработчику.\n\nДля перезапуска бота, отправьте команду /start')
+        raise e
     back_message = await context.bot.send_message(update.effective_chat.id, strings.get_string('payment_cancelation_button', user.language), reply_markup=ReplyKeyboardMarkup([[strings.get_string('back_button', user.language)]], resize_keyboard=True))
     context.user_data['back_message_id'] = back_message.message_id
 

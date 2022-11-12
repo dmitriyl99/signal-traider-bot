@@ -1,4 +1,5 @@
-from typing import List
+from asyncpg.exceptions import DataError
+from typing import List, Optional
 
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
@@ -17,3 +18,14 @@ class PaymentsRepository:
         stmt = select(Payment).options(joinedload(Payment.subscription), joinedload(Payment.subscription_condition))
         result = await self._session.execute(stmt)
         return result.scalars().all()
+
+    async def get_payment_by_id(self, payment_id) -> Optional[Payment]:
+        try:
+            return await self._session.get(Payment, payment_id)
+        except Exception:
+            return None
+
+    async def set_payment_status(self, payment_id, status):
+        payment = await self.get_payment_by_id(payment_id)
+        payment.status = status
+        await self._session.commit()
