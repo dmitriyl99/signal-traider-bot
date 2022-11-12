@@ -115,11 +115,14 @@ async def payme(
             error['message'] = e.message
         if e.data:
             error['data'] = e.data
-        return {
+
+        response = {
             'id': e.request_id,
             'result': None,
             'error': error
         }
+        logging.info(f'Response to payme {response}')
+        return response
     response = {
         'jsonrpc': '2.0',
         'id': form.id,
