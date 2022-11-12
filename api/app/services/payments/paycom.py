@@ -8,7 +8,8 @@ from app.data.db.subscriptions_repository import SubscriptionsRepository
 from app.data.db.users_repository import UsersRepository
 from app.data.models.payments import PaymentStatus
 from app.routers.forms.payments import PaymeForm
-from app.data.models.payme_transaction import PaymeTransactionStates, PaymeTransaction, PaymeTransactionReasons
+from app.data.models.payme_transaction import PaymeTransactionStates
+from app.services import bot
 
 
 class PaycomPaymentHandler:
@@ -159,6 +160,7 @@ class PaycomPaymentHandler:
             payment = await self.payments_repository.get_payment_by_id(transaction.payment_id)
             user = await self.users_repository.get_user_by_id(payment.user_id)
             await self.subscriptions_repository.add_subscription_to_user(user, payment.subscription_id, subscription_condition_id=payment.subscription_condition_id)
+            await bot.send_message_to_user(user.telegram_user_id, "Подписка куплена!")
 
             return {
                 'transaction': transaction.id,

@@ -16,6 +16,7 @@ from app.data.models.admin_users import AdminUser
 
 from app.services.payments.click import ClickPaymentHandler
 from app.services.payments.paycom import PaycomPaymentHandler, PaycomException
+from app.services import bot
 
 router = APIRouter(prefix='/payments', tags=['Payments'])
 
@@ -86,7 +87,7 @@ async def click_complete(
             subscription_condition_id=payment.subscription_condition_id,
             active=True
         )
-
+        await bot.send_message_to_user(user.telegram_user_id, "Подписка куплена!")
     result['click_trans_id'] = click_trans_id
     result['merchant_trans_id'] = merchant_trans_id
     result['merchant_prepare_id'] = merchant_prepare_id
