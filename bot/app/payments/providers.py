@@ -55,9 +55,9 @@ class PaymePaymentProvider(PaymentProvider):
             payload_str += f'{k}={v}'
             if k != 'ds.items.0.count':
                 payload_str += ';'
-        payload_str_bytes = payload_str.encode('ascii')
+        payload_str_bytes = payload_str.encode('utf-8')
         payload_str_base64_bytes = base64.b64encode(payload_str_bytes)
-        payload_str_base64_string = payload_str_base64_bytes.decode('ascii')
+        payload_str_base64_string = payload_str_base64_bytes.decode('utf-8')
         return f"{host}/{payload_str_base64_string}"
 
 
