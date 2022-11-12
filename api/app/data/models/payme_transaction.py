@@ -6,17 +6,17 @@ import sqlalchemy as sa
 class PaymeTransaction(Base):
     __tablename__ = 'payme_transactions'
 
-    id = sa.Column(sa.BigInteger, primary_key=True),
-    paycom_transaction_id = sa.Column(sa.String(25)),
-    paycom_time = sa.Column(sa.String(13)),
-    paycom_time_datetime = sa.Column(sa.DateTime),
-    create_time = sa.Column(sa.DateTime),
-    perform_time = sa.Column(sa.DateTime, nullable=True),
-    cancel_time = sa.Column(sa.DateTime, nullable=True),
-    amount = sa.Column(sa.Integer),
-    state = sa.Column(sa.SmallInteger),
-    reason = sa.Column(sa.SmallInteger, nullable=True),
-    receivers = sa.Column(sa.String(500), nullable=True, comment='JSON array of receivers'),
+    id = sa.Column(sa.BigInteger, primary_key=True)
+    paycom_transaction_id = sa.Column(sa.String(25))
+    paycom_time = sa.Column(sa.String(13))
+    paycom_time_datetime = sa.Column(sa.DateTime)
+    create_time = sa.Column(sa.DateTime)
+    perform_time = sa.Column(sa.DateTime, nullable=True)
+    cancel_time = sa.Column(sa.DateTime, nullable=True)
+    amount = sa.Column(sa.Integer)
+    state = sa.Column(sa.SmallInteger)
+    reason = sa.Column(sa.SmallInteger, nullable=True)
+    receivers = sa.Column(sa.String(500), nullable=True, comment='JSON array of receivers')
     payment_id = sa.Column(sa.BigInteger)
 
 
