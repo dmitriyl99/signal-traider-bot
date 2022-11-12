@@ -62,7 +62,7 @@ class PaycomPaymentHandler:
                 'Incorrect amount',
                 PaycomException.ERROR_INVALID_AMOUNT
             )
-        if payment.status != PaymentStatus.WAITING:
+        if payment.status != PaymentStatus.NEW:
             raise PaycomException(
                 self.data.id,
                 'Order state is invalid',
