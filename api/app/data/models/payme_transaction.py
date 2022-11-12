@@ -4,6 +4,8 @@ import sqlalchemy as sa
 
 
 class PaymeTransaction(Base):
+    __tablename__ = 'payme_transactions'
+
     id = sa.Column('id', sa.BigInteger, primary_key=True),
     paycom_transaction_id = sa.Column('paycom_transaction_id', sa.String(25)),
     paycom_time = sa.Column('paycom_time', sa.String(13)),
