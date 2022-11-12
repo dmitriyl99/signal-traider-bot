@@ -97,7 +97,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
             await update.message.reply_text(f'Ошибка при создании платежа в системе {payment_provider.name}. Обратитесь к разработчику.\n\nДля перезапуска бота, отправьте команду /start')
             raise e
     else:
-        payment_url = payment_provider.get_payment_url(exchanged_price, subscription.name, payment.id)
+        payment_url = payment_provider.get_payment_url(int(exchanged_price), subscription.name, payment.id)
         await update.message.reply_text(f"Оплатите через систему {payment_provider.name}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(strings.get_string('subscription_pay', user.language), url=payment_url)]]))
     back_message = await context.bot.send_message(update.effective_chat.id, strings.get_string('payment_cancelation_button', user.language), reply_markup=ReplyKeyboardMarkup([[strings.get_string('back_button', user.language)]], resize_keyboard=True))
     context.user_data['back_message_id'] = back_message.message_id
