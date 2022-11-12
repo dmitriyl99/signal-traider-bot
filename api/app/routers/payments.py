@@ -106,6 +106,7 @@ async def payme(
 
 ):
     handler = PaycomPaymentHandler(form, paycom_transactions_repository, payment_repository, subscription_repository, users_repository)
+    logging.info(f'Request from payme: id: {form.id}, Method: {form.method}, Params: {form.params}')
     try:
         result = await handler.handle()
     except PaycomException as e:
@@ -119,9 +120,11 @@ async def payme(
             'result': None,
             'error': error
         }
-    return {
+    response = {
         'jsonrpc': '2.0',
         'id': form.id,
         'result': result,
         'error': None
     }
+    logging.info(f'Response to payme {response}')
+    return response
