@@ -1,11 +1,15 @@
-import os
 import logging
 
-from telegram.ext import ApplicationBuilder
+from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, filters
+from telegram import Update
 
 from app.conversations import registration_conversation, select_subscription_conversation
-from app.payments import handlers
+from app.payments import handlers as payment_handlers
 from app.config import config
+
+
+async def default_handler(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    await update.message.reply_text("Отправьте команду /start для перезапуска бота")
 
 
 def main():
@@ -17,7 +21,8 @@ def main():
 
     application.add_handler(registration_conversation.handler)
     application.add_handler(select_subscription_conversation.handler)
-    application.add_handlers(handlers.handlers)
+    application.add_handlers(payment_handlers.handlers)
+    application.add_handler(MessageHandler(filters.TEXT, default_handler))
     if config.ENV == 'production':
         application.run_webhook(
             listen='0.0.0.0',
