@@ -88,7 +88,7 @@ strings_data = {
         'ru': 'Назад',
         'uz': 'Orqaga'
     },
-    'subscription_name': {
+    'subscription_condition_name': {
         'ru': '%s месяц',
         'uz': '%s oy'
     },
