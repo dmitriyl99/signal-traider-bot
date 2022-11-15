@@ -46,7 +46,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
             keyboard = [
                 [
                     KeyboardButton(text=strings.get_string('wrong_number_button_text',
-                                                           context.user_data['registration_language']))
+                                                           current_user.language))
                 ]
             ]
             await update.message.reply_text(
