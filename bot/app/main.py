@@ -1,7 +1,7 @@
 import logging
 
 from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, filters
-from telegram import Update
+from telegram import Update, ReplyKeyboardRemove
 
 from app.conversations import registration_conversation, select_subscription_conversation
 from app.payments import handlers as payment_handlers
@@ -9,7 +9,7 @@ from app.config import config
 
 
 async def default_handler(update: Update, context: CallbackContext.DEFAULT_TYPE):
-    await update.message.reply_text("Отправьте команду /start для перезапуска бота")
+    await update.message.reply_text("Отправьте команду /start для перезапуска бота", reply_markup=ReplyKeyboardRemove())
 
 
 def main():
