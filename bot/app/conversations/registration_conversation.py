@@ -49,6 +49,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
                                                            current_user.language))
                 ]
             ]
+            context.user_data['registration_language'] = current_user.language
             await update.message.reply_text(
                 strings.get_string('registration_phone_not_verified', current_user.language),
                 reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
