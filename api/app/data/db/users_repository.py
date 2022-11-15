@@ -58,6 +58,11 @@ class UsersRepository:
             session.commit()
 
     async def create_user(self, name: str, phone: str) -> User:
+        stmt = select(User).filter(User.phone == phone)
+        result = await self._session.execute(stmt)
+        user = result.scalars().first()
+        if user:
+            return user
         user = User(
             name=name,
             phone=phone
