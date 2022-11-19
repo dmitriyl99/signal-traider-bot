@@ -25,8 +25,9 @@ class Config:
     WEBHOOK_PORT: int
     WEBHOOK_TOKEN: str
 
-    TWILIO_ACCOUNT_SID: str
-    TWILIO_AUTH_TOKEN: str
+    ESKIZ_EMAIL: str
+    ESKIZ_PASSWORD: str
+    SMS_FROM_WHOM: str
 
     REDIS_HOST: str
 
@@ -48,9 +49,9 @@ class Config:
         self.PAYME_TEST_KEY = os.getenv('PAYME_TEST_KEY')
         self.WEBHOOK_PORT = int(os.getenv('WEBHOOK_PORT'))
         self.WEBHOOK_TOKEN = os.getenv('WEBHOOK_TOKEN')
-        self.TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
-        self.TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
-        self.TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
+        self.ESKIZ_EMAIL = os.getenv('ESKIZ_EMAIL')
+        self.ESKIZ_PASSWORD = os.getenv('ESKIZ_PASSWORD')
+        self.SMS_FROM_WHOM = os.getenv('SMS_FROM_WHOM')
         self.REDIS_HOST = os.getenv('REDIS_HOST')
         self.MASSPAY_HOST = os.getenv('MASSPAY_HOST')
 

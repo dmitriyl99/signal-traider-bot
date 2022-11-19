@@ -1,23 +1,12 @@
-from twilio.rest import Client
-from twilio.rest.api.v2010.account.message import MessageInstance
+from eskiz_sms import EskizSMS
 
 from app.config import config
 
 
-def _configure_client() -> Client:
-    return Client(
-        config.TWILIO_ACCOUNT_SID,
-        config.TWILIO_AUTH_TOKEN
-    )
+def _configure_client() -> EskizSMS:
+    return EskizSMS(email=config.ESKIZ_EMAIL, password=config.ESKIZ_PASSWORD)
 
 
-def send_sms(phone: str, text: str) -> MessageInstance:
+def send_sms(phone: str, text: str):
     client = _configure_client()
-
-    message = client.messages.create(
-        body=text,
-        from_=config.TWILIO_PHONE_NUMBER,
-        to=phone
-    )
-
-    return message
+    client.send_sms(phone, text, from_whom=config.SMS_FROM_WHOM, callback_url=None)
