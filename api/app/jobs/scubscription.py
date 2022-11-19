@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 async def check_all_subscriptions_job():
     stmt = select(SubscriptionUser).options(
         joinedload(SubscriptionUser.user),
-    ).filter(SubscriptionUser.active == True)
+    ).filter(SubscriptionUser.active == True).filter(SubscriptionUser.activation_datetime != None)
     logger.info('Start job to deactivate subscriptions')
     async with async_session() as session:
         result = await session.execute(stmt)
