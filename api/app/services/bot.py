@@ -45,8 +45,11 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository, si
     signals_repository.save_mapper_for_signal(signal, chat_message_mapper)
 
 
-async def send_text_distribution(text: str, files: Optional[List[BinaryIO]], user_repository: UsersRepository):
-    users = await user_repository.get_all_users_with_active_subscriptions()
+async def send_text_distribution(text: str, files: Optional[List[BinaryIO]], user_repository: UsersRepository, admin_user: AdminUser):
+    if len(list(filter(lambda x: x.name == 'Analyst', admin_user.roles))) > 0:
+        users = await user_repository.get_all_users_with_active_subscriptions(analyst_id=admin_user.id)
+    else:
+        users = await user_repository.get_all_users_with_active_subscriptions()
     logging.info(f'Send text message to {len(users)} users')
     users_chunks = array.chunks(users, 50)
     for chunk in users_chunks:
