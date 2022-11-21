@@ -15,13 +15,14 @@ router = APIRouter(prefix='/users', tags=['Users'])
 @router.get('/')
 async def get_users_list(
         user_repository: UsersRepository = Depends(get_user_repository),
-        current_user: AdminUser = Depends(get_current_user)
+        current_user: AdminUser = Depends(get_current_user),
+        page: int = 1
 ):
     if len(list(filter(lambda x: x.name == 'Analyst', current_user.roles))) > 0:
-        users = await user_repository.get_all_users(current_user.id)
+        users = await user_repository.get_all_users(current_user.id, page=page)
     else:
-        users = await user_repository.get_all_users()
-    return users
+        users = await user_repository.get_all_users(page=page)
+    return  users
 
 
 @router.post('/')
