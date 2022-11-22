@@ -1,15 +1,18 @@
+import datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload, joinedload, subqueryload
 from sqlalchemy import update
 from typing import List, Optional
-import random
 
 from app.data.models.admin_users import AdminUser
 from app.data.db import Session
 from app.data.models.subscription import SubscriptionUser
 from app.data.models.users import User
 from app.helpers import array
+
+from app.helpers import paginator
 
 
 class UsersRepository:
@@ -23,17 +26,19 @@ class UsersRepository:
         result = await self._session.execute(stmt)
         return result.scalars().first()
 
-    async def get_all_users(self, analyst_id: int = None) -> List[User]:
-        stmt = select(User).options(selectinload(User.subscription).options(
-            joinedload(SubscriptionUser.subscription)
-        ))
-        if analyst_id is not None:
-            stmt = stmt.filter(User.analyst_id == analyst_id)
-        result = await self._session.execute(stmt)
-        return result.scalars().all()
+    async def get_all_users(self, analyst_id: int = None, page: int = 1, per_page: int = 25) -> paginator.Paginator:
+        with Session() as session:
+            query = session.query(User).options(selectinload(User.subscription).options(
+                joinedload(SubscriptionUser.subscription)
+            ))
+            if analyst_id:
+                query = query.filter(User.analyst_id == analyst_id)
+            return paginator.paginate(query, page, per_page)
 
     async def get_all_users_with_active_subscriptions(self, analyst_id: int = None) -> List[User]:
-        stmt = select(User).options(joinedload(User.subscription.and_(SubscriptionUser.active == True), innerjoin=True)).filter(User.telegram_user_id != None)
+        stmt = select(User).options(
+            joinedload(User.subscription.and_(SubscriptionUser.active == True), innerjoin=True)).filter(
+            User.telegram_user_id != None)
         if analyst_id is not None:
             stmt = stmt.filter(User.analyst_id == analyst_id)
         result = await self._session.execute(stmt)
@@ -65,7 +70,8 @@ class UsersRepository:
             return user
         user = User(
             name=name,
-            phone=phone
+            phone=phone,
+            verified_at=datetime.datetime.now()
         )
         self._session.add(user)
         await self._session.commit()

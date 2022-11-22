@@ -1,7 +1,7 @@
 import apiInstance from "./index";
 
-function getUsersList() {
-    return apiInstance.get('/users')
+function getUsersList(page = 1) {
+    return apiInstance.get(`/users?page=${page}`)
 }
 
 function saveUser(
