@@ -152,6 +152,10 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
         context.user_data['registration_language']
     )
     await users_repository.verify_user(user.id)
+    await users_repository.activate_proactively_added_user(context.user_data['registration_phone'],
+                                                           update.effective_user.id,
+                                                           context.user_data['registration_language'])
+    user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     await update.message.reply_text(strings.get_string('registration_finished', user.language),
                                     reply_markup=ReplyKeyboardRemove())
     active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(user)
