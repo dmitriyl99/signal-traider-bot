@@ -22,7 +22,7 @@ async def get_users_list(
         users = await user_repository.get_all_users(current_user.id, page=page)
     else:
         users = await user_repository.get_all_users(page=page)
-    return  users
+    return users
 
 
 @router.post('/')

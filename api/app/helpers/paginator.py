@@ -1,12 +1,19 @@
 import math
-from pydantic import BaseModel
 from typing import List, Any
 
 
-class Paginator(BaseModel):
+class Paginator:
+
+    items: List[Any]
+    previous_page: int | None = None
+    next_page: int | None = None
+    has_previous: bool
+    previous_items: int
+    has_next: bool
+    total: int
+    pages: int
 
     def __init__(self, items, page, page_size, total, **kwargs: Any):
-        super().__init__(**kwargs)
         self.items = items
         self.previous_page = None
         self.next_page = None
