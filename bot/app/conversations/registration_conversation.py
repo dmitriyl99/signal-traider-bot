@@ -140,7 +140,7 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
             return PHONE
     existed_user = await users_repository.find_user_by_phone(phone_number)
     if existed_user is not None:
-        if existed_user.telegram_user_id is not None:
+        if existed_user.telegram_user_id and existed_user.telegram_user_id != update.effective_user.id:
             await update.message.reply_text(
                 strings.get_string('registration_phone_user_exists', context.user_data['registration_language']))
             return
