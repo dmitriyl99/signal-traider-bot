@@ -24,6 +24,8 @@ async def set_user_language(telegram_user_id: int, language) -> User:
         user = result.scalars().first()
         user.language = language
         await session.commit()
+        await session.refresh(user)
+    return user
 
 
 def divide_users_between_analytics():
@@ -72,7 +74,7 @@ async def find_user_by_phone(phone: str) -> User:
         return user
 
 
-async def activate_proactively_added_user(phone: str, telegram_user_id: int) -> bool:
+async def activate_proactively_added_user(phone: str, telegram_user_id: int, language = None) -> bool:
     stmt = select(User).options(joinedload(User.subscriptions.and_(SubscriptionUser.proactively_added == True))).filter(
         User.phone == phone)
     async with async_session() as session:
@@ -83,6 +85,9 @@ async def activate_proactively_added_user(phone: str, telegram_user_id: int) -> 
         if user.telegram_user_id is None:
             user.telegram_user_id = telegram_user_id
             user.registration_date = datetime.now()
+            print("Language", language)
+            if language is not None:
+                user.language = language
         if len(user.subscriptions) > 0:
             proactively_subscription: SubscriptionUser = user.subscriptions[0]
             proactively_subscription.proactively_added = False
