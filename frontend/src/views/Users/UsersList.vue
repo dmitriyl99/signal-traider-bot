@@ -2,10 +2,17 @@
   <div class="card">
     <div class="card-header">
       <div class="row align-items-center">
-        <div class="d-flex justify-content-end">
-          <router-link :to="{name: 'CreateUser'}" class="btn btn-primary lift">
-            Добавить пользователя
-          </router-link>
+        <div class="col-10">
+          <div class="search-group">
+            <input type="text" class="form-control form-control-flush" v-model="searchQuery" placeholder="Search">
+          </div>
+        </div>
+        <div class="col-2">
+          <div class="d-flex justify-content-end">
+            <router-link :to="{name: 'CreateUser'}" class="btn btn-primary lift">
+              Добавить пользователя
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -58,24 +65,37 @@
 
 <script>
 import usersApi from "../../api/usersApi";
+import {debounce} from "lodash";
 
 export default {
   name: "UsersList",
   data: () => ({
     users: [],
     page: 1,
+    searchQuery: "",
+    isTyping: false,
+    isLoading: false
   }),
+  watch: {
+    searchQuery: debounce(function () {
+      console.log(this.searchQuery)
+      this.fetchUsers()
+    }, 1000),
+  },
   methods: {
     onClickHandler(page) {
       usersApi.getUsersList(page).then(response => {
         this.users = response.data
       })
+    },
+    fetchUsers() {
+      usersApi.getUsersList(this.page, this.searchQuery).then(response => {
+      this.users = response.data
+    })
     }
   },
   created() {
-    usersApi.getUsersList(this.page).then(response => {
-      this.users = response.data
-    })
+    this.fetchUsers()
   }
 }
 </script>

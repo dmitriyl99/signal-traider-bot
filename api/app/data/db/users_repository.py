@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload, joinedload, subqueryload
-from sqlalchemy import update
+from sqlalchemy import update, or_
 from typing import List, Optional
 
 from app.data.models.admin_users import AdminUser
@@ -26,13 +26,15 @@ class UsersRepository:
         result = await self._session.execute(stmt)
         return result.scalars().first()
 
-    async def get_all_users(self, analyst_id: int = None, page: int = 1, per_page: int = 25) -> paginator.Paginator:
+    async def get_all_users(self, analyst_id: int = None, page: int = 1, per_page: int = 25, search: str| None = None) -> paginator.Paginator:
         with Session() as session:
             query = session.query(User).options(selectinload(User.subscription).options(
                 joinedload(SubscriptionUser.subscription)
             ))
             if analyst_id:
                 query = query.filter(User.analyst_id == analyst_id)
+            if search and search != '':
+                query = query.filter(or_(User.name.like(f"%{search}%"), User.phone.like(f"%{search}%")))
             return paginator.paginate(query, page, per_page)
 
     async def get_all_users_with_active_subscriptions(self, analyst_id: int = None) -> List[User]:
