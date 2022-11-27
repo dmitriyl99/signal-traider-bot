@@ -37,6 +37,10 @@ function sendCustomMessage(text, files=null) {
     return apiInstance.post('/signals/message', formData, {headers: {"Content-Type": "multipart/form-data"}});
 }
 
+function loadCustomMessages() {
+    return apiInstance.get('/signals/message');
+}
+
 function getAllSignals() {
     return apiInstance.get('/signals');
 }
@@ -46,5 +50,5 @@ function getSuggestion(currencyPair) {
 }
 
 export default {
-    sendSignal, getAllSignals, getSuggestion, sendCustomMessage, sendReply
+    sendSignal, getAllSignals, getSuggestion, sendCustomMessage, sendReply, loadCustomMessages
 }

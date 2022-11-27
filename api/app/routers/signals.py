@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Body, HTTPException, UploadFile, Form, BackgroundTasks
+from fastapi import APIRouter, Depends, Body, HTTPException, UploadFile, Form, BackgroundTasks, status
 
 from app.dependencies import get_signals_repository, get_user_repository, get_current_user
 from app.data.db.signals_repository import SignalsRepository
@@ -73,12 +73,36 @@ async def send_signal_message(
         text: str = Form(default="hello"),
         files: list[UploadFile] | None = None,
         users_repository: UsersRepository = Depends(get_user_repository),
+        signals_repository: SignalsRepository = Depends(get_signals_repository),
         current_user: AdminUser = Depends(get_current_user)
 ):
     if files is not None:
         await bot.send_text_distribution(text, [f.file for f in files], users_repository, current_user)
     else:
         await bot.send_text_distribution(text, None, users_repository, current_user)
+    await signals_repository.save_text_distribution(text, current_user)
+
+
+@router.get('/message')
+async def get_signal_messages(
+        current_user: AdminUser = Depends(get_current_user),
+        signals_repository: SignalsRepository = Depends(get_signals_repository),
+):
+    if len(list(filter(lambda x: x.name == 'Admin', current_user.roles))) > 0:
+        distributions = await signals_repository.get_all_text_distributions()
+        return list(
+            map(
+                lambda x: {
+                    'text': x.text,
+                    'admin_user': x.admin_user.username,
+                    'created_at': x.created_at
+                }, distributions
+            )
+        )
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail='You do not have permission'
+    )
 
 
 @router.get('/suggestion')

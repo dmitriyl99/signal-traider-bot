@@ -5,6 +5,7 @@ import CreateUser from "../views/Users/CreateUser";
 import UpdateUser from "../views/Users/UpdateUser";
 import PaymentsList from "../views/payments/PaymentsList";
 import ListSignals from "../views/Signals/ListSignals";
+import DistributionsList from "../views/Distributions/DistributionsList";
 import SendReplySignal from "../views/Signals/SendReplySignal";
 import CreateSignal from "../views/Signals/CreateSignal";
 import CurrencyPairsList from "../views/currency-pairs/CurrencyPairsList";
@@ -90,6 +91,17 @@ const routes = [
         path: '/signals/create',
         component: CreateSignal,
         name: 'CreateSignal',
+        meta: {
+            layout: 'AppLayoutAdmin',
+            middleware: [
+                auth
+            ]
+        },
+    },
+    {
+        path: '/distributions',
+        name: 'ListDistributions',
+        component: DistributionsList,
         meta: {
             layout: 'AppLayoutAdmin',
             middleware: [

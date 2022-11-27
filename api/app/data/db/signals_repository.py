@@ -1,10 +1,12 @@
 from typing import List, Optional
 
 from sqlalchemy import insert
+from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.data.models.signal import Signal, signal_chat_message_mapper_table
+from app.data.models.admin_users import AdminUser
+from app.data.models.signal import Signal, signal_chat_message_mapper_table, TextDistribution
 from app.data.db import Session, sync_engine
 
 
@@ -13,6 +15,18 @@ class SignalsRepository:
 
     def __init__(self, session: AsyncSession):
         self._session = session
+
+    async def save_text_distribution(self, text: str, admin_user: AdminUser):
+        self._session.add(TextDistribution(
+            text=text,
+            admin_user_id=admin_user.id
+        ))
+        await self._session.commit()
+
+    async def get_all_text_distributions(self) -> List[TextDistribution]:
+        stmt = select(TextDistribution).options(joinedload(TextDistribution.admin_user))
+        result = await self._session.execute(stmt)
+        return result.scalars().all()
 
     async def save_signal(self,
                           currency_pair: str,

@@ -1,5 +1,6 @@
 from . import Base, metadata
 import sqlalchemy as sa
+from sqlalchemy.orm import relationship
 
 from datetime import datetime
 
@@ -26,3 +27,14 @@ signal_chat_message_mapper_table = sa.Table(
     sa.Column('chat_id', sa.BigInteger),
     sa.Column('message_id', sa.BigInteger)
 )
+
+
+class TextDistribution(Base):
+    __tablename__ = 'text_distributions'
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    text = sa.Column(sa.Text)
+    admin_user_id = sa.Column(sa.Integer, sa.ForeignKey('admin_users.id'))
+    created_at = sa.Column(sa.DateTime, default=datetime.now)
+
+    admin_user = relationship('AdminUser')
