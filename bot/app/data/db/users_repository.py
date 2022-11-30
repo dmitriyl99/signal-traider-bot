@@ -55,7 +55,7 @@ async def save_user(name: str, phone: str, telegram_user_id: int, language: str)
         if user is None:
             user = User(
                 name=name,
-                phone=phone,
+                phone=phone.replace('+', ''),
                 language=language,
             )
             session.add(user)
