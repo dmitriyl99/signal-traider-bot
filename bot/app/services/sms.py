@@ -1,7 +1,7 @@
 import logging
 
 from eskiz_sms import EskizSMS
-from twilio import Client
+from twilio.rest import Client
 
 from app.config import config
 
