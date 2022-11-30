@@ -29,6 +29,9 @@ class Config:
     ESKIZ_PASSWORD: str
     SMS_FROM_WHOM: str
 
+    TWILIO_ACCOUNT_SID: str
+    TWILIO_AUTH_TOKEN: str
+
     REDIS_HOST: str
 
     MASSPAY_HOST: str
@@ -51,6 +54,9 @@ class Config:
         self.WEBHOOK_TOKEN = os.getenv('WEBHOOK_TOKEN')
         self.ESKIZ_EMAIL = os.getenv('ESKIZ_EMAIL')
         self.ESKIZ_PASSWORD = os.getenv('ESKIZ_PASSWORD')
+        self.TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+        self.TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+        self.TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
         self.SMS_FROM_WHOM = os.getenv('SMS_FROM_WHOM')
         self.REDIS_HOST = os.getenv('REDIS_HOST')
         self.MASSPAY_HOST = os.getenv('MASSPAY_HOST')
