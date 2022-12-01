@@ -22,7 +22,7 @@ def main():
     application.add_handler(registration_conversation.handler)
     application.add_handler(select_subscription_conversation.handler)
     application.add_handlers(payment_handlers.handlers)
-    application.add_handler(MessageHandler(filters.TEXT, default_handler))
+    application.add_handler(MessageHandler(filters.ALL, default_handler))
     if config.ENV == 'production':
         application.run_webhook(
             listen='0.0.0.0',
