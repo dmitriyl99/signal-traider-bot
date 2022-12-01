@@ -45,7 +45,7 @@ async def create_user(
             form.subscription_duration_in_days,
             form.subscription_condition_id,
             proactively_added=True,
-            active=False
+            active=True
         )
 
     return user
