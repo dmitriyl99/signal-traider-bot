@@ -68,6 +68,7 @@ class UsersRepository:
         stmt = select(User).filter(User.phone == phone)
         result = await self._session.execute(stmt)
         user = result.scalars().first()
+        phone = phone.replace('+', '')
         if user:
             return user
         user = User(
