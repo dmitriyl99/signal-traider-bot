@@ -73,7 +73,6 @@ class UsersRepository:
         user = User(
             name=name,
             phone=phone,
-            verified_at=datetime.datetime.now()
         )
         self._session.add(user)
         await self._session.commit()
