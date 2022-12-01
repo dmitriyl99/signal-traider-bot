@@ -79,7 +79,7 @@ async def send_message_to_user(telegram_user_id: int, text: str, files: Optional
                     bio = BytesIO(f.read())
                     media_group.attach_photo(
                         types.InputFile(bio),
-                        caption=text if idx == 0 else None,
+                        caption=text if idx == 0 else '',
                         parse_mode=types.ParseMode.HTML,
                     )
                 return await bot.send_media_group(
