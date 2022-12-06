@@ -77,7 +77,7 @@ async def send_signal_message(
         current_user: AdminUser = Depends(get_current_user)
 ):
     if files is not None:
-        await bot.send_text_distribution(text, [f.file for f in files], users_repository, current_user)
+        await bot.send_text_distribution(text, [{'binary': f.file, 'type': f.content_type, 'filename': f.filename} for f in files], users_repository, current_user)
     else:
         await bot.send_text_distribution(text, None, users_repository, current_user)
     await signals_repository.save_text_distribution(text, current_user)

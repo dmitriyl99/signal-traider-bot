@@ -1,6 +1,6 @@
 import aiogram.utils.exceptions
 import logging
-from typing import Optional, BinaryIO, List
+from typing import Optional, BinaryIO, List, Dict, Any
 from io import BytesIO
 
 from aiogram import Bot, types
@@ -45,7 +45,7 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository, si
     signals_repository.save_mapper_for_signal(signal, chat_message_mapper)
 
 
-async def send_text_distribution(text: str, files: Optional[List[BinaryIO]], user_repository: UsersRepository, admin_user: AdminUser):
+async def send_text_distribution(text: str, files: Optional[List[Dict[str, Any]]], user_repository: UsersRepository, admin_user: AdminUser):
     if len(list(filter(lambda x: x.name == 'Analyst', admin_user.roles))) > 0:
         users = await user_repository.get_all_users_with_active_subscriptions(analyst_id=admin_user.id)
     else:
@@ -57,31 +57,68 @@ async def send_text_distribution(text: str, files: Optional[List[BinaryIO]], use
             await send_message_to_user(user.telegram_user_id, text, files)
 
 
-async def send_message_to_user(telegram_user_id: int, text: str, files: Optional[List[BinaryIO]] = None, reply_to_message_id: int = None) -> Optional[types.Message] | Optional[List[types.Message]]:
+async def send_message_to_user(telegram_user_id: int, text: str = None, files: Optional[List[Dict[str, Any]]] = None, reply_to_message_id: int = None) -> Optional[types.Message] | Optional[List[types.Message]]:
     bot = Bot(settings.telegram_bot_api_token)
+    logging.info(f'Content Types: {list(map(lambda x: x["type"], files))}')
+    text = text.replace('null', '')
+    logging.info(f'Text: {text}')
     if files is not None:
         try:
             if len(files) == 1:
-                file = files[0]
+                file: BinaryIO = files[0]['binary']
+                content_type = files[0]['type']
                 file.seek(0)
                 bio = BytesIO(file.read())
-                return await bot.send_photo(
-                    chat_id=telegram_user_id,
-                    photo=types.InputFile(bio),
-                    caption=text,
-                    parse_mode=types.ParseMode.HTML,
-                    reply_to_message_id=reply_to_message_id
-                )
+                if 'image' in content_type:
+                    return await bot.send_photo(
+                        chat_id=telegram_user_id,
+                        photo=types.InputFile(bio, filename=files[0]['filename']),
+                        caption=text if text else '',
+                        parse_mode=types.ParseMode.HTML,
+                        reply_to_message_id=reply_to_message_id
+                    )
+                elif 'video' in content_type:
+                    return await bot.send_video(
+                        chat_id=telegram_user_id,
+                        video=types.InputFile(bio, filename=files[0]['filename']),
+                        caption=text if text else '',
+                        parse_mode=types.ParseMode.HTML,
+                        reply_to_message_id=reply_to_message_id
+                    )
+                else:
+                    return await bot.send_document(
+                        chat_id=telegram_user_id,
+                        document=types.InputFile(bio, filename=files[0]['filename']),
+                        caption=text if text else '',
+                        parse_mode=types.ParseMode.HTML,
+                        reply_to_message_id=reply_to_message_id
+                    )
             else:
                 media_group = types.MediaGroup()
                 for idx, f in enumerate(files):
-                    f.seek(0)
-                    bio = BytesIO(f.read())
-                    media_group.attach_photo(
-                        types.InputFile(bio),
-                        caption=text if idx == 0 else '',
-                        parse_mode=types.ParseMode.HTML,
-                    )
+                    binary = f['binary']
+                    content_type = f['type']
+                    binary.seek(0)
+                    bio = BytesIO(binary.read())
+                    if 'image' in content_type:
+                        media_group.attach_photo(
+                            types.InputFile(bio, filename=f['filename']),
+                            caption=text if idx == 0 and text else '',
+                            parse_mode=types.ParseMode.HTML,
+                        )
+                    elif 'video' in content_type:
+                        media_group.attach_video(
+                            types.InputFile(bio, filename=f['filename']),
+                            caption=text if idx == 0 and text else '',
+                            parse_mode=types.ParseMode.HTML,
+                        )
+                    else:
+                        media_group.attach_document(
+                            types.InputFile(bio, filename=f['filename']),
+                            caption=text if idx == 0 and text else '',
+                            parse_mode=types.ParseMode.HTML,
+                        )
+
                 return await bot.send_media_group(
                     telegram_user_id,
                     media=media_group,
