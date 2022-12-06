@@ -41,7 +41,6 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository, si
             if message is None:
                 continue
             chat_message_mapper[user.telegram_user_id] = message.message_id
-    print('chat_message_mapper: ', chat_message_mapper)
     signals_repository.save_mapper_for_signal(signal, chat_message_mapper)
 
 
@@ -59,8 +58,8 @@ async def send_text_distribution(text: str, files: Optional[List[Dict[str, Any]]
 
 async def send_message_to_user(telegram_user_id: int, text: str = None, files: Optional[List[Dict[str, Any]]] = None, reply_to_message_id: int = None) -> Optional[types.Message] | Optional[List[types.Message]]:
     bot = Bot(settings.telegram_bot_api_token)
-    logging.info(f'Content Types: {list(map(lambda x: x["type"], files))}')
-    text = text.replace('null', '')
+    if text == 'null':
+        text = None
     logging.info(f'Text: {text}')
     if files is not None:
         try:
