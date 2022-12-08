@@ -1,5 +1,4 @@
 import apiInstance from "./index";
-import authApi from "./authApi";
 
 function getUtmCommands() {
     return apiInstance.get('/utm/commands')

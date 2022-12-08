@@ -13,7 +13,7 @@
           <div class="col-12 col-md-6 mb-3">
             <label for="roles" class="form-label">Роль</label>
             <select type="text" class="form-select" id="roles" v-model="selectedRoles">
-              <option :value="role.id" v-for="role in roles">{{ role.name }}</option>
+              <option :value="role.id" v-for="role in roles" :key="role.id">{{ role.name }}</option>
             </select>
           </div>
         </div>
