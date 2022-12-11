@@ -98,3 +98,12 @@ class UsersRepository:
         await self._session.commit()
 
         return user
+
+    async def delete_user(self, user_id: int):
+        user = await self.get_user_by_id(user_id)
+        if user is None:
+            return False
+
+        await self._session.delete(user)
+        await self._session.commit()
+        return True

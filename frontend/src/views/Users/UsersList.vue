@@ -45,8 +45,12 @@
                 (new Date(user.registration_date)).toLocaleString()
               }}</span><span v-else class="text-danger">Не зарегистрирован</span></td>
             <td>
-              <router-link class="btn btn-warning" :to="{name: 'UpdateUser', params: {id: user.id}}"><span
-                  class="fe fe-edit"></span></router-link>
+              <div class="d-flex justify-content-around">
+                <router-link class="btn btn-warning" :to="{name: 'UpdateUser', params: {id: user.id}}"><span
+                    class="fe fe-edit"></span></router-link>
+                <button class="btn btn-danger" v-on:click="deleteUser(user.id)"><span class="fe fe-trash"></span>
+                </button>
+              </div>
             </td>
           </tr>
           </tbody>
@@ -90,8 +94,37 @@ export default {
     },
     fetchUsers() {
       usersApi.getUsersList(this.page, this.searchQuery).then(response => {
-      this.users = response.data
-    })
+        this.users = response.data
+      })
+    },
+    deleteUser(user_id) {
+      this.$swal({
+        icon: 'warning',
+        title: 'Вы уверены?',
+        text: 'Вы уверены что хотите удалить пользователя? Это так же удалит его подписку и все его платежи. Эти данные нельзя будет вернуть',
+        showCancelButton: true,
+        confirmButtonText: "Удалить пользователя",
+        cancelButtonText: "Отмена",
+        dangerMode: true
+      })
+        .then(({isConfirmed}) => {
+          console.log(isConfirmed);
+          if (isConfirmed) {
+            usersApi.deleteUser(user_id).then(() => {
+              this.$swal({
+                icon: 'success',
+                text: 'Пользователь удалён'
+              })
+              this.fetchUsers()
+            }).catch(e => {
+              this.$swal({
+                icon: 'error',
+                title: 'Ошика',
+                text: e.response.data.detail
+              })
+            })
+          }
+        })
     }
   },
   created() {

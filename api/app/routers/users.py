@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Body, HTTPException
+from fastapi import APIRouter, Depends, Body, HTTPException, status
 
 from app.dependencies import get_user_repository, get_current_user, get_subscriptions_repository
 from app.data.db.users_repository import UsersRepository
@@ -91,3 +91,22 @@ async def update_user(
         await bot.send_message_to_user(user.telegram_user_id, f'Вам добавлена подписка на {user_subscription.duration_in_days} дней!')
 
     return user
+
+
+@router.delete('/{user_id}')
+async def delete_user(
+        user_id: int,
+        user_repository: UsersRepository = Depends(get_user_repository),
+        subscription_repository: SubscriptionsRepository = Depends(get_subscriptions_repository),
+        current_user: AdminUser = Depends(get_current_user),
+):
+    await subscription_repository.delete_subscription_from_user(user_id)
+    deleted = await user_repository.delete_user(user_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='User not found'
+        )
+    return {
+        'detail': 'User deleted!'
+    }

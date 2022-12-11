@@ -25,6 +25,12 @@ function updateUser(
     })
 }
 
+function deleteUser(
+    id,
+) {
+    return apiInstance.delete(`/users/${id}`)
+}
+
 export default {
-    getUsersList, saveUser, getUserById, updateUser
+    getUsersList, saveUser, getUserById, updateUser, deleteUser
 }

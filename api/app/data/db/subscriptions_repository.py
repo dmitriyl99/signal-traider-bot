@@ -54,3 +54,11 @@ class SubscriptionsRepository:
         await self._session.commit()
 
         return subscription_user
+
+    async def delete_subscription_from_user(self, user_id):
+        current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user_id)
+        result = await self._session.execute(current_subscription_user_stmt)
+        subscription_user: SubscriptionUser = result.scalars().first()
+        if subscription_user:
+            await self._session.delete(subscription_user)
+            await self._session.commit()
