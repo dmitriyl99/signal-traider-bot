@@ -126,7 +126,11 @@ strings_data = {
     },
     'subscription_pay': {
         'ru': '💳 Оплатить',
-        'uz': '💳 Оплатить'
+        'uz': "💳 to'lash"
+    },
+    'language_changed': {
+        'ru': '🇷🇺 Язык изменён',
+        'uz': "🇺🇿 Til o'zgartirildi"
     }
 }
 

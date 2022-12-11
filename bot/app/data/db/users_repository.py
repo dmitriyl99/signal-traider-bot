@@ -18,10 +18,12 @@ async def get_user_by_telegram_id(telegram_user_id: int) -> User:
         return result.scalars().first()
 
 
-async def set_user_language(telegram_user_id: int, language) -> User:
+async def set_user_language(telegram_user_id: int, language) -> User | None:
     async with async_session() as session:
         result = await session.execute(select(User).filter(User.telegram_user_id == telegram_user_id))
         user = result.scalars().first()
+        if not user:
+            return None
         user.language = language
         await session.commit()
         await session.refresh(user)

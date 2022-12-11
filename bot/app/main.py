@@ -3,7 +3,7 @@ import logging
 from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, filters
 from telegram import Update, ReplyKeyboardRemove
 
-from app.conversations import registration_conversation, select_subscription_conversation
+from app.conversations import registration_conversation, select_subscription_conversation, language_conversation
 from app.payments import handlers as payment_handlers
 from app.config import config
 
@@ -21,6 +21,7 @@ def main():
 
     application.add_handler(registration_conversation.handler)
     application.add_handler(select_subscription_conversation.handler)
+    application.add_handler(language_conversation.handler)
     application.add_handlers(payment_handlers.handlers)
     application.add_handler(MessageHandler(filters.ALL, default_handler))
     if config.ENV == 'production':
