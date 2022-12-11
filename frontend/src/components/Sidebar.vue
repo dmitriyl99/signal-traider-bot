@@ -85,6 +85,9 @@
                     <img src="@/assets/img/avatars/profiles/avatar-6.jpg" class="avatar-img rounded-circle" alt="...">
                   </div>
                 </a>
+                <div v-if="$store.state.auth.current_user != null">
+                    {{ $store.state.auth.current_user.username }}
+                  </div>
 
                 <!-- Menu -->
                 <div class="dropdown-menu" aria-labelledby="sidebarIconCopy">
