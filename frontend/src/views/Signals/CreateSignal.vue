@@ -54,21 +54,6 @@
         <span class="text-success ms-3" v-if="successText != null">{{ successText }}</span>
 
       </form>
-      <h3 class="mt-4">Кастомное сообщение</h3>
-      <form v-on:submit.prevent="onCustomMessageFormSubmit" action="" class="mt-3">
-        <div class="row g-3">
-          <div class="col-12 mb-3">
-            <textarea id="text" rows="10" class="form-control" v-model="customMessage.text"></textarea>
-          </div>
-        </div>
-        <DropZone @drop.prevent="drop" @change="drop"/>
-        <div v-if="dropzoneFiles !== null">
-          <div v-for="dropzoneFile in dropzoneFiles" :key="dropzoneFile.name">{{ dropzoneFile.name }}</div>
-        </div>
-        <button v-if="customMessage.sendButtonView" :disabled="customMessage.isLoading" class="btn btn-primary mt-3"
-                type="submit" v-html="customMessage.isLoading ? 'Отправляю, подождите...' : 'Отправить сообщение'"/>
-        <span class="text-success ms-3" v-if="customMessage.successText != null">{{ customMessage.successText }}</span>
-      </form>
     </div>
   </div>
 </template>
