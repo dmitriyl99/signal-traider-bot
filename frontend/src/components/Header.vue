@@ -9,7 +9,7 @@
 
             <!-- Pretitle -->
             <h6 class="header-pretitle">
-              Signal Trader Bot
+              MassPower FX Signal VIP Bot
             </h6>
 
             <!-- Title -->
@@ -19,6 +19,9 @@
 
           </div>
           <div class="col-auto">
+            <router-link :to="{name: 'CreateDistribution'}" class="btn btn-primary lift me-2">
+              Отправить сообщение
+            </router-link>
             <!-- Button -->
             <router-link :to="{name: 'CreateSignal'}" class="btn btn-primary lift">
               Отправить сигнал
