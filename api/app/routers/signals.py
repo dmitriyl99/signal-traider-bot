@@ -72,14 +72,33 @@ async def reply_to_signal_message(
 async def send_signal_message(
         text: str = Form(default="hello"),
         files: list[UploadFile] | None = None,
+        images: list[UploadFile] | None = None,
         users_repository: UsersRepository = Depends(get_user_repository),
         signals_repository: SignalsRepository = Depends(get_signals_repository),
         current_user: AdminUser = Depends(get_current_user)
 ):
+    attachments = []
+    if images is not None and files is not None:
+        raise HTTPException(
+            status_code=400,
+            detail='Telegram не позволяет отправлять документы и изображения одновременно'
+        )
+    if images is not None:
+        for i in images:
+            if not i.content_type.startswith('image/') or not i.content_type.startswith('video/'):
+                raise HTTPException(
+                    status_code=400,
+                    detail='Если хотите отправить файлы, не пользуйтесь полем для изображений'
+                )
+        attachments += [{'binary': f.file, 'type': f.content_type, 'filename': f.filename, 'is_image': True} for f in images]
     if files is not None:
-        await bot.send_text_distribution(text, [{'binary': f.file, 'type': f.content_type, 'filename': f.filename} for f in files], users_repository, current_user)
-    else:
-        await bot.send_text_distribution(text, None, users_repository, current_user)
+        attachments += [{'binary': f.file, 'type': f.content_type, 'filename': f.filename, 'is_image': False} for f in files]
+    await bot.send_text_distribution(
+        text,
+        attachments,
+        users_repository,
+        current_user
+    )
     await signals_repository.save_text_distribution(text, current_user)
 
 

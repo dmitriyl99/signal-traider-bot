@@ -6,10 +6,10 @@
       @drop.prevent="toggleActive"
       :class="{'active-dropzone': active}"
       class="dropzone">
-    <span>Drag or Drop File</span>
-    <span>OR</span>
+    <span>{{ title }}</span>
+    <span>or</span>
     <label for="dropzoneFile">Select File</label>
-    <input type="file" multiple id="dropzoneFile">
+    <input type="file" multiple id="dropzoneFile" :accept="accept">
   </div>
 </template>
 
@@ -18,6 +18,7 @@ import {ref} from "vue";
 
 export default {
   name: "DropZone",
+  props: ['title', 'accept'],
   setup() {
     const active = ref(false);
 

@@ -44,7 +44,7 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository, si
     signals_repository.save_mapper_for_signal(signal, chat_message_mapper)
 
 
-async def send_text_distribution(text: str, files: Optional[List[Dict[str, Any]]], user_repository: UsersRepository, admin_user: AdminUser):
+async def send_text_distribution(text: str, attachments: Optional[List[Dict[str, Any]]], user_repository: UsersRepository, admin_user: AdminUser):
     if len(list(filter(lambda x: x.name == 'Analyst', admin_user.roles))) > 0:
         users = await user_repository.get_all_users_with_active_subscriptions(analyst_id=admin_user.id)
     else:
@@ -53,21 +53,31 @@ async def send_text_distribution(text: str, files: Optional[List[Dict[str, Any]]
     users_chunks = array.chunks(users, 50)
     for chunk in users_chunks:
         for user in chunk:
-            await send_message_to_user(user.telegram_user_id, text, files)
+            await send_message_to_user(user.telegram_user_id, text, attachments)
 
 
-async def send_message_to_user(telegram_user_id: int, text: str = None, files: Optional[List[Dict[str, Any]]] = None, reply_to_message_id: int = None) -> Optional[types.Message] | Optional[List[types.Message]]:
+async def send_message_to_user(telegram_user_id: int, text: str = None, attachments: Optional[List[Dict[str, Any]]] = None, reply_to_message_id: int = None) -> Optional[types.Message] | Optional[List[types.Message]]:
     bot = Bot(settings.telegram_bot_api_token)
     if text == 'null':
         text = None
     logging.info(f'Text: {text}')
-    if files is not None:
+    if attachments is not None:
+        files = attachments
         try:
             if len(files) == 1:
                 file: BinaryIO = files[0]['binary']
                 content_type = files[0]['type']
+                is_image = files[0]['is_image']
                 file.seek(0)
                 bio = BytesIO(file.read())
+                if not is_image:
+                    return await bot.send_document(
+                        chat_id=telegram_user_id,
+                        document=types.InputFile(bio, filename=files[0]['filename']),
+                        caption=text if text else '',
+                        parse_mode=types.ParseMode.HTML,
+                        reply_to_message_id=reply_to_message_id
+                    )
                 if 'image' in content_type:
                     return await bot.send_photo(
                         chat_id=telegram_user_id,
@@ -97,8 +107,15 @@ async def send_message_to_user(telegram_user_id: int, text: str = None, files: O
                 for idx, f in enumerate(files):
                     binary = f['binary']
                     content_type = f['type']
+                    is_image = files[0]['is_image']
                     binary.seek(0)
                     bio = BytesIO(binary.read())
+                    if not is_image:
+                        media_group.attach_document(
+                            types.InputFile(bio, filename=f['filename']),
+                            caption=text if idx == 0 and text else '',
+                            parse_mode=types.ParseMode.HTML,
+                        )
                     if 'image' in content_type:
                         media_group.attach_photo(
                             types.InputFile(bio, filename=f['filename']),
@@ -117,7 +134,6 @@ async def send_message_to_user(telegram_user_id: int, text: str = None, files: O
                             caption=text if idx == 0 and text else '',
                             parse_mode=types.ParseMode.HTML,
                         )
-
                 return await bot.send_media_group(
                     telegram_user_id,
                     media=media_group,

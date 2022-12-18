@@ -25,12 +25,17 @@ function sendReply(signal_id, text) {
     return apiInstance.post(`/signals/${signal_id}/reply`, {text})
 }
 
-function sendCustomMessage(text, files=null) {
+function sendCustomMessage(text, files=null, images=null) {
     let formData = new FormData();
         formData.append('text', text);
     if (files !== null) {
         Array.from(files).forEach(file => {
             formData.append('files', file);
+        })
+    }
+    if (images !== null) {
+        Array.from(images).forEach(image => {
+            formData.append('images', image);
         })
     }
 
