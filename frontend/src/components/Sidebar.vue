@@ -77,7 +77,7 @@
             <div class="navbar-user d-none d-md-flex" id="sidebarUser">
 
               <!-- Dropup -->
-              <div class="dropup">
+              <div class="dropup d-flex align-items-center flex-column">
 
                 <!-- Toggle -->
                 <a href="#" id="sidebarIconCopy" class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
