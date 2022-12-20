@@ -53,6 +53,18 @@ class AdminUsersRepository(BaseRepository):
                 session.commit()
         return user, need_to_divide_users
 
+    def delete_admin_user(self, admin_user_id):
+        with Session() as session:
+            user: AdminUser = session.query(AdminUser).get(admin_user_id)
+            roles = user.roles
+            for role in roles:
+                user.roles.remove(role)
+            permissions = user.permissions
+            for permission in permissions:
+                user.permissions.remove(permission)
+            session.delete(user)
+            session.commit()
+
     def get_admin_user_by_id(self, user_id: int) -> AdminUser:
         with Session() as session:
             return session.query(AdminUser). \

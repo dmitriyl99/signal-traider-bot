@@ -113,7 +113,7 @@ async def get_signal_messages(
             map(
                 lambda x: {
                     'text': x.text,
-                    'admin_user': x.admin_user.username,
+                    'admin_user': x.admin_user.username if x.admin_user else None,
                     'created_at': x.created_at
                 }, distributions
             )

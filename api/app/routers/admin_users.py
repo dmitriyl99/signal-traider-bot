@@ -12,8 +12,8 @@ router = APIRouter(prefix='/admin-users', tags=['admin-users'])
 
 @router.get('/')
 async def list_admin_users(
-    current_user: AdminUser = Depends(get_current_user),
-    admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository)
+        current_user: AdminUser = Depends(get_current_user),
+        admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository)
 ):
     if not admin_users_repository.check_if_user_has_role(current_user, 'Admin'):
         raise HTTPException(
@@ -121,3 +121,19 @@ def get_permissions(
             detail='Unauthenticated'
         )
     return admin_users_repository.get_permissions()
+
+
+@router.delete('/{admin_user_id}')
+def delete_admin_user(
+        admin_user_id: int,
+        current_user: AdminUser = Depends(get_current_user),
+        admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository),
+):
+    if not admin_users_repository.check_if_user_has_role(current_user, 'Admin'):
+        raise HTTPException(
+            status_code=401,
+            detail='Unauthenticated'
+        )
+    admin_users_repository.delete_admin_user(admin_user_id)
+
+    return {'detail': 'User deleted'}

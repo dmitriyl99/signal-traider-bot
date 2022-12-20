@@ -26,7 +26,7 @@
               <td>{{ user.username }}</td>
               <td><div class="d-flex justify-content-center">
                 <router-link class="btn btn-warning" :to="{name: 'admin-users.edit', params: {id: user.id}}"><span class="fe fe-edit"></span></router-link>
-                <button class="btn btn-danger ms-3"><span class="fe fe-trash"></span></button>
+                <button @click="deleteUser(user.id)" class="btn btn-danger ms-3"><span class="fe fe-trash"></span></button>
               </div></td>
             </tr>
           </tbody>
@@ -50,6 +50,35 @@ export default {
       adminUsersApi.getAdminUsersList().then(response => {
         this.admin_users = response.data;
       })
+    },
+    deleteUser(user_id) {
+      this.$swal({
+        icon: 'warning',
+        title: 'Вы уверены?',
+        text: 'Вы уверены что хотите удалить пользователя администрации?',
+        showCancelButton: true,
+        confirmButtonText: "Удалить пользователя",
+        cancelButtonText: "Отмена",
+        dangerMode: true
+      })
+        .then(({isConfirmed}) => {
+          console.log(isConfirmed);
+          if (isConfirmed) {
+            adminUsersApi.deleteUser(user_id).then(() => {
+              this.$swal({
+                icon: 'success',
+                text: 'Пользователь удалён'
+              })
+              this.loadAdminUsers()
+            }).catch(e => {
+              this.$swal({
+                icon: 'error',
+                title: 'Ошика',
+                text: e.response.data.detail
+              })
+            })
+          }
+        })
     }
   },
 

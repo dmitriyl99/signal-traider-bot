@@ -23,7 +23,7 @@
           <tbody>
           <tr v-for="distribution in distributions" :key="distribution.id">
             <td>{{ distribution.text }}</td>
-            <td>{{ distribution.admin_user }}</td>
+            <td><span v-if="distribution.admin_user !== null">{{ distribution.admin_user }}</span><span v-else>-</span></td>
             <td>{{ (new Date(distribution.created_at)).toLocaleDateString() }}
               {{ (new Date(distribution.created_at)).toLocaleTimeString() }}
             </td>

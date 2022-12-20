@@ -21,10 +21,15 @@ function getRoles() {
     return apiInstance.get('admin-users/roles');
 }
 
+function deleteUser(adminUserId) {
+    return apiInstance.delete(`admin-users/${adminUserId}`)
+}
+
 export default {
     getAdminUsersList,
     createAdminUser,
     getAdminUserById,
     changePassword,
-    getRoles
+    getRoles,
+    deleteUser
 }
