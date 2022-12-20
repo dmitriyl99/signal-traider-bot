@@ -26,7 +26,7 @@
               <td>{{ user.username }}</td>
               <td><div class="d-flex justify-content-center">
                 <router-link class="btn btn-warning" :to="{name: 'admin-users.edit', params: {id: user.id}}"><span class="fe fe-edit"></span></router-link>
-                <button @click="deleteUser(user.id)" class="btn btn-danger ms-3"><span class="fe fe-trash"></span></button>
+                <button v-if="currentUserHasAdminRole" @click="deleteUser(user.id)" class="btn btn-danger ms-3"><span class="fe fe-trash"></span></button>
               </div></td>
             </tr>
           </tbody>
@@ -44,6 +44,14 @@ export default {
   data: () => ({
     admin_users: []
   }),
+
+  computed: {
+    currentUserHasAdminRole() {
+      if (this.$store.state.auth.current_user != null)
+        return this.$store.state.auth.current_user.roles.filter(role => role.name === 'Admin').length;
+      return false;
+    }
+  },
 
   methods: {
     loadAdminUsers() {
