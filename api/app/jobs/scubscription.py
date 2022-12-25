@@ -9,6 +9,7 @@ from app.data.db import async_session
 from app.data.models.subscription import SubscriptionUser, Subscription
 from app.helpers import date
 from app.services import bot
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,9 @@ async def check_all_subscriptions_job():
                 logger.info('Deactivate subscription %d for user %d' % (subscription.subscription_id, subscription.user_id))
                 subscription.active = False
                 await session.commit()
-                # subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
-                # await bot.send_message_to_user(subscription.user.telegram_user_id, 'Ваша подписка {name} деактивирована. Отправьте команду /start чтобы приобрести подписку заново'.format(
-                #     name=subscription_entity.name)
-                # )
+                subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
+                await bot.send_message_to_user(subscription.user.telegram_user_id, 'Ваша подписка {name} деактивирована. Отправьте команду /start чтобы приобрести подписку заново'.format(
+                    name=subscription_entity.name)
+                )
+                if settings.telegram_group_id:
+                    await bot.remove_user_from_group(settings.telegram_group_id, subscription.user.telegram_user_id)

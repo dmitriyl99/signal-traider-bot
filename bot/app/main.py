@@ -9,7 +9,7 @@ from app.config import config
 
 
 async def default_handler(update: Update, context: CallbackContext.DEFAULT_TYPE):
-    await update.message.reply_text("Отправьте команду /start для перезапуска бота", reply_markup=ReplyKeyboardRemove())
+    await update.message.reply_text(f"Отправьте команду /start для перезапуска бота", reply_markup=ReplyKeyboardRemove())
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
     application.add_handler(select_subscription_conversation.handler)
     application.add_handler(language_conversation.handler)
     application.add_handlers(payment_handlers.handlers)
-    application.add_handler(MessageHandler(filters.ALL, default_handler))
+    application.add_handler(MessageHandler(filters.ChatType.PRIVATE, default_handler))
     if config.ENV == 'production':
         application.run_webhook(
             listen='0.0.0.0',

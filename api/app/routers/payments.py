@@ -4,6 +4,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Body, Form
 
+from app.config import settings
 from app.data.db.payments_repository import PaymentsRepository
 from app.data.db.subscriptions_repository import SubscriptionsRepository
 from app.data.db.paycom_transactions_repository import PaycomTransactionsRepository
@@ -88,6 +89,8 @@ async def click_complete(
             active=True
         )
         await bot.send_message_to_user(user.telegram_user_id, "Подписка куплена!")
+        if settings.telegram_group_id:
+            await bot.add_user_to_group(settings.telegram_group_id, user.telegram_user_id)
     result['click_trans_id'] = click_trans_id
     result['merchant_trans_id'] = merchant_trans_id
     result['merchant_prepare_id'] = merchant_prepare_id

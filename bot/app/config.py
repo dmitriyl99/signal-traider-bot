@@ -1,3 +1,4 @@
+from typing import Optional
 from dotenv import load_dotenv
 import os
 
@@ -8,6 +9,8 @@ class Config:
     ENV: str
 
     TELEGRAM_BOT_TOKEN: str
+    TELEGRAM_GROUP_ID: Optional[int]
+
     DATABASE_URL: str
     PAYMENT_PROVIDERS: list
 

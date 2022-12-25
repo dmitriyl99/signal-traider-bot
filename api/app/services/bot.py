@@ -2,6 +2,7 @@ import aiogram.utils.exceptions
 import logging
 from typing import Optional, BinaryIO, List, Dict, Any
 from io import BytesIO
+from datetime import timedelta
 
 from aiogram import Bot, types
 
@@ -42,6 +43,28 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository, si
                 continue
             chat_message_mapper[user.telegram_user_id] = message.message_id
     signals_repository.save_mapper_for_signal(signal, chat_message_mapper)
+    if settings.telegram_group_id:
+        bot = Bot(settings.telegram_bot_api_token)
+        await bot.send_message(chat_id=settings.telegram_group_id, text=text, parse_mode=types.ParseMode.HTML)
+
+
+async def remove_user_from_group(telegram_group_id: str, user_id: int):
+    bot = Bot(settings.telegram_bot_api_token)
+    await bot.kick_chat_member(telegram_group_id, user_id)
+
+
+async def add_user_to_group(telegram_group_id: str, user_id: int):
+    bot = Bot(settings.telegram_bot_api_token)
+    member = await bot.get_chat_member(telegram_group_id, user_id)
+    print(f'Member: {member}')
+    if member.status == 'left':
+        invite_link = await bot.export_chat_invite_link(telegram_group_id)
+        keyboard = types.InlineKeyboardMarkup()
+        keyboard.add(types.InlineKeyboardButton('Ссылка на группу', url=invite_link))
+        await bot.send_message(
+            chat_id=user_id, text='Вступите в нашу группу, чтобы получать больше информации!',
+            reply_markup=keyboard
+        )
 
 
 async def send_text_distribution(text: str, attachments: Optional[List[Dict[str, Any]]], user_repository: UsersRepository, admin_user: AdminUser):
@@ -54,6 +77,9 @@ async def send_text_distribution(text: str, attachments: Optional[List[Dict[str,
     for chunk in users_chunks:
         for user in chunk:
             await send_message_to_user(user.telegram_user_id, text, attachments)
+    bot = Bot(settings.telegram_bot_api_token)
+    if settings.telegram_group_id:
+        await send_message_to_user(settings.telegram_group_id, text, attachments)
 
 
 async def send_message_to_user(telegram_user_id: int, text: str = None, attachments: Optional[List[Dict[str, Any]]] = None, reply_to_message_id: int = None) -> Optional[types.Message] | Optional[List[types.Message]]:

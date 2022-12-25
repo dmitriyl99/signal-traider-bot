@@ -1,3 +1,4 @@
+from typing import Optional
 import os
 
 from pydantic import BaseSettings
@@ -15,6 +16,7 @@ class Settings(BaseSettings):
 
     telegram_bot_api_domain: str
     telegram_bot_api_token: str
+    telegram_group_id: Optional[str] = None
 
     click_secret_key: str
     click_service_id: int

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Body, HTTPException, status
 
+from app.config import settings
 from app.dependencies import get_user_repository, get_current_user, get_subscriptions_repository
 from app.data.db.users_repository import UsersRepository
 from app.data.db.subscriptions_repository import SubscriptionsRepository
@@ -88,7 +89,10 @@ async def update_user(
             proactively_added=False,
             active=True
         )
-        await bot.send_message_to_user(user.telegram_user_id, f'Вам добавлена подписка на {user_subscription.duration_in_days} дней!')
+        if user.telegram_user_id:
+            await bot.send_message_to_user(user.telegram_user_id, f'Вам добавлена подписка на {user_subscription.duration_in_days} дней!')
+            if settings.telegram_group_id:
+                await bot.add_user_to_group(settings.telegram_group_id, user.telegram_user_id)
 
     return user
 

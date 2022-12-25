@@ -42,7 +42,7 @@ async def _fallbacks_text(update: Update, context: CallbackContext.DEFAULT_TYPE)
 
 
 handler = ConversationHandler(
-    entry_points=[CommandHandler('lang', _start)],
+    entry_points=[CommandHandler('lang', _start, filters.ChatType.PRIVATE)],
     states={
         LANGUAGE: [MessageHandler(filters.TEXT & ~filters.COMMAND, _language)],
     },

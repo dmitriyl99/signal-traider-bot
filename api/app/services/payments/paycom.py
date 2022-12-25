@@ -2,6 +2,7 @@ from datetime import datetime
 
 from typing import Any
 
+from app.config import settings
 from app.data.db.paycom_transactions_repository import PaycomTransactionsRepository
 from app.data.db.payments_repository import PaymentsRepository
 from app.data.db.subscriptions_repository import SubscriptionsRepository
@@ -161,6 +162,8 @@ class PaycomPaymentHandler:
             user = await self.users_repository.get_user_by_id(payment.user_id)
             await self.subscriptions_repository.add_subscription_to_user(user, payment.subscription_id, subscription_condition_id=payment.subscription_condition_id)
             await bot.send_message_to_user(user.telegram_user_id, "Подписка куплена!")
+            if settings.telegram_group_id:
+                await bot.add_user_to_group(settings.telegram_group_id, user.telegram_user_id)
 
             return {
                 'transaction': transaction.id,
