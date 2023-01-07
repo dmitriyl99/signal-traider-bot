@@ -12,23 +12,31 @@
         </div>
         <div class="row">
           <div class="col-6">
-            <span class="text-center text-muted">Эти файлы будут отправлены как файлы (в том числе и изображения и видео)</span>
-            <DropZone @drop.prevent="dropFile" @change="dropFile" title="Drop Files" accept="*/*"/>
-            <div v-if="dropzoneFiles !== null">
-              <div v-for="dropzoneFile in dropzoneFiles" :key="dropzoneFile.name">{{ dropzoneFile.name }}</div>
+            <div class="d-flex flex-column justify-content-center align-items-center">
+              <span class="text-center text-muted">Эти файлы будут отправлены как файлы (изображения и видео)</span>
+              <DropZone @drop.prevent="dropFile" @change="dropFile" title="Drop Files" accept="*/*"/>
+              <div v-if="dropzoneFiles !== null">
+                <div v-for="dropzoneFile in dropzoneFiles" :key="dropzoneFile.name">{{ dropzoneFile.name }}</div>
+              </div>
             </div>
           </div>
           <div class="col-6">
-            <span class="text-center text-muted">Эти файлы будут отправлены как изображения и видео</span>
-            <DropZone @drop.prevent="dropImage" @change="dropImage" title="Drop Images" accept=".jpg"/>
-            <div v-if="dropzoneImages !== null">
-              <div v-for="dropzoneImage in dropzoneImages" :key="dropzoneImage.name">{{ dropzoneImage.name }}</div>
+            <div class="d-flex flex-column justify-content-center align-items-center">
+              <span class="text-center text-muted">Эти файлы будут отправлены как изображения и видео</span>
+              <DropZone @drop.prevent="dropImage" @change="dropImage" title="Drop Images" accept=".jpg"/>
+              <div v-if="dropzoneImages !== null">
+                <div v-for="dropzoneImage in dropzoneImages" :key="dropzoneImage.name">{{ dropzoneImage.name }}</div>
+              </div>
             </div>
           </div>
         </div>
-        <button v-if="customMessage.sendButtonView" :disabled="customMessage.isLoading" class="btn btn-primary mt-3"
-                type="submit" v-html="customMessage.isLoading ? 'Отправляю, подождите...' : 'Отправить сообщение'"/>
-        <span class="text-success ms-3" v-if="customMessage.successText != null">{{ customMessage.successText }}</span>
+        <div class="d-flex justify-content-end flex-column align-items-end mt-5">
+          <button v-if="customMessage.sendButtonView" :disabled="customMessage.isLoading" class="btn btn-primary"
+                  type="submit" v-html="customMessage.isLoading ? 'Отправляю, подождите...' : 'Отправить сообщение'"/>
+          <span class="text-success ms-3" v-if="customMessage.successText != null">{{
+              customMessage.successText
+            }}</span>
+        </div>
       </form>
     </div>
   </div>

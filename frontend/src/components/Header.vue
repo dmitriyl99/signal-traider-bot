@@ -19,11 +19,11 @@
 
           </div>
           <div class="col-auto">
-            <router-link :to="{name: 'CreateDistribution'}" class="btn btn-primary lift me-2">
+            <router-link :to="{name: 'CreateDistribution'}" class="btn btn-primary me-2">
               Отправить сообщение
             </router-link>
             <!-- Button -->
-            <router-link :to="{name: 'CreateSignal'}" class="btn btn-primary lift">
+            <router-link :to="{name: 'CreateSignal'}" class="btn btn-primary">
               Отправить сигнал
             </router-link>
 
