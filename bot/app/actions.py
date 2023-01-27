@@ -17,7 +17,10 @@ def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAU
         strings.get_string('subscription_menu_message', user.language),
         reply_markup=ReplyKeyboardMarkup(
             [
-                [KeyboardButton(strings.get_string('choose_subscription_text', user.language), callback_data='choose_subscription')]
+                [KeyboardButton(strings.get_string('graphical_signals', user.language))],
+                [KeyboardButton(strings.get_string('interday_subscriptions', user.language))],
+                [KeyboardButton(strings.get_string('marafon_subscriptions', user.language))],
+                [KeyboardButton(strings.get_string('leave_application_online', user.language))]
             ], resize_keyboard=True
         )
     )
@@ -37,8 +40,20 @@ async def send_current_subscription_information(active_subscription: Subscriptio
     )
 
 
-async def send_subscriptions(update: Update, user: User):
-    subscriptions = await subscriptions_repository.get_subscriptions()
+async def send_subscriptions(update: Update, context: CallbackContext.DEFAULT_TYPE, user: User):
+    message_subscription_category_map = {
+        strings.get_string('graphical_signals', 'ru'): 'graph_signals',
+        strings.get_string('graphical_signals', 'uz'): 'graph_signals',
+        strings.get_string('interday_subscriptions', 'ru'): 'interday',
+        strings.get_string('marafon_subscriptions', 'ru'): 'marafon'
+    }
+    category = update.message.text
+    if category not in message_subscription_category_map and 'current_subscription_category' in context.user_data:
+        category = context.user_data['current_subscription_category']
+    if category in message_subscription_category_map:
+        category = message_subscription_category_map[category]
+    context.user_data['current_subscription_category'] = category
+    subscriptions = await subscriptions_repository.get_subscriptions(category=category)
     chunked_subscriptions = array.chunks(subscriptions, 2)
     keyboard = []
     for chunk in chunked_subscriptions:
@@ -47,7 +62,9 @@ async def send_subscriptions(update: Update, user: User):
             buttons.append(
                 KeyboardButton(subscription.name))
         keyboard.append(buttons)
-    await update.message.reply_text(strings.get_string('choose_subscription_text', user.language), reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
+    keyboard.append([KeyboardButton(strings.get_string('back_button', user.language))])
+    await update.message.reply_text(strings.get_string('choose_subscription_text', user.language),
+                                    reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
 
 
 async def send_subscription_conditions(update: Update, subscription_id: int, user: User):
@@ -57,8 +74,14 @@ async def send_subscription_conditions(update: Update, subscription_id: int, use
     for chunk in chunked_conditions:
         buttons = []
         for condition in chunk:
-            buttons.append(
-                KeyboardButton(strings.get_string('subscription_condition_name', user.language) % condition.duration_in_month))
+            if condition.duration_in_month:
+                buttons.append(
+                    KeyboardButton(strings.get_string('subscription_condition_name_months',
+                                                      user.language) % condition.duration_in_month))
+            elif condition.duration_in_days:
+                buttons.append(
+                    KeyboardButton(strings.get_string('subscription_condition_name_days',
+                                                      user.language) % condition.duration_in_days))
         keyboard.append(buttons)
     keyboard.append([KeyboardButton(strings.get_string('back_button', user.language))])
     await update.message.reply_text(strings.get_string('subscription_select_condition', user.language), reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
@@ -72,8 +95,8 @@ async def send_payment_providers(update: Update, context: CallbackContext.DEFAUL
     keyboard_buttons = list(map(
         lambda provider: KeyboardButton(provider.name,),
         providers))
-    await message.reply_text(text=strings.get_string('subscription_full_info').format(
+    await message.reply_text(text=strings.get_string('subscription_full_info', user.language).format(
         subscription.name,
-        subscription_condition.duration_in_month,
+        subscription_condition.duration_in_month if subscription_condition.duration_in_month else subscription_condition.duration_in_days,
         int(subscription_condition.price / 100)
     ), reply_markup=ReplyKeyboardMarkup([keyboard_buttons, [KeyboardButton(strings.get_string('back_button', user.language))]], resize_keyboard=True), parse_mode='HTML')

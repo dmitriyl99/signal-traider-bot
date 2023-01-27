@@ -2,9 +2,8 @@ from typing import List, Optional
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from sqlalchemy.future import select
-from sqlalchemy.orm import joinedload
 
 from . import async_session
 from app.data.models.subscription import Subscription, SubscriptionUser, SubscriptionCondition
@@ -16,9 +15,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-async def get_subscriptions() -> List[Subscription]:
+async def get_subscriptions(category: str | None = None) -> List[Subscription]:
     async with async_session() as session:
-        result = await session.execute(select(Subscription))
+        stmt = select(Subscription)
+        if category:
+            category = category.lower()
+            stmt = stmt.filter(Subscription.category == category)
+        result = await session.execute(stmt)
         return result.scalars().all()
 
 
@@ -98,7 +101,8 @@ async def get_subscription_by_name(subscription_name: str) -> Optional[Subscript
 
 async def find_condition_by_subscription_id_and_duration(subscription_id: int, duration: int) -> Optional[SubscriptionCondition]:
     async with async_session() as session:
-        stmt = select(SubscriptionCondition).filter(SubscriptionCondition.subscription_id == subscription_id,
-                                                    SubscriptionCondition.duration_in_month == duration)
+        stmt = select(SubscriptionCondition).filter(or_(and_(SubscriptionCondition.subscription_id == subscription_id,
+                                                    SubscriptionCondition.duration_in_month == duration),
+                                                        SubscriptionCondition.duration_in_days == duration))
         result = await session.execute(stmt)
         return result.scalars().first()

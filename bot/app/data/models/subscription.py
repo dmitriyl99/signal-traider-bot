@@ -11,6 +11,7 @@ class Subscription(Base):
 
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String)
+    category = sa.Column(sa.String)
 
     conditions = relationship('SubscriptionCondition', back_populates='subscription', lazy='subquery')
     users = relationship('SubscriptionUser', back_populates='subscription')
@@ -21,6 +22,7 @@ class SubscriptionCondition(Base):
 
     id = sa.Column(sa.Integer, primary_key=True)
     duration_in_month = sa.Column(sa.Integer)
+    duration_in_days = sa.Column(sa.Integer)
     price = sa.Column(sa.Integer)
     subscription_id = sa.Column(sa.Integer, sa.ForeignKey('subscriptions.id'))
 

@@ -55,6 +55,18 @@ strings_data = {
         'ru': 'Выбрать подписку',
         'uz': 'Obunani tanlang'
     },
+    'graphical_signals': {
+        'ru': 'Графические сигналы',
+        'uz': 'Grafik signallar'
+    },
+    'interday_subscriptions': {
+        'ru': 'Interday',
+        'uz': 'Interday'
+    },
+    'marafon_subscriptions': {
+        'ru': 'Marafon',
+        'uz': 'Marafon'
+    },
     'hello_message': {
         'ru': 'Здравствуйте, %s!',
         'uz': 'Salom %s!'
@@ -88,13 +100,25 @@ strings_data = {
         'ru': 'Назад',
         'uz': 'Orqaga'
     },
-    'subscription_condition_name': {
+    'subscription_condition_name_months': {
         'ru': '%s месяц',
         'uz': '%s oy'
+    },
+    'subscription_condition_name_days': {
+        'ru': '%s дней',
+        'uz': '%s kun'
+    },
+    'leave_application_online': {
+        'ru': 'Оставить заявку онлайн',
+        'uz': "Onlayn so'rov qoldiring"
     },
     'subscription_month': {
         'ru': 'месяц',
         'uz': 'oy'
+    },
+    'subscription_days': {
+        'ru': 'дней',
+        'uz': 'kun'
     },
     'provider_provider_not_supported': {
         'ru': 'Выбран провайдер, которого мы не поддерживаем',
