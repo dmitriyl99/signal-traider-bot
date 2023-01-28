@@ -13,16 +13,12 @@
 </head>
 <script type="text/javascript">
     const checkout = new cp.Checkout({
-        publicId: 'pk_37b7e1e4e2163ea482d130606076a'
+        publicId: 'pk_37b7e1e4e2163ea482d130606076a',
+        container: document.getElementById("paymentForm")
     })
-    const fieldValues = {
-        cardNumber: '8600 0000 0000 0007',
-        expDateMonth: '12',
-        expDateYear: '24',
-    }
     Telegram.WebApp.ready();
     Telegram.WebApp.MainButton.setText('Cloud Payments').show().onClick(function () {
-        checkout.createPaymentCryptogram(fieldValues).then((cryptogram) => {
+        checkout.createPaymentCryptogram().then((cryptogram) => {
             const data = JSON.stringify({cryptogram})
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
@@ -30,14 +26,27 @@
     });
 </script>
 <body style="background-color: #ffffff">
-<form id="paymentFormSample" autocomplete="off">
-    <input type="text" data-cp="cardNumber">
-    <input type="text" data-cp="expDateMonth">
-    <input type="text" data-cp="expDateYear">
-    <input type="text" data-cp="cvv"> //при вводе карт платежной системы Humo/UzCard данное поле не обязательно,
-    системой не проверяется
-    <input type="text" data-cp="name">
-    <button type="submit">Оплатить 100 р.</button>
+<form autocomplete="off" id="paymentForm">
+    <div class="mb-3">
+        <label for="card_number" class="form-label">Номер карты</label>
+        <input type="text" class="form-control" id="card_number" data-cp="cardNumber">
+    </div>
+    <div class="mb-3">
+        <label for="expDateMonth" class="form-label">Месяц срока действия</label>
+        <input type="text" class="form-control" id="expDateMonth" data-cp="expDateMonth">
+    </div>
+    <div class="mb-3">
+        <label for="card_number" class="form-label">Год срока действия</label>
+        <input type="text" class="form-control" id="expDateYear" data-cp="expDateYear">
+    </div>
+    <div class="mb-3">
+        <label for="cvv" class="form-label">CVV</label>
+        <input type="text" class="form-control" id="cvv" data-cp="cvv">
+    </div>
+    <div class="mb-3">
+        <label for="name" class="form-label">Имя владельца карты</label>
+        <input type="text" class="form-control" id="name" data-cp="name">
+    </div>
 </form>
 </body>
 <script type="text/javascript">
