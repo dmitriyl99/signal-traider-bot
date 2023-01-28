@@ -4,7 +4,7 @@ from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, users, payments, signals, dashboard, subscriptions, currency_pairs, utm, admin_users
+from app.routers import auth, users, payments, signals, dashboard, subscriptions, currency_pairs, utm, admin_users, telegram_web_app
 from app.jobs import scheduler
 
 
@@ -75,6 +75,10 @@ app.include_router(
 app.include_router(
     admin_users.router,
     prefix='/api'
+)
+
+app.include_router(
+    telegram_web_app.router
 )
 
 if __name__ == "__main__":
