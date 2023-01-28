@@ -36,7 +36,8 @@
             fieldValues.cvv = document.getElementById('cvv').value;
             fieldValues.name = document.getElementById('name').value;
         }
-        checkout.createPaymentCryptogram().then((cryptogram) => {
+        console.log(fieldValues)
+        checkout.createPaymentCryptogram(fieldValues).then((cryptogram) => {
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("GET", 'https://api.ipify.org/?format=json', false);
             xmlHttp.send()
