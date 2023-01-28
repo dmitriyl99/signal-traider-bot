@@ -12,12 +12,12 @@
     <script src="https://checkout.cloudpayments.uz/checkout.js"></script>
 </head>
 <script type="text/javascript">
-    const checkout = new cp.Checkout({
-        publicId: 'pk_37b7e1e4e2163ea482d130606076a',
-        container: document.getElementById("paymentForm")
-    })
     Telegram.WebApp.ready();
     Telegram.WebApp.MainButton.setText('Choose Color').show().onClick(function () {
+        const checkout = new cp.Checkout({
+            publicId: 'pk_37b7e1e4e2163ea482d130606076a',
+            container: document.getElementById("paymentForm")
+        })
         checkout.createPaymentCryptogram().then((cryptogram) => {
             const data = JSON.stringify({cryptogram})
             Telegram.WebApp.sendData(data);
