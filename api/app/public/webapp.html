@@ -13,17 +13,35 @@
 </head>
 <script type="text/javascript">
     Telegram.WebApp.ready();
-    Telegram.WebApp.MainButton.setText('Choose Color').show().onClick(function () {
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+    });
+    const localization = {
+        'ru': 'Оплатить',
+        'uz': "To'lash"
+    }
+    const langauge = params.language;
+    const payment_id = params.payment_id;
+    Telegram.WebApp.MainButton.setText(localization[langauge]).show().onClick(function () {
         const checkout = new cp.Checkout({
-            publicId: 'pk_37b7e1e4e2163ea482d130606076a',
-            container: document.getElementById("paymentForm")
+            publicId: 'pk_37b7e1e4e2163ea482d130606076a'
         })
+        const cardNumber = document.getElementById('card_number').value;
+        const fieldValues = {
+            cardNumber: cardNumber,
+            expDateMonth: document.getElementById('expDateMonth').value,
+            expDateYear: document.getElementById('expDateYear').value
+        }
+        if (!cardNumber.startsWith('8600') && !cardNumber.startsWith('9860')) {
+            fieldValues.cvv = document.getElementById('cvv').value;
+            fieldValues.name = document.getElementById('name').value;
+        }
         checkout.createPaymentCryptogram().then((cryptogram) => {
             var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open( "GET", 'https://api.ipify.org/?format=json', false );
+            xmlHttp.open("GET", 'https://api.ipify.org/?format=json', false);
             xmlHttp.send()
             const ip_data = JSON.parse(xmlHttp.responseText)
-            const data = JSON.stringify({cryptogram, ip_address: ip_data.ip})
+            const data = JSON.stringify({cryptogram, ip_address: ip_data.ip, payment_id})
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
         }).catch((errors) => {
@@ -35,27 +53,45 @@
 <form autocomplete="off" id="paymentForm">
     <div class="mb-3">
         <label for="card_number" class="form-label">Номер карты</label>
-        <input type="text" class="form-control" id="card_number" data-cp="cardNumber">
+        <input type="text" class="form-control" id="card_number" data-cp="cardNumber" required>
     </div>
     <div class="mb-3">
         <label for="expDateMonth" class="form-label">Месяц срока действия</label>
-        <input type="text" class="form-control" id="expDateMonth" data-cp="expDateMonth">
+        <input type="text" class="form-control" id="expDateMonth" data-cp="expDateMonth" required>
     </div>
     <div class="mb-3">
-        <label for="card_number" class="form-label">Год срока действия</label>
-        <input type="text" class="form-control" id="expDateYear" data-cp="expDateYear">
+        <label for="expDateYear" class="form-label">Год срока действия</label>
+        <input type="text" class="form-control" id="expDateYear" data-cp="expDateYear" required>
     </div>
-    <div class="mb-3">
+    <div class="mb-3" id="cvvFormGroup">
         <label for="cvv" class="form-label">CVV</label>
-        <input type="text" class="form-control" id="cvv" data-cp="cvv">
+        <input type="text" class="form-control" id="cvv" data-cp="cvv" required>
     </div>
-    <div class="mb-3">
+    <div class="mb-3" id="nameFormGroup">
         <label for="name" class="form-label">Имя владельца карты</label>
-        <input type="text" class="form-control" id="name" data-cp="name">
+        <input type="text" class="form-control" id="name" data-cp="name" required>
     </div>
 </form>
 </body>
 <script type="text/javascript">
     Telegram.WebApp.expand();
+
+    document.getElementById('card_number').addEventListener('change', (event) => {
+        const cvvInputGroup = document.getElementById('cvvFormGroup')
+        const nameInputGroup = document.getElementById('nameFormGroup')
+        const cvvInput = document.getElementById('cvv')
+        const nameInput = document.getElementById('name');
+        if (event.target.value.startsWith('8600') || event.target.value.startsWith('9860')) {
+            cvvInputGroup.style.display = 'none';
+            nameInputGroup.style.display = 'none';
+            cvvInput.required = false;
+            nameInput.required = false;
+        } else {
+            cvvInputGroup.style.display = 'block';
+            nameInputGroup.style.display = 'block';
+            cvvInput.required = true;
+            nameInput.required = true
+        }
+    })
 </script>
 </html>
