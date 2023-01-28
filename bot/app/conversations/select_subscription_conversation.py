@@ -1,4 +1,8 @@
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
+import logging
+
+import json
+
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, WebAppInfo, KeyboardButton
 from telegram.ext import CallbackContext, ConversationHandler, MessageHandler, filters
 
 from app.payments import providers as payment_providers, handlers
@@ -6,12 +10,11 @@ from app.data.db import subscriptions_repository, users_repository, payments_rep
 from app.resources import strings
 from app.conversations.registration_conversation import handler as registration_handler
 
-from app.services import currency_exchange as currency_exchange_service
+from app.services import currency_exchange as currency_exchange_service, cloud_payments
 from app.actions import (send_subscriptions, send_subscription_conditions, send_payment_providers,
                          send_subscription_menu_button)
 
-
-CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION, SELECT_PAYMENT_PROVIDER, BACK = range(4)
+CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION, SELECT_PAYMENT_PROVIDER, BACK, CLOUD_PAYMENTS = range(5)
 
 
 async def _subscription_start(update: Update, context: CallbackContext.DEFAULT_TYPE):
@@ -42,6 +45,7 @@ async def _choose_condition(update: Update, context: CallbackContext.DEFAULT_TYP
     async def error():
         await update.message.reply_text(strings.get_string('subscription_condition_wrong', user.language))
         return CHOOSE_CONDITION
+
     message = update.message
     # In this action need to send payment invoice, but for now without
     message_data = message.text
@@ -56,7 +60,8 @@ async def _choose_condition(update: Update, context: CallbackContext.DEFAULT_TYP
         return await error()
     subscription_id = context.user_data['subscription:id']
     subscription_condition_duration_in_month = int(splitted_message_data[0])
-    subscription_condition = await subscriptions_repository.find_condition_by_subscription_id_and_duration(subscription_id, subscription_condition_duration_in_month)
+    subscription_condition = await subscriptions_repository.find_condition_by_subscription_id_and_duration(
+        subscription_id, subscription_condition_duration_in_month)
     if subscription_condition is None:
         return await error()
     subscription_condition_id = subscription_condition.id
@@ -93,14 +98,32 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     if payment_provider.name == 'Click':
         try:
             payment_provider.create_invoice(int(exchanged_price), user.phone, payment.id)
-            await update.message.reply_text(f'Вам выставлен счёт в системе {payment_provider.name}. Оплатите его и вам будет оформлена подписка')
+            await update.message.reply_text(
+                f'Вам выставлен счёт в системе {payment_provider.name}. Оплатите его и вам будет оформлена подписка')
         except Exception as e:
-            await update.message.reply_text(f'Ошибка при создании платежа в системе {payment_provider.name}. Обратитесь к разработчику.\n\nДля перезапуска бота, отправьте команду /start')
+            await update.message.reply_text(
+                f'Ошибка при создании платежа в системе {payment_provider.name}. Обратитесь к разработчику.\n\nДля перезапуска бота, отправьте команду /start')
             raise e
-    else:
+    elif payment_provider.name == 'Payme':
         payment_url = payment_provider.get_payment_url(int(exchanged_price), subscription.name, payment.id)
-        await update.message.reply_text(f"Оплатите через систему {payment_provider.name}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(strings.get_string('subscription_pay', user.language), url=payment_url)]]))
-    back_message = await context.bot.send_message(update.effective_chat.id, strings.get_string('payment_cancelation_button', user.language), reply_markup=ReplyKeyboardMarkup([[strings.get_string('back_button', user.language)]], resize_keyboard=True))
+        await update.message.reply_text(f"Оплатите через систему {payment_provider.name}",
+                                        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                                            strings.get_string('subscription_pay', user.language), url=payment_url)]]))
+    elif payment_provider.name == 'Cloud Payments':
+        web_app = WebAppInfo(url=f'https://apibot.masspay.uz/webapp/?payment_id={payment.id}&language={user.language}')
+        await update.message.reply_text(
+            f"Оплатите через систему {payment_provider.name}",
+            reply_markup=ReplyKeyboardMarkup([
+                [KeyboardButton(strings.get_string('subscription_pay', user.language), web_app=web_app)],
+                [KeyboardButton(strings.get_string('back_button', user.language))]
+            ])
+        )
+        return CLOUD_PAYMENTS
+    back_message = await context.bot.send_message(update.effective_chat.id,
+                                                  strings.get_string('payment_cancelation_button', user.language),
+                                                  reply_markup=ReplyKeyboardMarkup(
+                                                      [[strings.get_string('back_button', user.language)]],
+                                                      resize_keyboard=True))
     context.user_data['back_message_id'] = back_message.message_id
 
     return BACK
@@ -113,6 +136,45 @@ async def _back_handler(update: Update, context: CallbackContext.DEFAULT_TYPE):
     await send_payment_providers(update, context, subscription_id, subscription_condition_id, user)
 
     return SELECT_PAYMENT_PROVIDER
+
+
+async def cloud_payment_web_app_data(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    if update.effective_message.web_app_data is None:
+        return await _back_handler(update, context)
+    data = json.loads(update.effective_message.web_app_data.data)
+    logging.info('Received web app data %r', data)
+    if 'cloud_payment' not in data:
+        return await _back_handler(update, context)
+    subscription_id = context.user_data['subscription:id']
+    subscription_condition_id = context.user_data['subscription:condition_id']
+    subscription = await subscriptions_repository.get_subscription_by_id(subscription_id)
+    subscription_condition = list(filter(lambda sc: sc.id == subscription_condition_id, subscription.conditions))[0]
+    service = cloud_payments.CloudPaymentApi()
+    if not service.test_connection():
+        await update.message.reply_text('Сервис Cloud Payments сейчас недоступен, пожалуйста, выберите другой сервис')
+        return await _back_handler(update, context)
+    result = service.charge(
+        amount=subscription_condition.price,
+        currency='USD',
+        ip_address=data['ip_address'],
+        card_cryptogram_packet=data['cryptogram'],
+        payment_id=data['payment_id'],
+        card_holder_name=data['name'] if 'name' in data else None
+    )
+    user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
+    if result['status'] == 'success':
+        await subscriptions_repository.add_subscription_to_user(subscription_id, subscription_condition_id, user.id)
+        await update.message.reply_text(strings.get_string('subscription_purchased', user.language))
+    elif result['status'] == '3d_secure':
+        # TODO: process 3d secure
+        await update.message.reply_text(
+            'Нажмите на кнопку, чтобы выполнить 3D Secure',
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('3D Secure', url='')]])
+        )
+    else:
+        # rejected
+        data = result['data']
+        await update.message.reply_html(f'Оплата не прошла\n\n<b>Код ошибки:</b> <code>{data["reason_code"]}</code>\n<b>Ошибка:</b> {data["reason"]}\n<b>Сообщение:</b> {data["message"]}')
 
 
 async def _fallbacks_handler(update: Update, context: CallbackContext.DEFAULT_TYPE):
@@ -135,8 +197,8 @@ handler = ConversationHandler(
         CHOOSE_SUBSCRIPTION: [MessageHandler(filters.TEXT, _choose_subscription)],
         CHOOSE_CONDITION: [MessageHandler(filters.TEXT, _choose_condition)],
         SELECT_PAYMENT_PROVIDER: [MessageHandler(filters.TEXT, _select_payment_provider)],
+        CLOUD_PAYMENTS: [MessageHandler(filters.StatusUpdate.WEB_APP_DATA | filters.TEXT, cloud_payment_web_app_data)],
         BACK: [MessageHandler(filters.TEXT, _back_handler)]
     },
     fallbacks=[registration_handler, MessageHandler(filters.TEXT, _fallbacks_handler)]
 )
-

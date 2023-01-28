@@ -22,6 +22,10 @@ class Config:
     PAYME_KEY: str
     PAYME_TEST_KEY: str
 
+    CLOUD_PAYMENTS_PUBLIC_ID: str
+    CLOUD_PAYMENTS_PASSWORD: str
+    CLOUD_PAYMENTS_HOST: str
+
     WEBHOOK_PORT: int
     WEBHOOK_TOKEN: str
 
@@ -50,6 +54,9 @@ class Config:
         self.PAYME_MERCHANT_ID = os.getenv('PAYME_MERCHANT_ID')
         self.PAYME_KEY = os.getenv('PAYME_KEY')
         self.PAYME_TEST_KEY = os.getenv('PAYME_TEST_KEY')
+        self.CLOUD_PAYMENTS_PUBLIC_ID = os.getenv('CLOUD_PAYMENTS_PUBLIC_ID')
+        self.CLOUD_PAYMENTS_PASSWORD = os.getenv('CLOUD_PAYMENTS_PASSWORD')
+        self.CLOUD_PAYMENTS_HOST = os.getenv('CLOUD_PAYMENTS_HOST')
         self.WEBHOOK_PORT = int(os.getenv('WEBHOOK_PORT'))
         self.WEBHOOK_TOKEN = os.getenv('WEBHOOK_TOKEN')
         self.ESKIZ_EMAIL = os.getenv('ESKIZ_EMAIL')

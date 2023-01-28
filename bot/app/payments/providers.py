@@ -14,7 +14,7 @@ class PaymentProvider:
     name: str
     provider_token: str
 
-    def __init__(self, name: str, provider_token: str):
+    def __init__(self, name: str, provider_token: str = None):
         self.name = name
         self.provider_token = provider_token
 
@@ -131,6 +131,10 @@ def get_payment_providers() -> List[PaymentProvider]:
             merchant_id=config.PAYME_MERCHANT_ID,
             key=config.PAYME_KEY,
             test_key=config.PAYME_TEST_KEY
+        ))
+    if 'cloud_payments' in available_providers:
+        providers.append(PaymentProvider(
+            name='Cloud Payments'
         ))
     return providers
 

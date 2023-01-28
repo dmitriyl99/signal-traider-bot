@@ -1,7 +1,7 @@
 from typing import Optional
 import logging
 
-from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, helpers
+from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, helpers, WebAppInfo
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, filters
 
 from app.resources import strings
@@ -15,7 +15,7 @@ from app.services import masspay
 LANGUAGE, NAME, PHONE, OTP = range(4)
 
 
-async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
     await _process_update_for_utm(update)
     hash_command_user = await _process_update_for_hash_command(update, context)
     if hash_command_user:
