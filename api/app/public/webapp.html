@@ -42,7 +42,7 @@
             xmlHttp.open("GET", 'https://api.ipify.org/?format=json', false);
             xmlHttp.send()
             const ip_data = JSON.parse(xmlHttp.responseText)
-            const data = JSON.stringify({cryptogram, ip_address: ip_data.ip, payment_id})
+            const data = JSON.stringify({cryptogram, ip_address: ip_data.ip, payment_id, cloud_payment: true})
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
         }).catch((errors) => {
