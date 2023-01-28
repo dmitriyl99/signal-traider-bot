@@ -22,7 +22,9 @@
             const data = JSON.stringify({cryptogram})
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
-        })
+        }).catch((errors) => {
+            console.log(errors)
+        });
     });
 </script>
 <body style="background-color: #ffffff; padding: 50px">
