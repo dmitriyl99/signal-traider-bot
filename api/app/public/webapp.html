@@ -19,7 +19,11 @@
             container: document.getElementById("paymentForm")
         })
         checkout.createPaymentCryptogram().then((cryptogram) => {
-            const data = JSON.stringify({cryptogram})
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", 'https://api.ipify.org/?format=json', false );
+            xmlHttp.send()
+            const ip_data = JSON.parse(xmlHttp.responseText)
+            const data = JSON.stringify({cryptogram, ip_address: ip_data.ip})
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
         }).catch((errors) => {
