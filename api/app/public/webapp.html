@@ -43,6 +43,7 @@
             xmlHttp.send()
             const ip_data = JSON.parse(xmlHttp.responseText)
             const data = JSON.stringify({cryptogram, ip_address: ip_data.ip, payment_id, cloud_payment: true})
+            console.log('Sending data...')
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
         }).catch((errors) => {
