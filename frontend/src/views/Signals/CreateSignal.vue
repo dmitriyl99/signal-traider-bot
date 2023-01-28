@@ -62,27 +62,10 @@
 import signalsApi from "../../api/signalsApi";
 import currencyPairsApi from "../../api/currencyPairsApi";
 import Select2 from 'vue3-select2-component';
-import DropZone from "../../components/DropZone";
-import {ref} from 'vue';
 
 export default {
   name: "CreateSignal",
-  components: {Select2, DropZone},
-  setup() {
-    let dropzoneFiles = ref(null);
-
-    const drop = (e) => {
-      if (e.dataTransfer == null) {
-        const input = document.querySelector('.dropzone input');
-        console.log(input.files)
-        dropzoneFiles.value = input.files
-      } else {
-        dropzoneFiles.value = e.dataTransfer.files;
-      }
-    };
-
-    return {dropzoneFiles, drop}
-  },
+  components: {Select2},
   data: () => ({
     currency_pair: null,
     execution_method: null,
@@ -125,20 +108,6 @@ export default {
         this.sendButtonView = false;
       }).finally(() => {
         this.isLoading = false;
-      })
-    },
-
-    onCustomMessageFormSubmit() {
-      this.customMessage.isLoading = true;
-      this.customMessage.successText = null;
-
-      console.log(this.dropzoneFiles);
-      signalsApi.sendCustomMessage(this.customMessage.text, this.dropzoneFiles).then(() => {
-        this.customMessage.successText = 'Сообщение отправлено!'
-        this.customMessage.text = null;
-        this.dropzoneFiles = null;
-      }).finally(() => {
-        this.customMessage.isLoading = false;
       })
     },
 
