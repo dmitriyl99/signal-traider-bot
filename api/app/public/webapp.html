@@ -30,7 +30,15 @@
     });
 </script>
 <body style="background-color: #ffffff">
-
+<form id="paymentFormSample" autocomplete="off">
+    <input type="text" data-cp="cardNumber">
+    <input type="text" data-cp="expDateMonth">
+    <input type="text" data-cp="expDateYear">
+    <input type="text" data-cp="cvv"> //при вводе карт платежной системы Humo/UzCard данное поле не обязательно,
+    системой не проверяется
+    <input type="text" data-cp="name">
+    <button type="submit">Оплатить 100 р.</button>
+</form>
 </body>
 <script type="text/javascript">
     Telegram.WebApp.expand();
