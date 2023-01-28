@@ -17,13 +17,12 @@
         container: document.getElementById("paymentForm")
     })
     Telegram.WebApp.ready();
-    Telegram.WebApp.MainButton.setText('Cloud Payments').show().onClick(function () {
+    Telegram.WebApp.MainButton.setText('Choose Color').show().onClick(function () {
         checkout.createPaymentCryptogram().then((cryptogram) => {
             const data = JSON.stringify({cryptogram})
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
         })
-        console.log('Test')
     });
 </script>
 <body style="background-color: #ffffff; padding: 50px">
