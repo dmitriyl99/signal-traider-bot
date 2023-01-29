@@ -7,6 +7,7 @@ from telegram.ext import CallbackContext, ConversationHandler, MessageHandler, f
 
 from app.payments import providers as payment_providers, handlers
 from app.data.db import subscriptions_repository, users_repository, payments_repository
+from app.data.models.payments import PaymentStatus
 from app.resources import strings
 from app.conversations.registration_conversation import handler as registration_handler
 
@@ -164,13 +165,21 @@ async def cloud_payment_web_app_data(update: Update, context: CallbackContext.DE
     user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if result['status'] == 'success':
         await subscriptions_repository.add_subscription_to_user(subscription_id, subscription_condition_id, user.id)
+        await payments_repository.set_status(data['payment_id'], PaymentStatus.CONFIRMED)
         await update.message.reply_text(strings.get_string('subscription_purchased', user.language))
     elif result['status'] == '3d_secure':
-        # TODO: process 3d secure
+        result_data = result['data']
         await update.message.reply_text(
             'Нажмите на кнопку, чтобы выполнить 3D Secure',
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('3D Secure', url='')]])
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton(
+                    '3D Secure',
+                    url=f'http://localhost:8000/api/payments/cloud-payments/pre-3d-secure?acs_url={result_data["acs_url"]}&md={result_data["transaction_id"]}&pa_req={result_data["pa_req"]}'
+                )]]
+            )
         )
+        await payments_repository.set_clouds_payments_transaction_id(data['payment_id'], result_data["transaction_id"])
+        await payments_repository.set_status(data['payment_id'], PaymentStatus.WAITING)
     else:
         # rejected
         data = result['data']

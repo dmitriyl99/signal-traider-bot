@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MassPay. Cloud Payments</title>
+</head>
+<body>
+<form id="3d-secure-form" name="downloadForm" action="{{ acs_url }}" method="POST">
+    <input type="hidden" name="PaReq" value="+{{ pa_req }}">
+    <input type="hidden" name="MD" value="{{ md }}">
+    <input type="hidden" name="TermUrl" value="https://apibot.masspay.uz/api/payments/cloud-payments/post-3d-secure">
+    <input type="submit" value="Продолжить"></input>
+</form>
+<!--<script>-->
+<!--    window.onload = submitForm;-->
+<!--    function submitForm() { document.getElementById('3d-secure-form').submit(); }-->
+<!--</script>-->
+</body>
+</html>

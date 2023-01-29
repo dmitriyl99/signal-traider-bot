@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI
+
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,7 +15,7 @@ logging.basicConfig(
 )
 
 
-app = FastAPI(title='Signal Traider Bot')
+app = FastAPI(title='Signal Trader Bot')
 
 
 @app.on_event("startup")

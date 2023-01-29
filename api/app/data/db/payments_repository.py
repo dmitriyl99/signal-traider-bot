@@ -29,3 +29,9 @@ class PaymentsRepository:
         payment = await self.get_payment_by_id(payment_id)
         payment.status = status
         await self._session.commit()
+
+    async def get_payment_by_clouds_payment_transaction_id(self, transaction_id) -> Payment:
+        stmt = select(Payment).filter(Payment.cloud_payments_transaction_id == transaction_id)
+        result = await self._session.execute(stmt)
+        payment = result.scalars().first()
+        return payment
