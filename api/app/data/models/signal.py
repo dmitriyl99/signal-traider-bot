@@ -35,6 +35,7 @@ class TextDistribution(Base):
     id = sa.Column(sa.Integer, primary_key=True)
     text = sa.Column(sa.Text)
     admin_user_id = sa.Column(sa.Integer, sa.ForeignKey('admin_users.id'))
+    importance = sa.Column(sa.Integer, default=0)
     created_at = sa.Column(sa.DateTime, default=datetime.now)
 
     admin_user = relationship('AdminUser')

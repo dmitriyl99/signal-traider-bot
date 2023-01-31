@@ -10,6 +10,20 @@
             <textarea id="text" rows="10" class="form-control" v-model="customMessage.text"></textarea>
           </div>
         </div>
+        <div class="row g-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" v-model="customMessage.important">
+            <label class="form-check-label" for="flexCheckDefault">
+              ❗️Важно!
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="2" id="flexCheckChecked"  v-model="customMessage.veryImportant">
+            <label class="form-check-label" for="flexCheckChecked">
+              ❗️❗️❗️Очень важно!
+            </label>
+          </div>
+        </div>
         <div class="row">
           <div class="col-6">
             <div class="d-flex flex-column justify-content-center align-items-center">
@@ -80,7 +94,9 @@ export default {
       text: null,
       sendButtonView: true,
       isLoading: false,
-      successText: null
+      successText: null,
+      important: false,
+      veryImportant: false
     }
   }),
 
@@ -89,8 +105,13 @@ export default {
       this.customMessage.isLoading = true;
       this.customMessage.successText = null;
 
-      console.log(this.dropzoneFiles);
-      signalsApi.sendCustomMessage(this.customMessage.text, this.dropzoneFiles, this.dropzoneImages).then(() => {
+      let importance = '0';
+      if (this.customMessage.important && !this.customMessage.veryImportant) {
+        importance = '1';
+      } else if (this.customMessage.veryImportant) {
+        importance = '2';
+      }
+      signalsApi.sendCustomMessage(this.customMessage.text, this.dropzoneFiles, this.dropzoneImages, importance).then(() => {
         this.customMessage.successText = 'Сообщение отправлено!'
         this.customMessage.text = null;
         this.dropzoneFiles = null;
