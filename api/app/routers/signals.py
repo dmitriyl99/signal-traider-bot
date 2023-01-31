@@ -72,6 +72,7 @@ async def reply_to_signal_message(
 async def send_signal_message(
         text: str = Form(),
         importance: int = Form(),
+        currency: str | None = Form(default=None),
         files: list[UploadFile] | None = None,
         images: list[UploadFile] | None = None,
         users_repository: UsersRepository = Depends(get_user_repository),
@@ -99,9 +100,10 @@ async def send_signal_message(
         attachments,
         users_repository,
         current_user,
-        importance=importance
+        importance=importance,
+        currency=currency
     )
-    await signals_repository.save_text_distribution(text, importance, current_user)
+    await signals_repository.save_text_distribution(text, importance, currency, current_user)
 
 
 @router.get('/message')

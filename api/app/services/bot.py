@@ -44,7 +44,7 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository, si
     signals_repository.save_mapper_for_signal(signal, chat_message_mapper)
 
 
-async def send_text_distribution(text: str, attachments: Optional[List[Dict[str, Any]]], user_repository: UsersRepository, admin_user: AdminUser, importance: int):
+async def send_text_distribution(text: str, attachments: Optional[List[Dict[str, Any]]], user_repository: UsersRepository, admin_user: AdminUser, importance: int, currency: str | None):
     if len(list(filter(lambda x: x.name == 'Analyst', admin_user.roles))) > 0:
         users = await user_repository.get_all_users_with_active_subscriptions(analyst_id=admin_user.id)
     else:
@@ -53,13 +53,17 @@ async def send_text_distribution(text: str, attachments: Optional[List[Dict[str,
     users_chunks = array.chunks(users, 50)
     for chunk in users_chunks:
         for user in chunk:
-            await send_message_to_user(user.telegram_user_id, text, attachments, importance=importance)
+            await send_message_to_user(
+                user.telegram_user_id, text, attachments, importance=importance, currency=currency
+            )
 
 
-async def send_message_to_user(telegram_user_id: int, text: str = None, attachments: Optional[List[Dict[str, Any]]] = None, reply_to_message_id: int = None, importance: int = 0) -> Optional[types.Message] | Optional[List[types.Message]]:
+async def send_message_to_user(telegram_user_id: int, text: str = None, attachments: Optional[List[Dict[str, Any]]] = None, reply_to_message_id: int = None, importance: int = 0,  currency: str | None = None) -> Optional[types.Message] | Optional[List[types.Message]]:
     bot = Bot(settings.telegram_bot_api_token)
     if text == 'null':
         text = None
+    if currency:
+        text = f"<b>{currency}</b>\n\n" + text
     if text:
         if importance == 1:
             text = '❗ ' + text
