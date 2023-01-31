@@ -4,8 +4,8 @@
       <div class="card-body">
         <form v-on:submit.prevent="saveCurrencyPair">
           <label for="currency_pair_name" class="form-label">Добавить валютную пару</label>
-          <the-mask type="text" name="currency_pair_name"  mask="SSS / SSS" id="currency_pair_name" class="form-control" placeholder="Название"
-                    v-model="currency_pair_name"></the-mask>
+          <input type="text" name="currency_pair_name" id="currency_pair_name" class="form-control" placeholder="Название"
+                    v-model="currency_pair_name" v-maska data-maska="AAA / AAA" data-maska-tokens="A:[A-Z]">
           <button type="submit" class="btn btn-primary mt-2">Сохранить</button>
         </form>
       </div>
@@ -25,11 +25,9 @@
 
 <script>
 import currencyPairsApi from "../../api/currencyPairsApi";
-import {TheMask} from 'vue-the-mask'
 
 export default {
   name: "CurrencyPairsList",
-  components: {TheMask},
   data: () => ({
     currency_pairs: [],
     currency_pair_name: null
