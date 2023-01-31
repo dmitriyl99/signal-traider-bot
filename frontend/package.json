@@ -18,7 +18,8 @@
     "vue-sweetalert2": "^5.0.5",
     "vue3-select2-component": "^0.1.7",
     "vuex": "^4.0.0-0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-eslint": "~4.5.13",
