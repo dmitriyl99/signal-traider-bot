@@ -111,7 +111,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
                                         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
                                             strings.get_string('subscription_pay', user.language), url=payment_url)]]))
     elif payment_provider.name == 'Cloud Payments':
-        web_app = WebAppInfo(url=f'https://apibot.masspay.uz/webapp/?payment_id={payment.id}&language={user.language}')
+        web_app = WebAppInfo(url=f'https://apibot.masspay.uz/webapp/?payment_id={payment.id}&language={user.language}&amount={int(exchanged_price)}&subscription_name={subscription.name}&user_id={user.id}')
         await update.message.reply_text(
             f"Оплатите через систему {payment_provider.name}",
             reply_markup=ReplyKeyboardMarkup([
