@@ -7,9 +7,7 @@
     <meta charset="UTF-8">
     <title>python-telegram-bot Example WebApp</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://checkout.cloudpayments.uz/checkout.js"></script>
+    <script src="https://widget.cloudpayments.uz/bundles/cloudpayments.js"></script>
 </head>
 <script type="text/javascript">
     Telegram.WebApp.ready();
@@ -17,83 +15,47 @@
         get: (searchParams, prop) => searchParams.get(prop),
     });
     const localization = {
-        'ru': 'Оплатить',
-        'uz': "To'lash"
+        'ru-RU': 'Оплатить',
+        'uz-UZ': "To'lash"
     }
     const langauge = params.language;
     const payment_id = params.payment_id;
-    Telegram.WebApp.MainButton.setText(localization[langauge]).show().onClick(function () {
-        const checkout = new cp.Checkout({
-            publicId: 'pk_37b7e1e4e2163ea482d130606076a'
-        })
-        const cardNumber = document.getElementById('card_number').value;
-        const fieldValues = {
-            cardNumber: cardNumber,
-            expDateMonth: document.getElementById('expDateMonth').value,
-            expDateYear: document.getElementById('expDateYear').value
-        }
-        if (!cardNumber.startsWith('8600') && !cardNumber.startsWith('9860')) {
-            fieldValues.cvv = document.getElementById('cvv').value;
-            fieldValues.name = document.getElementById('name').value;
-        }
-        console.log(fieldValues)
-        checkout.createPaymentCryptogram(fieldValues).then((cryptogram) => {
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open("GET", 'https://api.ipify.org/?format=json', false);
-            xmlHttp.send()
-            const ip_data = JSON.parse(xmlHttp.responseText)
-            const data = JSON.stringify({cryptogram, ip_address: ip_data.ip, payment_id, cloud_payment: true})
-            console.log('Sending data...')
-            Telegram.WebApp.sendData(data);
-            Telegram.WebApp.close();
-        }).catch((errors) => {
-            console.log(errors)
+    const amount = params.amount;
+    const subscriptionName = params.subscription_name;
+    const accountId = params.user_id;
+    this.pay = function () {
+        var widget = new cp.CloudPayments({
+            langauge: 'ru-RU'
         });
-    });
+        widget.pay('charge', // или 'auth'
+            { //options
+                publicId: 'pk_37b7e1e4e2163ea482d130606076a', //id из личного кабинета
+                description: 'Оплата подписки Masspay ' + subscriptionName, //назначение
+                amount: amount, //сумма
+                currency: 'UZS', //валюта
+                accountId: accountId, //идентификатор плательщика (необязательно)
+                invoiceId: payment_id, //номер заказа  (необязательно)
+                skin: "mini", //дизайн виджета (необязательно)
+            },
+            {
+                onSuccess: function (options) { // success
+                    console.log('success', options)
+                },
+                onFail: function (reason, options) { // fail
+                    console.log('error', reason, options)
+                },
+                onComplete: function (paymentResult, options) { //Вызывается как только виджет получает от api.cloudpayments ответ с результатом транзакции.
+                    console.log('complete', paymentResult, options);
+                }
+            }
+        )
+    };
+    pay();
+    Telegram.WebApp.MainButton.setText(localization[langauge]).show()
 </script>
 <body style="background-color: #ffffff; padding: 50px">
-<form autocomplete="off" id="paymentForm">
-    <div class="mb-3">
-        <label for="card_number" class="form-label">Номер карты</label>
-        <input type="text" class="form-control" id="card_number" required>
-    </div>
-    <div class="mb-3">
-        <label for="expDateMonth" class="form-label">Месяц срока действия</label>
-        <input type="text" class="form-control" id="expDateMonth" required>
-    </div>
-    <div class="mb-3">
-        <label for="expDateYear" class="form-label">Год срока действия</label>
-        <input type="text" class="form-control" id="expDateYear" required>
-    </div>
-    <div class="mb-3" id="cvvFormGroup">
-        <label for="cvv" class="form-label">CVV</label>
-        <input type="text" class="form-control" id="cvv" required>
-    </div>
-    <div class="mb-3" id="nameFormGroup">
-        <label for="name" class="form-label">Имя владельца карты</label>
-        <input type="text" class="form-control" id="name" required>
-    </div>
-</form>
 </body>
 <script type="text/javascript">
     Telegram.WebApp.expand();
-
-    document.getElementById('card_number').addEventListener('keydown', (event) => {
-        const cvvInputGroup = document.getElementById('cvvFormGroup')
-        const nameInputGroup = document.getElementById('nameFormGroup')
-        const cvvInput = document.getElementById('cvv')
-        const nameInput = document.getElementById('name');
-        if (event.target.value.startsWith('8600') || event.target.value.startsWith('9860')) {
-            cvvInputGroup.style.display = 'none';
-            nameInputGroup.style.display = 'none';
-            cvvInput.required = false;
-            nameInput.required = false;
-        } else {
-            cvvInputGroup.style.display = 'block';
-            nameInputGroup.style.display = 'block';
-            cvvInput.required = true;
-            nameInput.required = true
-        }
-    })
 </script>
 </html>
