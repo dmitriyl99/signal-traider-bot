@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cloud Payments. Оплата подписки Masspay</title>
+    <script src="https://widget.cloudpayments.uz/bundles/cloudpayments.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<script type="text/javascript">
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+    });
+    const payment_id = params.payment_id;
+    const amount = params.amount;
+    const subscriptionName = params.subscription_name;
+    const subscriptionId = params.subscription_id;
+    const accountId = params.user_id;
+    pay = function () {
+        var payments = new cp.Widget({
+            language: "ru-RU",
+            applePaySupport: false,
+            googlePaySupport: false,
+            yandexPaySupport: false,
+            tinkoffInstallmentSupport: false,
+        });
+
+
+        payments.pay("charge", {
+            publicId: "pk_37b7e1e4e2163ea482d130606076a",
+            description: "Оплата подписки Masspay " + subscriptionName,
+            amount: parseInt(amount),
+            currency: "UZS",
+            invoiceId: payment_id,
+            accountId: accountId,
+            skin: "classic",
+            requireEmail: false,
+        }).then(function (widgetResult) {
+            console.log('result', widgetResult);
+            if (widgetResult.status === 'success' && widgetResult.type === 'payment') {
+                axios.post('http://localhost:8000/api/pyaments/cloud-payments/success', {
+                    user_id: accountId,
+                    subscription_id: subscriptionId,
+                    payment_id: payment_id
+                })
+            }
+        }).catch(function (error) {
+            console.log('error', error);
+        });
+    };
+</script>
+<body style="background-color: #ffffff; padding: 50px">
+</body>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        pay();
+    })
+</script>
+</html>
