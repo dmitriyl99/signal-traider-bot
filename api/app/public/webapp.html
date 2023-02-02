@@ -6,28 +6,21 @@
 <head>
     <meta charset="UTF-8">
     <title>python-telegram-bot Example WebApp</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://widget.cloudpayments.uz/bundles/cloudpayments.js"></script>
 </head>
 <script type="text/javascript">
-    Telegram.WebApp.ready();
     const params = new Proxy(new URLSearchParams(window.location.search), {
         get: (searchParams, prop) => searchParams.get(prop),
     });
-    const localization = {
-        'ru-RU': 'Оплатить',
-        'uz-UZ': "To'lash"
-    }
-    const langauge = params.language;
     const payment_id = params.payment_id;
     const amount = params.amount;
     const subscriptionName = params.subscription_name;
     const accountId = params.user_id;
-    this.pay = function () {
+    pay = function () {
         var widget = new cp.CloudPayments({
             langauge: 'ru-RU'
         });
-        widget.pay('charge', // или 'auth'
+        widget.pay('auth', // или 'auth'
             { //options
                 publicId: 'pk_37b7e1e4e2163ea482d130606076a', //id из личного кабинета
                 description: 'Оплата подписки Masspay ' + subscriptionName, //назначение
@@ -50,13 +43,12 @@
             }
         )
     };
-    Telegram.WebApp.MainButton.setText(localization[langauge]).show()
 </script>
 <body style="background-color: #ffffff; padding: 50px">
+<button id="payButton">Оплатить</button>
 </body>
 <script type="text/javascript">
-    Telegram.WebApp.expand();
-    document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('payButton').addEventListener('click', () => {
         pay();
     })
 </script>
