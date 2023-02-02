@@ -58,8 +58,19 @@ async def send_text_distribution(text: str, attachments: Optional[List[Dict[str,
             )
 
 
-async def send_message_to_user(telegram_user_id: int, text: str = None, attachments: Optional[List[Dict[str, Any]]] = None, reply_to_message_id: int = None, importance: int = 0,  currency: str | None = None) -> Optional[types.Message] | Optional[List[types.Message]]:
+async def send_message_to_user(
+        telegram_user_id: int,
+        text: str = None,
+        attachments: Optional[List[Dict[str, Any]]] = None,
+        reply_to_message_id: int = None,
+        importance: int = 0,
+        currency: str | None = None,
+        remove_keyboard: bool = False
+) -> Optional[types.Message] | Optional[List[types.Message]]:
     bot = Bot(settings.telegram_bot_api_token)
+    reply_keyboard = None
+    if remove_keyboard:
+        reply_keyboard = types.ReplyKeyboardRemove()
     if text == 'null':
         text = None
     if currency:
@@ -81,6 +92,7 @@ async def send_message_to_user(telegram_user_id: int, text: str = None, attachme
                 if not is_image:
                     return await bot.send_document(
                         chat_id=telegram_user_id,
+                        reply_markup=reply_keyboard,
                         document=types.InputFile(bio, filename=files[0]['filename']),
                         caption=text if text else '',
                         parse_mode=types.ParseMode.HTML,
@@ -89,6 +101,7 @@ async def send_message_to_user(telegram_user_id: int, text: str = None, attachme
                 if 'image' in content_type:
                     return await bot.send_photo(
                         chat_id=telegram_user_id,
+                        reply_markup=reply_keyboard,
                         photo=types.InputFile(bio, filename=files[0]['filename']),
                         caption=text if text else '',
                         parse_mode=types.ParseMode.HTML,
@@ -97,6 +110,7 @@ async def send_message_to_user(telegram_user_id: int, text: str = None, attachme
                 elif 'video' in content_type:
                     return await bot.send_video(
                         chat_id=telegram_user_id,
+                        reply_markup=reply_keyboard,
                         video=types.InputFile(bio, filename=files[0]['filename']),
                         caption=text if text else '',
                         parse_mode=types.ParseMode.HTML,
@@ -105,6 +119,7 @@ async def send_message_to_user(telegram_user_id: int, text: str = None, attachme
                 else:
                     return await bot.send_document(
                         chat_id=telegram_user_id,
+                        reply_markup=reply_keyboard,
                         document=types.InputFile(bio, filename=files[0]['filename']),
                         caption=text if text else '',
                         parse_mode=types.ParseMode.HTML,
@@ -154,7 +169,13 @@ async def send_message_to_user(telegram_user_id: int, text: str = None, attachme
         except Exception as e:
             return await bot.send_message(76777495, f"Error while sending message to user {telegram_user_id}: {e}")
     try:
-        message = await bot.send_message(telegram_user_id, text, parse_mode=types.ParseMode.HTML, reply_to_message_id=reply_to_message_id)
+        message = await bot.send_message(
+            telegram_user_id,
+            text,
+            parse_mode=types.ParseMode.HTML,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_keyboard
+        )
         return message
     except aiogram.utils.exceptions.ChatNotFound:
         return None

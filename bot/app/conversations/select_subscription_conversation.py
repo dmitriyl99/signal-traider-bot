@@ -120,15 +120,12 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
                                           f'&amount={int(exchanged_price)}'
                                           f'&subscription_name={subscription.name}'
                                           f'&user_id={user.id}'
+                                          f'&subscription_id={subscription.id}'
+                                          f'&subscription_condition_id={subscription_condition_id}'
                                       )
                  ],
             ])
         )
-        await update.message.reply_text(
-            'Для отмены нажмите кнопку "Назад"',
-            reply_markup=ReplyKeyboardMarkup([[KeyboardButton(strings.get_string('back_button', user.language))]])
-        )
-        return CLOUD_PAYMENTS
     back_message = await context.bot.send_message(update.effective_chat.id,
                                                   strings.get_string('payment_cancelation_button', user.language),
                                                   reply_markup=ReplyKeyboardMarkup(
