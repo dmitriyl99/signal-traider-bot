@@ -50,12 +50,14 @@
             }
         )
     };
-    pay();
     Telegram.WebApp.MainButton.setText(localization[langauge]).show()
 </script>
 <body style="background-color: #ffffff; padding: 50px">
 </body>
 <script type="text/javascript">
     Telegram.WebApp.expand();
+    document.addEventListener('DOMContentLoaded', () => {
+        pay();
+    })
 </script>
 </html>
