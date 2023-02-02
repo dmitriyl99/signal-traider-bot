@@ -10,6 +10,26 @@
             <textarea id="text" rows="10" class="form-control" v-model="customMessage.text"></textarea>
           </div>
         </div>
+        <div class="row g-3">
+          <div class="col-12 mb-3">
+            <label for="currency_pair" class="form-label">Валютная пара</label>
+            <Select2 v-model="customMessage.currency_pair" :options="currencyPairsList"/>
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" v-model="customMessage.important">
+            <label class="form-check-label" for="flexCheckDefault">
+              ❗️Важно!
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="2" id="flexCheckChecked"  v-model="customMessage.veryImportant">
+            <label class="form-check-label" for="flexCheckChecked">
+              ❗️❗️❗️Очень важно!
+            </label>
+          </div>
+        </div>
         <div class="row">
           <div class="col-6">
             <div class="d-flex flex-column justify-content-center align-items-center">
@@ -46,10 +66,12 @@
 import DropZone from "../../components/DropZone";
 import {ref} from 'vue';
 import signalsApi from "../../api/signalsApi";
+import currencyPairsApi from "../../api/currencyPairsApi";
+import Select2 from 'vue3-select2-component';
 
 export default {
   name: "CreateDistribution",
-  components: {DropZone},
+  components: {DropZone, Select2},
   setup() {
     let dropzoneFiles = ref(null);
     let dropzoneImages = ref(null);
@@ -76,21 +98,37 @@ export default {
     return {dropzoneFiles, dropzoneImages, dropFile, dropImage}
   },
   data: () => ({
+    currencyPairsList: [],
     customMessage: {
       text: null,
       sendButtonView: true,
       isLoading: false,
-      successText: null
+      successText: null,
+      important: false,
+      veryImportant: false,
+      currency_pair: null,
     }
   }),
 
   methods: {
+    loadCurrencyPairs() {
+      currencyPairsApi.getCurrencyPairs().then(response => {
+        this.currencyPairsList = response.data.map(function (i) {
+          return i.pair;
+        });
+      })
+    },
     onCustomMessageFormSubmit() {
       this.customMessage.isLoading = true;
       this.customMessage.successText = null;
 
-      console.log(this.dropzoneFiles);
-      signalsApi.sendCustomMessage(this.customMessage.text, this.dropzoneFiles, this.dropzoneImages).then(() => {
+      let importance = '0';
+      if (this.customMessage.important && !this.customMessage.veryImportant) {
+        importance = '1';
+      } else if (this.customMessage.veryImportant) {
+        importance = '2';
+      }
+      signalsApi.sendCustomMessage(this.customMessage.text, this.dropzoneFiles, this.dropzoneImages, importance, this.customMessage.currency_pair).then(() => {
         this.customMessage.successText = 'Сообщение отправлено!'
         this.customMessage.text = null;
         this.dropzoneFiles = null;
@@ -108,6 +146,9 @@ export default {
         })
       })
     },
+  },
+  created() {
+    this.loadCurrencyPairs();
   }
 }
 </script>

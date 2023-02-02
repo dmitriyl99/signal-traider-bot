@@ -16,10 +16,12 @@ class SignalsRepository:
     def __init__(self, session: AsyncSession):
         self._session = session
 
-    async def save_text_distribution(self, text: str, admin_user: AdminUser):
+    async def save_text_distribution(self, text: str, importance: int, currency: str | None, admin_user: AdminUser):
         self._session.add(TextDistribution(
             text=text,
-            admin_user_id=admin_user.id
+            admin_user_id=admin_user.id,
+            importance=importance,
+            currency=currency
         ))
         await self._session.commit()
 

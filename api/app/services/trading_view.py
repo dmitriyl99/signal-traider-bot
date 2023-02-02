@@ -20,6 +20,7 @@ class TradingViewException(Exception):
 
 def trading_view_scan(currency_pair_name: str) -> Optional[TradingViewScanResponse]:
     url = 'https://scanner.tradingview.com/forex/scan'
+    currency_pair_name = currency_pair_name.replace('/', '').replace(' ', '')
     payload = {
         'symbols': {
             'tickers': [

@@ -55,6 +55,8 @@ class UsersRepository:
             for admin_user in admin_users:
                 if len(list(filter(lambda x: x.name == 'Analyst', admin_user.roles))) > 0:
                     analysts_users.append(admin_user)
+            if len(analysts_users) == 0:
+                return
             session.execute(update(User).where(User.analyst_id != None).values(analyst_id=None))
             all_users = session.query(User).all()
             chunk_size = round(len(all_users) / len(analysts_users)) + 1

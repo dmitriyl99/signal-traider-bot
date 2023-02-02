@@ -5,7 +5,7 @@
         <form v-on:submit.prevent="saveCurrencyPair">
           <label for="currency_pair_name" class="form-label">Добавить валютную пару</label>
           <input type="text" name="currency_pair_name" id="currency_pair_name" class="form-control" placeholder="Название"
-                 v-model="currency_pair_name">
+                    v-model="currency_pair_name" v-maska data-maska="AAA / AAA" data-maska-tokens="A:[A-Z]">
           <button type="submit" class="btn btn-primary mt-2">Сохранить</button>
         </form>
       </div>
