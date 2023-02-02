@@ -111,13 +111,22 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
                                         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
                                             strings.get_string('subscription_pay', user.language), url=payment_url)]]))
     elif payment_provider.name == 'Cloud Payments':
-        web_app = WebAppInfo(url=f'https://apibot.masspay.uz/webapp/?payment_id={payment.id}&language={user.language}&amount={int(exchanged_price)}&subscription_name={subscription.name}&user_id={user.id}')
         await update.message.reply_text(
             f"Оплатите через систему {payment_provider.name}",
-            reply_markup=ReplyKeyboardMarkup([
-                [KeyboardButton(strings.get_string('subscription_pay', user.language), web_app=web_app)],
-                [KeyboardButton(strings.get_string('back_button', user.language))]
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton(strings.get_string('subscription_pay', user.language),
+                                      url=f'https://apibot.masspay.uz/webapp/?payment_id={payment.id}'
+                                          f'&language={user.language}'
+                                          f'&amount={int(exchanged_price)}'
+                                          f'&subscription_name={subscription.name}'
+                                          f'&user_id={user.id}'
+                                      )
+                 ],
             ])
+        )
+        await update.message.reply_text(
+            'Для отмены нажмите кнопку "Назад"',
+            reply_markup=ReplyKeyboardMarkup([[KeyboardButton(strings.get_string('back_button', user.language))]])
         )
         return CLOUD_PAYMENTS
     back_message = await context.bot.send_message(update.effective_chat.id,
@@ -183,7 +192,8 @@ async def cloud_payment_web_app_data(update: Update, context: CallbackContext.DE
     else:
         # rejected
         data = result['data']
-        await update.message.reply_html(f'Оплата не прошла\n\n<b>Код ошибки:</b> <code>{data["reason_code"]}</code>\n<b>Ошибка:</b> {data["reason"]}\n<b>Сообщение:</b> {data["message"]}')
+        await update.message.reply_html(
+            f'Оплата не прошла\n\n<b>Код ошибки:</b> <code>{data["reason_code"]}</code>\n<b>Ошибка:</b> {data["reason"]}\n<b>Сообщение:</b> {data["message"]}')
 
 
 async def _fallbacks_handler(update: Update, context: CallbackContext.DEFAULT_TYPE):
