@@ -23,4 +23,8 @@ class Settings(BaseSettings):
     redis_port: int
 
 
+class CsrfSettings(BaseSettings):
+    secret_key: str
+
+
 settings = Settings()

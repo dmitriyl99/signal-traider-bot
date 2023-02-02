@@ -6,3 +6,10 @@ class PaymeForm(BaseModel):
     method: str
     params: dict
     id: int
+
+
+class CloudPaymentsForm(BaseModel):
+    user_id: int
+    subscription_id: int
+    payment_id: int
+    subscription_condition_id: int

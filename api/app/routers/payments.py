@@ -2,14 +2,14 @@ import logging
 
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Body, Form
+from fastapi import APIRouter, Depends, Body, Form, HTTPException
 
 from app.data.db.payments_repository import PaymentsRepository
 from app.data.db.subscriptions_repository import SubscriptionsRepository
 from app.data.db.paycom_transactions_repository import PaycomTransactionsRepository
 from app.data.db.users_repository import UsersRepository
 from app.data.models.payments import PaymentStatus
-from app.routers.forms.payments import PaymeForm
+from app.routers.forms.payments import PaymeForm, CloudPaymentsForm
 from app.dependencies import get_payments_repository, get_current_user, get_paycom_transactions_repository, \
     get_subscriptions_repository, get_user_repository
 from app.data.models.admin_users import AdminUser
@@ -105,7 +105,8 @@ async def payme(
         users_repository: UsersRepository = Depends(get_user_repository),
 
 ):
-    handler = PaycomPaymentHandler(form, paycom_transactions_repository, payment_repository, subscription_repository, users_repository)
+    handler = PaycomPaymentHandler(form, paycom_transactions_repository, payment_repository, subscription_repository,
+                                   users_repository)
     logging.info(f'Request from payme: id: {form.id}, Method: {form.method}, Params: {form.params}')
     try:
         result = await handler.handle()
@@ -131,3 +132,27 @@ async def payme(
     }
     logging.info(f'Response to payme {response}')
     return response
+
+
+@router.post('/cloud-payments/success')
+async def cloud_payments(
+        form: CloudPaymentsForm = Body(),
+        payment_repository: PaymentsRepository = Depends(get_payments_repository),
+        subscription_repository: SubscriptionsRepository = Depends(get_subscriptions_repository),
+        users_repository: UsersRepository = Depends(get_user_repository),
+):
+    await payment_repository.set_payment_status(form.payment_id, PaymentStatus.CONFIRMED)
+    user = await users_repository.get_user_by_id(form.user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=404,
+            detail='User not found'
+        )
+    await subscription_repository.add_subscription_to_user(
+        user, form.subscription_id,
+        subscription_condition_id=form.subscription_condition_id,
+        proactively_added=False,
+        active=True
+    )
+
+    return {}
