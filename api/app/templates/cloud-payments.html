@@ -38,7 +38,7 @@
         }).then(function (widgetResult) {
             console.log('result', widgetResult);
             if (widgetResult.status === 'success' && widgetResult.type === 'payment') {
-                axios.post('http://localhost:8000/api/payments/cloud-payments/success', {
+                axios.post('https://apibot.masspay.uz/api/payments/cloud-payments/success', {
                     user_id: accountId,
                     subscription_id: subscriptionId,
                     payment_id: payment_id,
