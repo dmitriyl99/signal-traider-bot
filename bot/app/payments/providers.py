@@ -115,6 +115,10 @@ class ClickPaymentProvider(PaymentProvider):
 def get_payment_providers() -> List[PaymentProvider]:
     available_providers = config.PAYMENT_PROVIDERS
     providers = []
+    if 'cloud_payments' in available_providers:
+        providers.append(PaymentProvider(
+            name='Cloud Payments'
+        ))
     if 'click' in available_providers:
         providers.append(ClickPaymentProvider(
             name='Click',
@@ -131,10 +135,6 @@ def get_payment_providers() -> List[PaymentProvider]:
             merchant_id=config.PAYME_MERCHANT_ID,
             key=config.PAYME_KEY,
             test_key=config.PAYME_TEST_KEY
-        ))
-    if 'cloud_payments' in available_providers:
-        providers.append(PaymentProvider(
-            name='Cloud Payments'
         ))
     return providers
 
