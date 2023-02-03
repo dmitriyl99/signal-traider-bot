@@ -20,6 +20,10 @@ CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION, SELECT_PAYMENT_PROVIDER, BACK, CLOUD_PAYM
 
 async def _subscription_start(update: Update, context: CallbackContext.DEFAULT_TYPE):
     user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
+    if update.message.text in [strings.get_string('graphical_signals', 'ru'), strings.get_string('graphical_signals', 'uz')]:
+        subscriptions = await subscriptions_repository.get_subscriptions('graph_signals')
+        await send_subscription_conditions(update, subscriptions[0].id, user)
+        return CHOOSE_CONDITION
     await send_subscriptions(update, context, user)
 
     return CHOOSE_SUBSCRIPTION
