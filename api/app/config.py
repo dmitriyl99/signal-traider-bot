@@ -19,10 +19,6 @@ class Settings(BaseSettings):
     click_secret_key: str
     click_service_id: int
 
-    cloud_payments_public_id: str
-    cloud_payments_password: str
-    cloud_payments_host: str
-
     redis_host: str
     redis_port: int
 
