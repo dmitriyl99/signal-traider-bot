@@ -11,6 +11,7 @@ from app import actions
 from app.data.db import users_repository, subscriptions_repository, utm_respository
 from app.services.otp_service import OTPService
 from app.services import masspay
+from app.services import amocrm_integration
 
 LANGUAGE, NAME, PHONE, OTP = range(4)
 
@@ -196,6 +197,7 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> 
             context.user_data['registration_language']
         )
     await users_repository.verify_user(user.id)
+    amocrm_integration.add_user_to_catalog(user, amocrm_integration.AmoCrmUserType.NEW_USER)
     await users_repository.activate_proactively_added_user(context.user_data['registration_phone'],
                                                            update.effective_user.id,
                                                            context.user_data['registration_language'])

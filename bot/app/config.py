@@ -40,6 +40,12 @@ class Config:
 
     MASSPAY_HOST: str
 
+    AMOCRM_CLIENT_ID: str
+    AMOCRM_SECRET_KEY: str
+    AMOCRM_AUTHORIZATION_CODE: str
+    AMOCRM_REDIRECT_URI: str
+    AMOCRM_SUBDOMAIN: str
+
     def __init__(self):
         self.ENV = os.getenv('ENV')
         self.TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_TOKEN')
@@ -67,6 +73,11 @@ class Config:
         self.SMS_FROM_WHOM = os.getenv('SMS_FROM_WHOM')
         self.REDIS_HOST = os.getenv('REDIS_HOST')
         self.MASSPAY_HOST = os.getenv('MASSPAY_HOST')
+        self.AMOCRM_CLIENT_ID = os.getenv('AMOCRM_CLIENT_ID')
+        self.AMOCRM_SECRET_KEY = os.getenv('AMOCRM_SECRET_KEY')
+        self.AMOCRM_AUTHORIZATION_CODE = os.getenv('AMOCRM_AUTHORIZATION_CODE')
+        self.AMOCRM_REDIRECT_URI = os.getenv('AMOCRM_REDIRECT_URI')
+        self.AMOCRM_SUBDOMAIN = os.getenv('AMOCRM_SUBDOMAIN')
 
 
 config = Config()

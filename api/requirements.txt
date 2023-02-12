@@ -52,3 +52,4 @@ aiogram
 psycopg2-binary
 jinja2
 fastapi-csrf-protect
+amocrm-api-wrapper

@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     redis_host: str
     redis_port: int
 
+    amocrm_client_id: str
+    amocrm_secret_key: str
+    amocrm_authorization_code: str
+    amocrm_redirect_uri: str
+
 
 class CsrfSettings(BaseSettings):
     secret_key: str

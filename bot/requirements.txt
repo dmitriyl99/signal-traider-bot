@@ -8,3 +8,4 @@ redis
 psycopg2-binary
 eskiz_sms
 twilio
+amocrm-api-wrapper
