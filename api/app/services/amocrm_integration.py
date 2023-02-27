@@ -66,21 +66,31 @@ def _get_client() -> AmoOAuthClient:
 def add_user_to_catalog(user: User, note_type: str):
     client = _get_client()
     catalog = _get_catalog(client)
+    elements = [
+        {
+            "name": user.name,
+            "custom_fields_values": [
+                {
+                    "field_id": 1300595,
+                    "values": [
+                        {
+                            "value": user.phone
+                        }
+                    ]
+                },
+                {
+                    "field_id": 1300597,
+                    "values": [
+                        {
+                            "value": note_type
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
     client.add_elements_to_catalog(
-        catalog['id'],
-        [
-            {
-                "name": f"{user.name}",
-                "custom_fields": [
-                    {
-                        "id": 1300595, "values": [{"value": user.phone}]
-                    },
-                    {
-                        "id": 1300597, "values": [{"value": note_type}]
-                    }
-                ]
-            }
-        ]
+        catalog['id'], elements
     )
 
 

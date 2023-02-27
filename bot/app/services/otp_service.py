@@ -14,9 +14,11 @@ class OTPService:
         self._phone = phone
 
     def send_otp(self):
-        rand_otp = random.randint(1000, 9999)
-        text = f"MassPay. Vash kod: {rand_otp}"
-        sms.send_sms('+' + self._phone, text)
+        rand_otp = 1111
+        if config.ENV == 'production':
+            rand_otp = random.randint(1000, 9999)
+            text = f"MassPay. Vash kod: {rand_otp}"
+            sms.send_sms('+' + self._phone, text)
         self._write_otp_to_cache(rand_otp)
 
     def verify_otp(self, otp: int) -> bool:

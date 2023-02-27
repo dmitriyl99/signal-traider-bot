@@ -162,7 +162,7 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
     return OTP
 
 
-async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE):
     if update.message.text == strings.get_string('wrong_number_button_text',
                                                  context.user_data['registration_language']):
         keyboard = [[KeyboardButton(
