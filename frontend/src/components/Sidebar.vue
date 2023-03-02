@@ -37,14 +37,9 @@
                 <i class="fe fe-users"></i> Пользователи Telegram
               </router-link>
             </li>
-            <li class="nav-item">
-              <router-link :to="{name: 'ListSignals'}" class="nav-link">
-                <i class="fe fe-bell"></i> Сигналы
-              </router-link>
-            </li>
             <li class="nav-item" v-if="currentUserHasAdminRole">
               <router-link class="nav-link" :to="{name: 'ListDistributions'}">
-                <i class="fe fe-message-circle"></i> Рассылки
+                <i class="fe fe-message-circle"></i> Сообщения
               </router-link>
             </li>
             <li class="nav-item">

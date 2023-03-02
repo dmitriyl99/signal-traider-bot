@@ -22,10 +22,6 @@
             <router-link :to="{name: 'CreateDistribution'}" class="btn btn-primary me-2">
               Отправить сообщение
             </router-link>
-            <!-- Button -->
-            <router-link :to="{name: 'CreateSignal'}" class="btn btn-primary">
-              Отправить сигнал
-            </router-link>
 
           </div>
         </div> <!-- / .row -->

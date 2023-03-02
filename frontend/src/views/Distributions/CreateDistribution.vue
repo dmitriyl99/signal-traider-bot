@@ -7,13 +7,13 @@
       <form v-on:submit.prevent="onCustomMessageFormSubmit" action="" class="mt-3">
         <div class="row g-3">
           <div class="col-12 mb-3">
-            <textarea id="text" rows="10" class="form-control" v-model="customMessage.text"></textarea>
+            <label for="currency_pair" class="form-label">Валютная пара</label>
+            <Select2 v-model="customMessage.currency_pair" :options="currencyPairsList"/>
           </div>
         </div>
         <div class="row g-3">
           <div class="col-12 mb-3">
-            <label for="currency_pair" class="form-label">Валютная пара</label>
-            <Select2 v-model="customMessage.currency_pair" :options="currencyPairsList"/>
+            <textarea id="text" rows="10" class="form-control" v-model="customMessage.text"></textarea>
           </div>
         </div>
         <div class="row g-3 mb-3">
