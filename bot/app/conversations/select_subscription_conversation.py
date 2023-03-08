@@ -22,6 +22,7 @@ async def _subscription_start(update: Update, context: CallbackContext.DEFAULT_T
     user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if update.message.text in [strings.get_string('graphical_signals', 'ru'), strings.get_string('graphical_signals', 'uz')]:
         subscriptions = await subscriptions_repository.get_subscriptions('graph_signals')
+        context.user_data['subscription:id'] = subscriptions[0].id
         await send_subscription_conditions(update, subscriptions[0].id, user)
         return CHOOSE_CONDITION
     await send_subscriptions(update, context, user)
