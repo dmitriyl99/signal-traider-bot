@@ -35,6 +35,7 @@ class UsersRepository:
                 query = query.filter(User.analyst_id == analyst_id)
             if search and search != '':
                 query = query.filter(or_(User.name.like(f"%{search}%"), User.phone.like(f"%{search}%")))
+            query = query.order_by(User.created_at.desc())
             return paginator.paginate(query, page, per_page)
 
     async def get_all_users_with_active_subscriptions(self, analyst_id: int = None) -> List[User]:
