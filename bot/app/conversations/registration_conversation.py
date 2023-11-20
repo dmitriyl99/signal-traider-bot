@@ -197,7 +197,7 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE):
             context.user_data['registration_language']
         )
     await users_repository.verify_user(user.id)
-    amocrm_integration.add_user_to_catalog(user, amocrm_integration.AmoCrmUserType.NEW_USER)
+    # amocrm_integration.add_user_to_catalog(user, amocrm_integration.AmoCrmUserType.NEW_USER)
     await users_repository.activate_proactively_added_user(context.user_data['registration_phone'],
                                                            update.effective_user.id,
                                                            context.user_data['registration_language'])
