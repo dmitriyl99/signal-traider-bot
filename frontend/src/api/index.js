@@ -3,7 +3,7 @@ import router from '../router'
 import store from '../store'
 
 const apiInstance = axios.create({
-    baseURL: 'https://apibot.masspay.uz/api/'
+    baseURL: 'https://api-bot.onepayment.uz/api/'
 })
 
 apiInstance.interceptors.response.use(function (response) {

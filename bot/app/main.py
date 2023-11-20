@@ -29,7 +29,7 @@ def main():
             listen='0.0.0.0',
             port=config.WEBHOOK_PORT,
             url_path=f'api/telegram-update/{config.WEBHOOK_TOKEN}',
-            webhook_url=f'https://apibot.masspay.uz/api/telegram-update/{config.WEBHOOK_TOKEN}'
+            webhook_url=f'https://service-bot.onepayment.uz/api/telegram-update/{config.WEBHOOK_TOKEN}'
         )
     else:
         application.run_polling()
