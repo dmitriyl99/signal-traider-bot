@@ -8,6 +8,7 @@ class Config:
     ENV: str
 
     TELEGRAM_BOT_TOKEN: str
+    TELEGRAM_GROUP_ID: int
     DATABASE_URL: str
     PAYMENT_PROVIDERS: list
 
@@ -49,6 +50,7 @@ class Config:
     def __init__(self):
         self.ENV = os.getenv('ENV')
         self.TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_TOKEN')
+        self.TELEGRAM_GROUP_ID = os.getenv('TELEGRAM_GROUP_ID')
         self.DATABASE_URL = os.getenv('DATABASE_URL')
         self.PAYMENT_PROVIDERS = os.getenv('PAYMENT_PROVIDERS').split(',')
         self.CLICK_PAYMENT_PROVIDER_TOKEN = os.getenv('CLICK_PAYMENT_PROVIDER_TOKEN')

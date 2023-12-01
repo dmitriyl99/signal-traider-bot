@@ -1,4 +1,4 @@
-import aiogram.utils.exceptions
+import aiogram.exceptions
 import logging
 from typing import Optional, BinaryIO, List, Dict, Any
 from io import BytesIO
@@ -56,6 +56,32 @@ async def send_text_distribution(text: str, attachments: Optional[List[Dict[str,
             await send_message_to_user(
                 user.telegram_user_id, text, attachments, importance=importance, currency=currency
             )
+
+
+async def add_user_to_group(telegram_user_id: int):
+    bot = Bot(settings.telegram_bot_api_token)
+    telegram_group_chat_id = settings.telegram_group_id
+    chat_member = await bot.get_chat_member(telegram_group_chat_id, telegram_user_id)
+    if chat_member.status == 'member':
+        return
+    elif chat_member.status == 'left':
+        invite_link = await bot.export_chat_invite_link(telegram_group_chat_id)
+        await bot.send_message(telegram_user_id,
+                               "Вступите в группу для получения аналитической информации!",
+                               reply_markup=types.InlineKeyboardMarkup(
+                                   inline_keyboard=[[types.InlineKeyboardButton(text="Вступить в группу",
+                                                                                url=invite_link)]]
+                               ))
+    elif chat_member.status == 'kicked':
+        await bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
+
+
+async def ban_user_in_group(telegram_user_id: int):
+    bot = Bot(settings.telegram_bot_api_token)
+    telegram_group_chat_id = settings.telegram_group_id
+    chat_member = await bot.get_chat_member(telegram_group_chat_id, telegram_user_id)
+    if chat_member.status in ['creator', 'administrator', 'member', 'restricted']:
+        await bot.ban_chat_member(telegram_group_chat_id, telegram_user_id)
 
 
 async def send_message_to_user(
@@ -177,10 +203,5 @@ async def send_message_to_user(
             reply_markup=reply_keyboard
         )
         return message
-    except aiogram.utils.exceptions.ChatNotFound:
-        return None
-    except aiogram.utils.exceptions.BotBlocked:
-        return None
-    except Exception as e:
-        await bot.send_message(76777495, f"Error while sending message to user {telegram_user_id}: {e}")
+    except aiogram.exceptions.TelegramBadRequest:
         return None
