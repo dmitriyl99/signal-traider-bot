@@ -10,6 +10,7 @@ from app.data.models.payments import PaymentStatus
 from app.routers.forms.payments import PaymeForm
 from app.data.models.payme_transaction import PaymeTransactionStates
 from app.services import bot
+from app.config import settings
 
 
 class PaycomPaymentHandler:
@@ -81,7 +82,25 @@ class PaycomPaymentHandler:
                 PaycomException.ERROR_COULD_NOT_PERFORM
             )
 
-        return {'allow': True}
+        payment = await self.payments_repository.get_payment_by_id(transaction.payment_id)
+
+        return {
+            'allow': True,
+            'detail': {
+                'receipt_type': 0,
+                'items': [
+                    {
+                        'title': payment.subscription.name,
+                        'price': payment.subscription_condition.price,
+                        'count': payment.subscription_condition.duration_in_month,
+                        'code': settings.ikpu,
+                        'vat_percent': 0,
+                        'package_code': settings.ikpu_unit_code,
+                        'units': settings.ikpu_unit_code
+                    }
+                ]
+            }
+        }
 
     async def _handle_check_transaction(self):
         transaction = self.transaction_repository.find_transaction(self.data.params)

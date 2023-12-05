@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     telegram_bot_api_token: str
     telegram_group_id: str
 
+    ikpu: str
+    ikpu_unit_code: str
     click_secret_key: str
     click_service_id: int
 
