@@ -17,7 +17,7 @@ class OTPService:
         rand_otp = 1111
         if config.ENV == 'production':
             rand_otp = random.randint(1000, 9999)
-            text = f"MassPay. Vash kod: {rand_otp}"
+            text = f"OneZone. Vash kod: {rand_otp}"
             sms.send_sms('+' + self._phone, text)
         self._write_otp_to_cache(rand_otp)
 
