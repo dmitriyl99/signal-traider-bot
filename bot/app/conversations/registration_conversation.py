@@ -1,7 +1,8 @@
 from typing import Optional
 import logging
 
-from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, helpers, WebAppInfo
+from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
+from telegram.constants import ChatType
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, filters
 
 from app.resources import strings
@@ -17,6 +18,8 @@ LANGUAGE, NAME, PHONE, OTP = range(4)
 
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    if update.message.chat.type != ChatType.PRIVATE:
+        return ConversationHandler.END
     await _process_update_for_utm(update)
     hash_command_user = await _process_update_for_hash_command(update, context)
     if hash_command_user:

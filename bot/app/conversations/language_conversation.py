@@ -1,4 +1,5 @@
 from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup
+from telegram.constants import ChatType
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, filters
 
 from app.resources import strings
@@ -9,6 +10,8 @@ LANGUAGE = range(1)
 
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    if update.message.chat.type != ChatType.PRIVATE:
+        return ConversationHandler.END
     current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if not current_user:
         return ConversationHandler.END
