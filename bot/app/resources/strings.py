@@ -56,8 +56,8 @@ strings_data = {
         'uz': 'Obunani tanlang'
     },
     'graphical_signals': {
-        'ru': 'Графические сигналы',
-        'uz': 'Grafik signallar'
+        'ru': 'OneZone группа - аналитические сигналы',
+        'uz': 'OneZone группа - аналитические сигналы'
     },
     'interday_subscriptions': {
         'ru': 'Interday',
