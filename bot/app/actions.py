@@ -18,9 +18,6 @@ def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAU
         reply_markup=ReplyKeyboardMarkup(
             [
                 [KeyboardButton(strings.get_string('graphical_signals', user.language))],
-                [KeyboardButton(strings.get_string('interday_subscriptions', user.language))],
-                [KeyboardButton(strings.get_string('marafon_subscriptions', user.language))],
-                [KeyboardButton(strings.get_string('leave_application_online', user.language))]
             ], resize_keyboard=True
         )
     )
