@@ -95,5 +95,5 @@ async def send_payment_providers(update: Update, context: CallbackContext.DEFAUL
     await message.reply_text(text=strings.get_string('subscription_full_info', user.language).format(
         subscription.name,
         subscription_condition.duration_in_month if subscription_condition.duration_in_month else subscription_condition.duration_in_days,
-        int(subscription_condition.price / 100)
+        int(subscription_condition.price)
     ), reply_markup=ReplyKeyboardMarkup([keyboard_buttons, [KeyboardButton(strings.get_string('back_button', user.language))]], resize_keyboard=True), parse_mode='HTML')
