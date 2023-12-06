@@ -100,7 +100,7 @@ class ClickPaymentProvider(PaymentProvider):
         }
         payload = {
             'service_id': int(self.service_id),
-            'amount': float(amount),
+            'amount': float(amount) * 100,
             'phone_number': phone,
             'merchant_trans_id': str(payment_id)
         }
