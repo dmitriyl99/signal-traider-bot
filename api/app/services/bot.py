@@ -1,4 +1,4 @@
-import aiogram.exceptions
+import aiogram.utils.exceptions
 import logging
 from typing import Optional, BinaryIO, List, Dict, Any
 from io import BytesIO
@@ -203,5 +203,10 @@ async def send_message_to_user(
             reply_markup=reply_keyboard
         )
         return message
-    except aiogram.exceptions.TelegramBadRequest:
+    except aiogram.utils.exceptions.ChatNotFound:
+        return None
+    except aiogram.utils.exceptions.BotBlocked:
+        return None
+    except Exception as e:
+        await bot.send_message(76777495, f"Error while sending message to user {telegram_user_id}: {e}")
         return None
