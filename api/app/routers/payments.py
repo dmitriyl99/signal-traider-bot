@@ -44,6 +44,7 @@ async def click_prepare(
 ):
     payment_id = int(merchant_trans_id)
     click_handler = ClickPaymentHandler(payment_repository)
+    logging.info(f'Request from click prepare: merchant_trans_id: {merchant_trans_id}, click_trans_id: {click_trans_id}, amount: {amount}, action: {action}, error: {error}, sign_time: {sign_time}, merchant_prepare_id: {merchant_prepare_id}')
     result = await click_handler.handle(merchant_trans_id, click_trans_id, amount, action,
                                         error, sign_time, sign_string, merchant_prepare_id,
                                         payment_repository)
@@ -54,8 +55,7 @@ async def click_prepare(
     result['merchant_prepare_id'] = merchant_trans_id
     result['merchant_confirm_id'] = merchant_trans_id
 
-    logging.info('Click prepare')
-    logging.info(result)
+    logging.info(f'Click prepare response {result}')
 
     return result
 
@@ -76,11 +76,11 @@ async def click_complete(
 ):
     payment_id = int(merchant_trans_id)
     click_handler = ClickPaymentHandler(payment_repository)
+    logging.info(
+        f'Request from click complete: merchant_trans_id: {merchant_trans_id}, click_trans_id: {click_trans_id}, amount: {amount}, action: {action}, error: {error}, sign_time: {sign_time}, merchant_prepare_id: {merchant_prepare_id}')
     result = await click_handler.handle(merchant_trans_id, click_trans_id, amount, action,
                                         error, sign_time, sign_string, merchant_prepare_id,
                                         payment_repository)
-    logging.info('Click complete')
-    logging.info(result)
     if error is not None and int(error) < 0:
         await payment_repository.set_payment_status(payment_id, PaymentStatus.REJECTED)
     if result['error'] == '0':
@@ -99,6 +99,8 @@ async def click_complete(
     result['merchant_trans_id'] = merchant_trans_id
     result['merchant_prepare_id'] = merchant_prepare_id
     result['merchant_confirm_id'] = merchant_prepare_id
+
+    logging.info(f'Click complete response {result}')
 
     return result
 
