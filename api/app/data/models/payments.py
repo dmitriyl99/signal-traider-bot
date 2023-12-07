@@ -19,7 +19,7 @@ class Payment(Base):
     created_at = sa.Column(sa.DateTime, default=datetime.now)
 
     user = relationship('User', back_populates='payments')
-    subscription = relationship('Subscription')
+    subscription = relationship('Subscription', sa_relationship_kwargs={'lazy': 'joined'})
     subscription_condition = relationship('SubscriptionCondition')
 
 
