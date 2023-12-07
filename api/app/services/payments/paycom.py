@@ -84,7 +84,7 @@ class PaycomPaymentHandler:
                 PaycomException.ERROR_COULD_NOT_PERFORM
             )
 
-        payment = await self.payments_repository.get_payment_by_id(transaction.payment_id)
+        payment = await self.payments_repository.get_payment_by_id(int(self.data.params['account']['order_id']))
 
         return {
             'allow': True,
