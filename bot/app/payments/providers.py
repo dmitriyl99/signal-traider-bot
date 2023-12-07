@@ -45,9 +45,9 @@ class PaymePaymentProvider(PaymentProvider):
         payload = {
             'm': self.merchant_id,
             'ac.order_id': payment_id,
-            'a': amount * 10000,
+            'a': amount * 100,
             'ds.items.0.title': title,
-            'ds.items.0.price': amount * 10000,
+            'ds.items.0.price': amount * 100,
             'ds.items.0.count': 1
         }
         payload_str = ''
