@@ -153,7 +153,7 @@ class PaycomPaymentHandler:
         transaction = self.transaction_repository.create_transaction(
             self.data.params['id'],
             self.data.params['time'],
-            datetime.fromtimestamp(int(self.data.params['time'])).strftime('%Y-%m-%d %H:%M:%S'),
+            datetime.fromtimestamp(self.data.params['time'] / 1000).strftime('%Y-%m-%d %H:%M:%S'),
             self.data.params['amount'],
             self.data.params['account']['order_id']
         )
