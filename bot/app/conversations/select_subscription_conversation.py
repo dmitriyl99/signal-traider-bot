@@ -93,7 +93,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     if payment_provider is None:
         await update.message.reply_text(strings.get_string('provider_provider_not_supported', user.language))
         return SELECT_PAYMENT_PROVIDER
-    exchanged_price = currency_exchange_service.convert_usd_to_uzs(subscription_condition.price / 100)
+    exchanged_price = currency_exchange_service.convert_usd_to_uzs(subscription_condition.price)
     payment = await payments_repository.save_payment(
         int(exchanged_price),
         payment_provider.name,
