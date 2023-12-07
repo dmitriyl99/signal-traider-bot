@@ -54,6 +54,9 @@ async def click_prepare(
     result['merchant_prepare_id'] = merchant_trans_id
     result['merchant_confirm_id'] = merchant_trans_id
 
+    logging.info('Click prepare')
+    logging.info(result)
+
     return result
 
 
@@ -76,6 +79,8 @@ async def click_complete(
     result = await click_handler.handle(merchant_trans_id, click_trans_id, amount, action,
                                         error, sign_time, sign_string, merchant_prepare_id,
                                         payment_repository)
+    logging.info('Click complete')
+    logging.info(result)
     if error is not None and int(error) < 0:
         await payment_repository.set_payment_status(payment_id, PaymentStatus.REJECTED)
     if result['error'] == '0':
