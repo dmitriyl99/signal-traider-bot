@@ -178,7 +178,7 @@ class PaycomPaymentHandler:
 
         if transaction.state == PaymeTransactionStates.STATE_CREATED:
             await self.payments_repository.set_payment_status(transaction.payment_id, PaymentStatus.CONFIRMED)
-            self.transaction_repository.perform_transaction(transaction.id)
+            transaction = self.transaction_repository.perform_transaction(transaction.id)
             payment = await self.payments_repository.get_payment_by_id(transaction.payment_id)
             user = await self.users_repository.get_user_by_id(payment.user_id)
             await self.subscriptions_repository.add_subscription_to_user(user, payment.subscription_id, subscription_condition_id=payment.subscription_condition_id)

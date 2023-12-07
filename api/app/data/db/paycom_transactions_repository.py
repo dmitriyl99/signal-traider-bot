@@ -45,12 +45,14 @@ class PaycomTransactionsRepository:
             session.refresh(transaction)
         return transaction
 
-    def perform_transaction(self, transaction_id: int):
+    def perform_transaction(self, transaction_id: int) -> PaymeTransaction:
         with Session() as session:
             transaction: PaymeTransaction = session.query(PaymeTransaction).get(transaction_id)
             transaction.state = PaymeTransactionStates.STATE_COMPLETED
             transaction.perform_time = datetime.now()
             session.commit()
+            session.refresh(transaction)
+        return transaction
 
     def cancel_transaction(self, transaction_id: int, reason):
         with Session() as session:
