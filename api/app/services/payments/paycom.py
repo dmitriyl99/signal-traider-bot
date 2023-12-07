@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from typing import Any
@@ -57,6 +58,7 @@ class PaycomPaymentHandler:
                 PaycomException.ERROR_INVALID_ACCOUNT,
                 'order_id'
             )
+        logging.info(f"{payment.amount} - {self.data.params['amount']}")
         if payment.amount * 100 != self.data.params['amount']:
             raise PaycomException(
                 self.data.id,
