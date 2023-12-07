@@ -47,7 +47,7 @@ class PaymePaymentProvider(PaymentProvider):
             'ac.order_id': payment_id,
             'a': amount * 100,
             'ds.items.0.title': title,
-            'ds.items.0.price': amount,
+            'ds.items.0.price': amount * 100,
             'ds.items.0.count': 1
         }
         payload_str = ''
