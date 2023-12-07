@@ -42,6 +42,7 @@ class PaycomTransactionsRepository:
         with Session() as session:
             session.add(transaction)
             session.commit()
+            session.refresh(transaction)
         return transaction
 
     def perform_transaction(self, transaction_id: int):
