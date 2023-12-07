@@ -74,7 +74,7 @@ class PaycomPaymentHandler:
 
     async def _handle_check_perform_transaction(self):
         await self._validate_payment()
-
+        logging.info(self.data.params)
         transaction = self.transaction_repository.find_transaction(self.data.params)
         if transaction and (
                 transaction.state == PaymeTransactionStates.STATE_CREATED or transaction.state == PaymeTransactionStates.STATE_COMPLETED):
