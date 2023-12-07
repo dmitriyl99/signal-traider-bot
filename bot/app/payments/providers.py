@@ -58,6 +58,7 @@ class PaymePaymentProvider(PaymentProvider):
         payload_str_bytes = payload_str.encode('utf-8')
         payload_str_base64_bytes = base64.b64encode(payload_str_bytes)
         payload_str_base64_string = payload_str_base64_bytes.decode('utf-8')
+        logging.info(f"Payme payment url: {host}/{payload_str_base64_string}")
         return f"{host}/{payload_str_base64_string}"
 
 
