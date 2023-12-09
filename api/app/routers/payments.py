@@ -167,5 +167,6 @@ async def cloud_payments(
         active=True
     )
     await bot.send_message_to_user(user.telegram_user_id, "Подписка куплена!", remove_keyboard=True)
+    await bot.add_user_to_group(telegram_user_id=user.telegram_user_id)
 
     return {}

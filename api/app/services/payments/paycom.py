@@ -183,6 +183,7 @@ class PaycomPaymentHandler:
             user = await self.users_repository.get_user_by_id(payment.user_id)
             await self.subscriptions_repository.add_subscription_to_user(user, payment.subscription_id, subscription_condition_id=payment.subscription_condition_id)
             await bot.send_message_to_user(user.telegram_user_id, "Подписка куплена!", remove_keyboard=True)
+            await bot.add_user_to_group(telegram_user_id=user.telegram_user_id)
 
             return {
                 'transaction': transaction.id,
