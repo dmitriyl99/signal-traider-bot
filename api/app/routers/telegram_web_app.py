@@ -16,8 +16,10 @@ def get_csrf_config():
 
 @router.get('/')
 def launch_web_app(request: Request, csrf_protect: CsrfProtect = Depends()):
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     response = templates.TemplateResponse('cloud-payments.html', {
-        'request': request
+        'request': request,
+        'csrf_token': csrf_token
     })
-    csrf_protect.set_csrf_cookie(response)
+    csrf_protect.set_csrf_cookie(signed_token, response)
     return response
