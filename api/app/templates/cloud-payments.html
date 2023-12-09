@@ -35,9 +35,9 @@
             accountId: accountId,
             skin: "classic",
             requireEmail: false,
-        }).then(function (widgetResult) {
-            console.log('result', widgetResult);
-            if (widgetResult.status === 'success' && widgetResult.type === 'payment') {
+        }, {
+            onSuccess: function (options) {
+                console.log('success')
                 axios.post('https://api-bot.onepayment.uz/api/payments/cloud-payments/success', {
                     user_id: accountId,
                     subscription_id: subscriptionId,
@@ -45,9 +45,7 @@
                     subscription_condition_id
                 })
             }
-        }).catch(function (error) {
-            console.log('error', error);
-        });
+        })
     };
 </script>
 <body style="background-color: #ffffff; padding: 50px">
