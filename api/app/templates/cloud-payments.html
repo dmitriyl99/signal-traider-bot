@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cloud Payments. Оплата подписки Masspay</title>
+    <title>Cloud Payments. Оплата подписки OneZone</title>
     <script src="https://widget.cloudpayments.uz/bundles/cloudpayments.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
@@ -27,8 +27,8 @@
 
 
         payments.pay("charge", {
-            publicId: "pk_37b7e1e4e2163ea482d130606076a",
-            description: "Оплата подписки Masspay " + subscriptionName,
+            publicId: "pk_b69566d16d1bc81c464b08f327ce9",
+            description: "Оплата подписки OneZone " + subscriptionName,
             amount: parseInt(amount),
             currency: "UZS",
             invoiceId: payment_id,
@@ -38,7 +38,7 @@
         }).then(function (widgetResult) {
             console.log('result', widgetResult);
             if (widgetResult.status === 'success' && widgetResult.type === 'payment') {
-                axios.post('https://apibot.masspay.uz/api/payments/cloud-payments/success', {
+                axios.post('https://api-bot.onepayment.uz/api/payments/cloud-payments/success', {
                     user_id: accountId,
                     subscription_id: subscriptionId,
                     payment_id: payment_id,

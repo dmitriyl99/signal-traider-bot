@@ -120,7 +120,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
             f"Оплатите через систему {payment_provider.name}",
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton(strings.get_string('subscription_pay', user.language),
-                                      url=f'https://apibot.masspay.uz/webapp/?payment_id={payment.id}'
+                                      url=f'https://api-bot.onepayment.uz/webapp/?payment_id={payment.id}'
                                           f'&language={user.language}'
                                           f'&amount={int(exchanged_price)}'
                                           f'&subscription_name={subscription.name}'
