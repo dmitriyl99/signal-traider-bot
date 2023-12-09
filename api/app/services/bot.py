@@ -74,6 +74,13 @@ async def add_user_to_group(telegram_user_id: int):
                                ))
     elif chat_member.status == 'kicked':
         await bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
+        invite_link = await bot.export_chat_invite_link(telegram_group_chat_id)
+        await bot.send_message(telegram_user_id,
+                               "Вернитесь в группу для получения аналитической информации!",
+                               reply_markup=types.InlineKeyboardMarkup(
+                                   inline_keyboard=[[types.InlineKeyboardButton(text="Вступить в группу",
+                                                                                url=invite_link)]]
+                               ))
 
 
 async def ban_user_in_group(telegram_user_id: int):
