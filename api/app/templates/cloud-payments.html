@@ -17,7 +17,7 @@
     const subscription_condition_id = params.subscription_condition_id
     const accountId = params.user_id;
     pay = function () {
-        var payments = new cp.Widget({
+        var widget = new cp.CloudPayments({
             language: "ru-RU",
             applePaySupport: false,
             googlePaySupport: false,
@@ -26,7 +26,7 @@
         });
 
 
-        payments.pay("charge", {
+        widget.pay("charge", {
             publicId: "pk_b69566d16d1bc81c464b08f327ce9",
             description: "Оплата подписки OneZone " + subscriptionName,
             amount: parseInt(amount),
@@ -35,18 +35,18 @@
             accountId: accountId,
             skin: "classic",
             requireEmail: false,
-        }).then(function (widgetResult) {
-            console.log('result', widgetResult);
-            if (widgetResult.status === 'success' && widgetResult.type === 'payment') {
+        }, {
+            onSuccess: function (options) {
                 axios.post('https://api-bot.onepayment.uz/api/payments/cloud-payments/success', {
                     user_id: accountId,
                     subscription_id: subscriptionId,
                     payment_id: payment_id,
                     subscription_condition_id
                 })
+            },
+            onFail: function (reason, options) {
+                console.log(reason, options)
             }
-        }).catch(function (error) {
-            console.log('error', error);
         });
     };
 </script>
