@@ -31,6 +31,6 @@ async def check_all_subscriptions_job():
                 await bot.ban_user_in_group(subscription.user.telegram_user_id)
                 # amocrm_integration.add_user_to_catalog(subscription.user, amocrm_integration.AmoCrmUserType.LOST_USER)
                 subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
-                await bot.send_message_to_user(subscription.user.telegram_user_id, 'Ваша подписка {name} деактивирована. Отправьте команду /start чтобы приобрести подписку заново'.format(
+                await bot.send_message_to_user(subscription.user.telegram_user_id, 'Ваша подписка {name} деактивирована и вы были исключены из группы. Отправьте команду /start чтобы приобрести подписку заново'.format(
                     name=subscription_entity.name)
                 )
