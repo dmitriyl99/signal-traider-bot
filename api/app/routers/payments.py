@@ -152,7 +152,7 @@ async def cloud_payments(
         subscription_repository: SubscriptionsRepository = Depends(get_subscriptions_repository),
         users_repository: UsersRepository = Depends(get_user_repository),
 ):
-    await csrf_protect.validate_csrf(request)
+    await csrf_protect.validate_csrf_in_cookies(request)
     await payment_repository.set_payment_status(form.payment_id, PaymentStatus.CONFIRMED)
     user = await users_repository.get_user_by_id(form.user_id)
     if user is None:
