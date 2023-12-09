@@ -1,6 +1,7 @@
 import logging
 
 from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, filters
+from telegram.constants import ChatType
 from telegram import Update, ReplyKeyboardRemove
 
 from app.conversations import registration_conversation, select_subscription_conversation, language_conversation
@@ -9,6 +10,8 @@ from app.config import config
 
 
 async def default_handler(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    if update.message.chat.type != ChatType.PRIVATE:
+        return
     await update.message.reply_text("Отправьте команду /start для перезапуска бота", reply_markup=ReplyKeyboardRemove())
 
 
