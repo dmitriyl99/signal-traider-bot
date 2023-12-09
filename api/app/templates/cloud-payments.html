@@ -37,6 +37,7 @@
             requireEmail: false,
         }, {
             onSuccess: function (options) {
+                console.log('onSuccess', options)
                 axios.post('https://api-bot.onepayment.uz/api/payments/cloud-payments/success', {
                     user_id: accountId,
                     subscription_id: subscriptionId,
@@ -45,7 +46,7 @@
                 })
             },
             onFail: function (reason, options) {
-                console.log(reason, options)
+                console.log('onFail', reason, options)
             }
         });
     };
