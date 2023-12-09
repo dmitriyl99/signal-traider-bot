@@ -33,7 +33,6 @@ class Settings(BaseSettings):
 
 class CsrfSettings(BaseSettings):
     secret_key: str
-    cookie_samesite: str = "none"
 
 
 settings = Settings()
