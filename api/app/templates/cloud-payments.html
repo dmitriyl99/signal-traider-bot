@@ -11,22 +11,6 @@
         get: (searchParams, prop) => searchParams.get(prop),
     });
 
-    function getCookie(cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
-
     const payment_id = params.payment_id;
     const amount = params.amount;
     const subscriptionName = params.subscription_name;
@@ -47,10 +31,10 @@
                 user_id: accountId,
                 subscription_id: subscriptionId,
                 payment_id: payment_id,
-                subscription_condition_id
+                subscription_condition_id,
             }, {
                 headers: {
-                    'X-CSRF-Token': getCookie('fastapi-csrf-token')
+                    'X-CSRF-Token': '{{ csrf_token }}'
                 }
             })
         }
