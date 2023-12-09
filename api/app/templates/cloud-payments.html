@@ -25,6 +25,10 @@
             tinkoffInstallmentSupport: false,
         });
 
+        widget.oncomplete = (result) => {
+            console.log('result', result);
+        }
+
 
         widget.pay("charge", {
             publicId: "pk_b69566d16d1bc81c464b08f327ce9",
@@ -35,19 +39,9 @@
             accountId: accountId,
             skin: "classic",
             requireEmail: false,
-        }, {
-            onSuccess: function (options) {
-                console.log('onSuccess', options)
-                axios.post('https://api-bot.onepayment.uz/api/payments/cloud-payments/success', {
-                    user_id: accountId,
-                    subscription_id: subscriptionId,
-                    payment_id: payment_id,
-                    subscription_condition_id
-                })
-            },
-            onFail: function (reason, options) {
-                console.log('onFail', reason, options)
-            }
+        }).then((result) => {
+            // Объект типа WidgetResult
+            console.log('result', result);
         });
     };
 </script>
