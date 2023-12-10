@@ -25,11 +25,14 @@ async def _renew_subscription(update: Update, context: CallbackContext.DEFAULT_T
     callback_data = query.data
     _, data = callback_data.split(':')
     telegram_user_id, subscription_id, user_id = data.split(',')
+    telegram_user_id = int(telegram_user_id)
+    subscription_id = int(subscription_id)
+    user_id = int(user_id)
     logging.info(f'Renew subscription: {telegram_user_id}, {subscription_id}, {user_id}')
     if telegram_user_id != query.from_user.id:
         await query.answer("У вас нет доступа к чужому пользователю", show_alert=True)
         return
-    subscription_user = await subscriptions_repository.get_subscription_user(int(subscription_id), int(user_id))
+    subscription_user = await subscriptions_repository.get_subscription_user(subscription_id, user_id)
     if subscription_user is None:
         await query.answer("Не найдена подписка, пожалуйста, обратитесь к администратору", show_alert=True)
         return
