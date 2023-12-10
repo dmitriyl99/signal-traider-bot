@@ -45,6 +45,7 @@ async def check_all_subscriptions_job():
                     ]])
                 )
             elif subscription.duration_in_days - abs(diff_in_days) == 3:
+                logger.info(f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
                 if subscription.notified_3_days is False:
                     subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
                     await tg_bot.send_message(
