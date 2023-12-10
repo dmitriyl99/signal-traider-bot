@@ -39,6 +39,7 @@ async def check_all_subscriptions_job():
                     chat_id=subscription.user.telegram_user_id,
                     text='Ваша подписка {name} окончена и вы были исключены из группы. Оформите подписку заново, чтобы получить доступ к группе'.format(
                                                    name=subscription_entity.name),
+                    parse_mode=types.ParseMode.HTML,
                     reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[
                         types.InlineKeyboardButton(text="Продлить", callback_data=f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
                     ]])
@@ -50,6 +51,7 @@ async def check_all_subscriptions_job():
                         chat_id=subscription.user.telegram_user_id,
                         text='До оночания вашей подписки <b>{name}</b> осталось 3 дня. Продлите подписку, чтобы не потерять доступ к группе.'.format(
                             name=subscription_entity.name),
+                        parse_mode=types.ParseMode.HTML,
                         reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[
                             types.InlineKeyboardButton(text="Продлить", callback_data=f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
                         ]])
