@@ -23,7 +23,7 @@ async def _subscription_start(update: Update, context: CallbackContext.DEFAULT_T
     if update.message.text in [strings.get_string('graphical_signals', 'ru'), strings.get_string('graphical_signals', 'uz')]:
         subscriptions = await subscriptions_repository.get_subscriptions('graph_signals')
         context.user_data['subscription:id'] = subscriptions[0].id
-        await send_subscription_conditions(update, subscriptions[0].id, user)
+        await send_subscription_conditions(update, subscriptions[0].id, user, context)
         return CHOOSE_CONDITION
     await send_subscriptions(update, context, user)
 
@@ -41,7 +41,7 @@ async def _choose_subscription(update: Update, context: CallbackContext.DEFAULT_
         return CHOOSE_SUBSCRIPTION
     subscription_id = subscription.id
     context.user_data['subscription:id'] = subscription_id
-    await send_subscription_conditions(update, subscription_id, user)
+    await send_subscription_conditions(update, subscription_id, user, context)
     return CHOOSE_CONDITION
 
 
@@ -84,7 +84,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     subscription_id = context.user_data['subscription:id']
     subscription_condition_id = context.user_data['subscription:condition_id']
     if message.text == strings.get_string('back_button', user.language):
-        await send_subscription_conditions(update, subscription_id, user)
+        await send_subscription_conditions(update, subscription_id, user, context)
         return CHOOSE_CONDITION
     subscription = await subscriptions_repository.get_subscription_by_id(subscription_id)
     subscription_condition = list(filter(lambda sc: sc.id == subscription_condition_id, subscription.conditions))[0]

@@ -37,7 +37,7 @@ async def _renew_subscription(update: Update, context: CallbackContext.DEFAULT_T
         await query.answer("Не найдена подписка, пожалуйста, обратитесь к администратору", show_alert=True)
         return
     user = await users_repository.get_user_by_telegram_id(telegram_user_id)
-    await actions.send_subscription_conditions(update, subscription_id, user)
+    await actions.send_subscription_conditions(update, subscription_id, user, context)
     context.user_data['subscription:id'] = subscription_id
     return CHOOSE_CONDITION
 
