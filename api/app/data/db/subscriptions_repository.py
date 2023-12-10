@@ -34,18 +34,25 @@ class SubscriptionsRepository:
         current_subscription_user_stmt = select(SubscriptionUser).filter(SubscriptionUser.user_id == user.id)
         result = await self._session.execute(current_subscription_user_stmt)
         subscription_user: SubscriptionUser = result.scalars().first()
+        days_to_add = 0
+        if subscription_user is not None and subscription_user.active is True:
+            diff_in_days = abs(date_helper.diff_in_days(subscription_user.activation_datetime, datetime.now()))
+            days_to_add = subscription_user.duration_in_days - diff_in_days \
+                if diff_in_days < subscription_user.duration_in_days else 0
+            active = True
         if subscription_user is None:
             subscription_user = SubscriptionUser()
         subscription_user.subscription_id = subscription_id
         if subscription_condition_id is not None:
-            subscription_condition: SubscriptionCondition = await self._session.get(SubscriptionCondition, subscription_condition_id)
+            subscription_condition: SubscriptionCondition = await self._session.get(SubscriptionCondition,
+                                                                                    subscription_condition_id)
             if subscription_condition is None:
                 raise Exception(f"Subscription condition with id {subscription_condition_id} not found")
             now_datetime = datetime.now()
             subscription_end_date = now_datetime + relativedelta(
                 months=subscription_condition.duration_in_month)
             duration_in_days = date_helper.diff_in_days(now_datetime, subscription_end_date)
-        subscription_user.duration_in_days = duration_in_days
+        subscription_user.duration_in_days = duration_in_days + days_to_add
         subscription_user.proactively_added = proactively_added
         subscription_user.user_id = user.id
         subscription_user.active = active

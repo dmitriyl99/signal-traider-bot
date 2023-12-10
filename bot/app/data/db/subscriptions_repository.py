@@ -106,3 +106,11 @@ async def find_condition_by_subscription_id_and_duration(subscription_id: int, d
                                                         SubscriptionCondition.duration_in_days == duration))
         result = await session.execute(stmt)
         return result.scalars().first()
+
+
+async def get_subscription_user(subscription_id: int, user_id: int) -> Optional[SubscriptionUser]:
+    async with async_session() as session:
+        stmt = select(SubscriptionUser).filter(and_(SubscriptionUser.user_id == user_id,
+                                                    SubscriptionUser.subscription_id == subscription_id))
+        result = await session.execute(stmt)
+        return result.scalars().first()
