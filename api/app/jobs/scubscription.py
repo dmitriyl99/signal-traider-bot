@@ -22,7 +22,7 @@ async def check_all_subscriptions_job():
     logger.info('Start job to deactivate subscriptions')
     tg_bot = Bot(settings.telegram_bot_api_token)
     async with async_session() as session:
-        result = await session.execute(stmt)
+        result = session.execute(stmt)
         active_subscriptions: List[SubscriptionUser] = result.scalars().all()
         logger.info('Active subscription found: %d' % len(active_subscriptions))
         for subscription in active_subscriptions:
@@ -44,6 +44,7 @@ async def check_all_subscriptions_job():
                     ]])
                 )
             elif subscription.duration_in_days - abs(diff_in_days) == 3:
+                subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
                 await tg_bot.send_message(
                     chat_id=subscription.user.telegram_user_id,
                     text='До оночания вашей подписки <b>{name}</b> осталось 3 дня. Продлите подписку, чтобы не потерять доступ к группе.'.format(
