@@ -1,3 +1,5 @@
+import logging
+
 from telegram import Update
 from telegram.ext import (
     CallbackContext,
@@ -23,7 +25,8 @@ async def _renew_subscription(update: Update, context: CallbackContext.DEFAULT_T
     callback_data = query.data
     _, data = callback_data.split(':')
     telegram_user_id, subscription_id, user_id = data.split(',')
-    if telegram_user_id != update.effective_user.id:
+    logging.info(f'Renew subscription: {telegram_user_id}, {subscription_id}, {user_id}')
+    if telegram_user_id != query.from_user.id:
         await query.answer("У вас нет доступа к чужому пользователю", show_alert=True)
         return
     subscription_user = await subscriptions_repository.get_subscription_user(int(subscription_id), int(user_id))
