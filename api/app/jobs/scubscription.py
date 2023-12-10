@@ -22,7 +22,7 @@ async def check_all_subscriptions_job():
     logger.info('Start job to deactivate subscriptions')
     tg_bot = Bot(settings.telegram_bot_api_token)
     async with async_session() as session:
-        result = session.execute(stmt)
+        result = await session.execute(stmt)
         active_subscriptions: List[SubscriptionUser] = result.scalars().all()
         logger.info('Active subscription found: %d' % len(active_subscriptions))
         for subscription in active_subscriptions:
