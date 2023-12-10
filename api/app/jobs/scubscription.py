@@ -44,12 +44,15 @@ async def check_all_subscriptions_job():
                     ]])
                 )
             elif subscription.duration_in_days - abs(diff_in_days) == 3:
-                subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
-                await tg_bot.send_message(
-                    chat_id=subscription.user.telegram_user_id,
-                    text='До оночания вашей подписки <b>{name}</b> осталось 3 дня. Продлите подписку, чтобы не потерять доступ к группе.'.format(
-                        name=subscription_entity.name),
-                    reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[
-                        types.InlineKeyboardButton(text="Продлить", callback_data=f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
-                    ]])
-                )
+                if subscription.notified_3_days is False:
+                    subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
+                    await tg_bot.send_message(
+                        chat_id=subscription.user.telegram_user_id,
+                        text='До оночания вашей подписки <b>{name}</b> осталось 3 дня. Продлите подписку, чтобы не потерять доступ к группе.'.format(
+                            name=subscription_entity.name),
+                        reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[
+                            types.InlineKeyboardButton(text="Продлить", callback_data=f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
+                        ]])
+                    )
+                    subscription.notified_3_days = True
+                    await session.commit()

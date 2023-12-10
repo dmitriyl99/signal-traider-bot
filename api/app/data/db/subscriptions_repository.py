@@ -56,6 +56,7 @@ class SubscriptionsRepository:
         subscription_user.proactively_added = proactively_added
         subscription_user.user_id = user.id
         subscription_user.active = active
+        subscription_user.notified_3_days = False
         subscription_user.activation_datetime = datetime.now()
         self._session.add(subscription_user)
         await self._session.commit()
