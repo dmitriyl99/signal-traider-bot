@@ -64,7 +64,7 @@ async def send_subscriptions(update: Update, context: CallbackContext.DEFAULT_TY
                                     reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
 
 
-async def send_subscription_conditions(update: Update, subscription_id: int, user: User):
+async def send_subscription_conditions(update: Update, subscription_id: int, user: User, context: CallbackContext.DEFAULT_TYPE):
     subscription_conditions = await subscriptions_repository.get_subscription_condition(subscription_id)
     chunked_conditions = array.chunks(subscription_conditions, 2)
     keyboard = []
@@ -81,7 +81,12 @@ async def send_subscription_conditions(update: Update, subscription_id: int, use
                                                       user.language) % condition.duration_in_days))
         keyboard.append(buttons)
     keyboard.append([KeyboardButton(strings.get_string('back_button', user.language))])
-    await update.message.reply_text(strings.get_string('subscription_select_condition', user.language), reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
+    if update.message:
+        await update.message.reply_text(strings.get_string('subscription_select_condition', user.language), reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
+    else:
+        await context.bot.send_message(update.effective_user.id,
+                                       strings.get_string('subscription_select_condition', user.language),
+                                       reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
 
 
 async def send_payment_providers(update: Update, context: CallbackContext.DEFAULT_TYPE, subscription_id, subscription_condition_id,  user: User):
