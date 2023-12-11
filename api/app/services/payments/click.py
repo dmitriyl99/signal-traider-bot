@@ -22,9 +22,9 @@ class ClickPaymentHandler:
                      sign_string: Optional[str],
                      merchant_prepare_id: Optional[str], payment_repository: PaymentsRepository):
         merchant_prepare_id = merchant_prepare_id if action is not None and action == '1' else ''
-        my_sign_string = '{}{}{}{}{}{}{}{}'.format(
+        my_sign_string = '{}{}{}{}{}{}{}'.format(
             click_trans_id, settings.click_service_id, settings.click_secret_key, merchant_trans_id,
-            merchant_prepare_id, amount, action, sign_time
+            amount, action, sign_time
         )
         encoder = hashlib.md5(my_sign_string.encode('utf-8'))
         my_sign_string = encoder.hexdigest()
