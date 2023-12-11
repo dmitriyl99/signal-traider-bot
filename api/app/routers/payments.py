@@ -85,7 +85,7 @@ async def click_complete(
         await payment_repository.set_payment_status(payment_id, PaymentStatus.REJECTED)
     if result['error'] == '0':
         payment = await payment_repository.get_payment_by_id(payment_id)
-        user = await users_repository.get_user_by_id(payment.id)
+        user = await users_repository.get_user_by_id(payment.user_id)
         await payment_repository.set_payment_status(payment_id, PaymentStatus.CONFIRMED)
         await subscription_repository.add_subscription_to_user(
             user,
