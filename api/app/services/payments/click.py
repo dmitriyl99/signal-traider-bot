@@ -45,7 +45,7 @@ class ClickPaymentHandler:
                 'error_note': 'Payment not found'
             }
 
-        if abs(float(amount) * 100 - float(payment.amount) > 0.01):
+        if abs(float(amount) - float(payment.amount) > 0.01):
             return {
                 'error': '-2',
                 'error_note': 'Incorrect parameter amount'
