@@ -105,6 +105,7 @@ class ClickPaymentProvider(PaymentProvider):
             'phone_number': phone,
             'merchant_trans_id': str(payment_id)
         }
+        logging.info(f"Click request body: {payload}, headers: {headers}")
         response = requests.post('https://api.click.uz/v2/merchant/invoice/create', json=payload, headers=headers)
         if response.status_code != 200:
             logging.error(
