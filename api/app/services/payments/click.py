@@ -1,4 +1,5 @@
 import hashlib
+import logging
 
 from typing import Optional
 
@@ -26,8 +27,13 @@ class ClickPaymentHandler:
             click_trans_id, settings.click_service_id, settings.click_secret_key, merchant_trans_id,
             amount, action, sign_time
         )
+        logging.info('My sign string params {} {} {} {} {} {} {}'.format(
+            click_trans_id, settings.click_service_id, settings.click_secret_key, merchant_trans_id,
+            amount, action, sign_time
+        ))
         encoder = hashlib.md5(my_sign_string.encode('utf-8'))
         my_sign_string = encoder.hexdigest()
+        logging.info(f'Sign Strings: {sign_string} + {my_sign_string}')
         if my_sign_string != sign_string:
             return {
                 'error': '-1',
