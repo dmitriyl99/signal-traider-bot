@@ -95,7 +95,7 @@ class ClickPaymentProvider(PaymentProvider):
         ).encode('utf-8')
                              ).hexdigest()
         headers = {
-            'Auth': f"{self.merchant_id}:{token}:{timestamp}",
+            'Auth': f"{self.merchant_user_id}:{token}:{timestamp}",
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
