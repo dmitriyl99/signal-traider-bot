@@ -12,6 +12,7 @@ from app.routers.forms.payments import PaymeForm
 from app.data.models.payme_transaction import PaymeTransactionStates
 from app.services import bot
 from app.config import settings
+from app.data.models.subscription import Subscription
 
 
 class PaycomPaymentHandler:
@@ -182,7 +183,9 @@ class PaycomPaymentHandler:
             payment = await self.payments_repository.get_payment_by_id(transaction.payment_id)
             user = await self.users_repository.get_user_by_id(payment.user_id)
             subscription_user = await self.subscriptions_repository.add_subscription_to_user(user, payment.subscription_id, subscription_condition_id=payment.subscription_condition_id)
-            await bot.subscription_purchased(user, subscription_user.subscription)
+            subscription_entity: Subscription = await self.subscriptions_repository.get_subscription_by_id(
+                subscription_user.subscription_id)
+            await bot.subscription_purchased(user, subscription_entity)
 
             return {
                 'transaction': transaction.id,

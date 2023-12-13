@@ -22,6 +22,9 @@ class SubscriptionsRepository:
         result = await self._session.execute(stmt)
         return result.scalars().all()
 
+    async def get_subscription_by_id(self, subscription_id) -> Optional[Subscription]:
+        return await self._session.get(Subscription, subscription_id)
+
     async def add_subscription_to_user(
             self,
             user: User,
