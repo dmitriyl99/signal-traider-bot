@@ -32,9 +32,12 @@ async def check_all_subscriptions_job():
                     'Deactivate subscription %d for user %d' % (subscription.subscription_id, subscription.user_id))
                 subscription.active = False
                 await session.commit()
-                await bot.ban_user_in_group(subscription.user.telegram_user_id)
-                # amocrm_integration.add_user_to_catalog(subscription.user, amocrm_integration.AmoCrmUserType.LOST_USER)
                 subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
+                telegram_group_chat_ids = subscription_entity.telegram_group_ids.split(',')
+                for telegram_group_chat_id in telegram_group_chat_ids:
+                    await bot.ban_user_in_group(subscription.user.telegram_user_id, telegram_group_chat_id)
+                # amocrm_integration.add_user_to_catalog(subscription.user, amocrm_integration.AmoCrmUserType.LOST_USER)
+
                 await tg_bot.send_message(
                     chat_id=subscription.user.telegram_user_id,
                     text='Ваша подписка {name} окончена и вы были исключены из группы. Оформите подписку заново, чтобы получить доступ к группе'.format(
