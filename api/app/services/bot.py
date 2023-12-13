@@ -7,13 +7,17 @@ from aiogram import Bot, types
 
 from app.data.models.signal import Signal
 from app.data.models.admin_users import AdminUser
+from app.data.models.users import User
+from app.data.models.subscription import Subscription
 from app.data.db.users_repository import UsersRepository
 from app.data.db.signals_repository import SignalsRepository
 from app.config import settings
 from app.helpers import array
+from app.resources import strings
 
 
-async def send_distribution(signal: Signal, user_repository: UsersRepository, signals_repository: SignalsRepository, admin_user: AdminUser):
+async def send_distribution(signal: Signal, user_repository: UsersRepository, signals_repository: SignalsRepository,
+                            admin_user: AdminUser):
     if len(list(filter(lambda x: x.name == 'Analyst', admin_user.roles))) > 0:
         users = await user_repository.get_all_users_with_active_subscriptions(admin_user.id)
     else:
@@ -44,7 +48,9 @@ async def send_distribution(signal: Signal, user_repository: UsersRepository, si
     signals_repository.save_mapper_for_signal(signal, chat_message_mapper)
 
 
-async def send_text_distribution(text: str, attachments: Optional[List[Dict[str, Any]]], user_repository: UsersRepository, admin_user: AdminUser, importance: int, currency: str | None):
+async def send_text_distribution(text: str, attachments: Optional[List[Dict[str, Any]]],
+                                 user_repository: UsersRepository, admin_user: AdminUser, importance: int,
+                                 currency: str | None):
     if len(list(filter(lambda x: x.name == 'Analyst', admin_user.roles))) > 0:
         users = await user_repository.get_all_users_with_active_subscriptions(analyst_id=admin_user.id)
     else:
@@ -81,6 +87,26 @@ async def add_user_to_group(telegram_user_id: int):
                                    inline_keyboard=[[types.InlineKeyboardButton(text="Вступить в группу",
                                                                                 url=invite_link)]]
                                ))
+
+
+async def subscription_purchased(user: User, subscription: Subscription):
+    bot = Bot(settings.telegram_bot_api_token)
+    telegram_group_ids = subscription.telegram_group_ids.split(',')
+    telegram_user_id = user.telegram_user_id
+    invite_links = []
+    for index, telegram_group_chat_id in enumerate(telegram_group_ids):
+        chat_member = await bot.get_chat_member(telegram_group_chat_id, telegram_user_id)
+        if chat_member.status == 'kicked':
+            await bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
+        invite_link = await bot.export_chat_invite_link(telegram_group_chat_id)
+        link_name = f"[{strings.get_string('invite_group', user.language)}]" if len(
+            telegram_group_ids) == 1 else f"[{strings.get_string('invite_group', user.language)} {index + 1}]"
+        invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")
+    await bot.send_message(user.telegram_user_id,
+                           strings.get_string('subscription_purchased', user.language).format(
+                               invite_links=' '.join(invite_links)),
+                           parse_mode=types.ParseMode.HTML,
+                           reply_markup=types.ReplyKeyboardRemove())
 
 
 async def ban_user_in_group(telegram_user_id: int):

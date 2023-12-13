@@ -13,7 +13,7 @@ from app.payments import providers as payment_providers
 
 
 def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAULT_TYPE, user: User):
-    return update.message.reply_text(
+    return update.message.reply_html(
         strings.get_string('subscription_menu_message', user.language),
         reply_markup=ReplyKeyboardMarkup(
             [

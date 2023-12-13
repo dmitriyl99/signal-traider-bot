@@ -86,6 +86,8 @@ async def _language(update: Update, context: CallbackContext.DEFAULT_TYPE):
     if current_user is not None:
         await users_repository.set_user_language(update.effective_user.id, languages[text])
         return await _start(update, context)
+    await update.message.reply_html(strings.get_string('welcome_text'), context.user_data['registration_language'],
+                                    reply_markup=ReplyKeyboardRemove())
     await update.message.reply_text(strings.get_string('registration_name', context.user_data['registration_language']),
                                     reply_markup=ReplyKeyboardRemove())
 

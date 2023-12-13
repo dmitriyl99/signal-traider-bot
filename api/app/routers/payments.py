@@ -18,6 +18,7 @@ from app.data.models.admin_users import AdminUser
 from app.services.payments.click import ClickPaymentHandler
 from app.services.payments.paycom import PaycomPaymentHandler, PaycomException
 from app.services import bot
+from app.resources import strings
 
 router = APIRouter(prefix='/payments', tags=['Payments'])
 
@@ -44,7 +45,8 @@ async def click_prepare(
 ):
     payment_id = int(merchant_trans_id)
     click_handler = ClickPaymentHandler(payment_repository)
-    logging.info(f'Request from click prepare: merchant_trans_id: {merchant_trans_id}, click_trans_id: {click_trans_id}, amount: {amount}, action: {action}, error: {error}, sign_time: {sign_time}, merchant_prepare_id: {merchant_prepare_id}')
+    logging.info(
+        f'Request from click prepare: merchant_trans_id: {merchant_trans_id}, click_trans_id: {click_trans_id}, amount: {amount}, action: {action}, error: {error}, sign_time: {sign_time}, merchant_prepare_id: {merchant_prepare_id}')
     result = await click_handler.handle(merchant_trans_id, click_trans_id, amount, action,
                                         error, sign_time, sign_string, merchant_prepare_id,
                                         payment_repository)
@@ -87,14 +89,13 @@ async def click_complete(
         payment = await payment_repository.get_payment_by_id(payment_id)
         user = await users_repository.get_user_by_id(payment.user_id)
         await payment_repository.set_payment_status(payment_id, PaymentStatus.CONFIRMED)
-        await subscription_repository.add_subscription_to_user(
+        subscription_user = await subscription_repository.add_subscription_to_user(
             user,
             payment.subscription_id,
             subscription_condition_id=payment.subscription_condition_id,
             active=True
         )
-        await bot.send_message_to_user(user.telegram_user_id, "Подписка куплена!", remove_keyboard=True)
-        await bot.add_user_to_group(telegram_user_id=user.telegram_user_id)
+        await bot.subscription_purchased(user, subscription_user.subscription)
     result['click_trans_id'] = click_trans_id
     result['merchant_trans_id'] = merchant_trans_id
     result['merchant_prepare_id'] = merchant_prepare_id
@@ -160,13 +161,12 @@ async def cloud_payments(
             status_code=404,
             detail='User not found'
         )
-    await subscription_repository.add_subscription_to_user(
+    subscription_user = await subscription_repository.add_subscription_to_user(
         user, form.subscription_id,
         subscription_condition_id=form.subscription_condition_id,
         proactively_added=False,
         active=True
     )
-    await bot.send_message_to_user(user.telegram_user_id, "Подписка куплена!", remove_keyboard=True)
-    await bot.add_user_to_group(telegram_user_id=user.telegram_user_id)
+    await bot.subscription_purchased(user, subscription_user.subscription)
 
     return {}
