@@ -2,7 +2,7 @@ import apiInstance from "./index";
 
 
 function getSubscriptions() {
-    return apiInstance.get('/subscriptions');
+    return apiInstance.get('/subscriptions/');
 }
 
 export default {

@@ -18,11 +18,11 @@ function sendSignal(
         sl
     }
 
-    return apiInstance.post('/signals', payload);
+    return apiInstance.post('/signals/', payload);
 }
 
 function sendReply(signal_id, text) {
-    return apiInstance.post(`/signals/${signal_id}/reply`, {text})
+    return apiInstance.post(`/signals/${signal_id}/reply/`, {text})
 }
 
 function sendCustomMessage(text, files=null, images=null, importance = '0', currency_pair) {
@@ -41,19 +41,19 @@ function sendCustomMessage(text, files=null, images=null, importance = '0', curr
         })
     }
 
-    return apiInstance.post('/signals/message', formData, {headers: {"Content-Type": "multipart/form-data"}});
+    return apiInstance.post('/signals/message/', formData, {headers: {"Content-Type": "multipart/form-data"}});
 }
 
 function loadCustomMessages() {
-    return apiInstance.get('/signals/message');
+    return apiInstance.get('/signals/message/');
 }
 
 function getAllSignals() {
-    return apiInstance.get('/signals');
+    return apiInstance.get('/signals/');
 }
 
 function getSuggestion(currencyPair) {
-    return apiInstance.get('/signals/suggestion', {params: {currency_pair: currencyPair}})
+    return apiInstance.get('/signals/suggestion/', {params: {currency_pair: currencyPair}})
 }
 
 export default {
