@@ -10,6 +10,9 @@ from app.config import config
 
 
 async def default_handler(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    if update.message.chat.type in [ChatType.SUPERGROUP, ChatType.GROUP]:
+        if update.message.new_chat_members or update.message.left_chat_member:
+            await update.message.delete()
     if update.message.chat.type != ChatType.PRIVATE:
         return
     await update.message.reply_text("Отправьте команду /start для перезапуска бота", reply_markup=ReplyKeyboardRemove())

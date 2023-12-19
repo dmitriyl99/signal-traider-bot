@@ -1,11 +1,11 @@
 strings_data = {
     'subscription_purchased': {
         'ru': 'Поздравляем с успешной оплатой подписки! 🎉 Вот ваш эксклюзивный доступ к группе OneZone: {invite_links}. Присоединяйтесь и начните свой путь к успеху на Forex сегодня!',
-        'uz': 'Obuna sotib olindi!'
+        'uz': "Tabriklaymiz, obuna uchun to'lov muvaffaqiyatli amalga oshirildi! 🎉 Mana sizning OneZone guruhiga eksklyuziv kirishingiz: {invite_links}. Qo'shiling va bugun Forex'dagi muvaffaqiyat yo'lingizni boshlang!"
     },
     'invite_group': {
-        'ru': 'Ссылка на группу',
-        'uz': 'empty'
+        'ru': 'Ссылка на Группу {name}',
+        'uz': '{name} Guruhiga Havola'
     }
 }
 

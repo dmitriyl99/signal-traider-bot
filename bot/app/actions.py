@@ -13,8 +13,11 @@ from app.payments import providers as payment_providers
 
 
 def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAULT_TYPE, user: User):
-    return update.message.reply_html(
+    update.message.reply_html(
         strings.get_string('subscription_menu_message', user.language),
+    )
+    return update.message.reply_html(
+        strings.get_string('subscription_menu_message_2', user.language),
         reply_markup=ReplyKeyboardMarkup(
             [
                 [KeyboardButton(strings.get_string('graphical_signals', user.language))],

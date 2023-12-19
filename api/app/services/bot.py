@@ -94,13 +94,23 @@ async def subscription_purchased(user: User, subscription: Subscription):
     telegram_group_ids = subscription.telegram_group_ids.split(',')
     telegram_user_id = user.telegram_user_id
     invite_links = []
+    index_group_mapper = {
+        0: {
+            'ru': 'Амаля',
+            'uz': 'Amal'
+        },
+        1: {
+            'ru': 'Захриддина',
+            'uz': 'Zahridin'
+        }
+    }
     for index, telegram_group_chat_id in enumerate(telegram_group_ids):
         chat_member = await bot.get_chat_member(telegram_group_chat_id, telegram_user_id)
         if chat_member.status == 'kicked':
             await bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
         invite_link = await bot.export_chat_invite_link(telegram_group_chat_id)
         link_name = f"[{strings.get_string('invite_group', user.language)}]" if len(
-            telegram_group_ids) == 1 else f"[{strings.get_string('invite_group', user.language)} {index + 1}]"
+            telegram_group_ids) == 1 else f"[{strings.get_string('invite_group', user.language).format(name=index_group_mapper[index][user.language])}]"
         invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")
     await bot.send_message(user.telegram_user_id,
                            strings.get_string('subscription_purchased', user.language).format(
