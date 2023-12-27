@@ -103,7 +103,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     )
     if payment_provider.name == 'Fake':
         await payments_repository.set_status(payment.id, PaymentStatus.CONFIRMED)
-        # await subscriptions_repository.add_subscription_to_user(subscription.id, subscription_condition.id, user.id)
+        await subscriptions_repository.add_subscription_to_user(subscription.id, subscription_condition.id, user.id)
         telegram_group_ids = subscription.telegram_group_ids.split(',')
         telegram_user_id = user.telegram_user_id
         invite_links = []
@@ -131,8 +131,8 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
                                        parse_mode=ParseMode.HTML,
                                        reply_markup=ReplyKeyboardRemove())
         await update.message.reply_video_note(open('2023-12-27 23.43.59.mp4', 'rb'))
-        await update.message.reply_video_note(open('video3.mp4', 'rb'))
-        await update.message.reply_video_note(open('video4.mp4', 'rb'))
+        await update.message.reply_video(open('video3.mp4', 'rb'))
+        await update.message.reply_video(open('video4.mp4', 'rb'))
     if payment_provider.name == 'Click':
         try:
             payment_provider.create_invoice(int(exchanged_price), user.phone, payment.id)
