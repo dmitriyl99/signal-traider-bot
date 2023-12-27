@@ -12,17 +12,14 @@ from app.helpers import date, array
 from app.payments import providers as payment_providers
 
 
-def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAULT_TYPE, user: User):
-    update.message.reply_html(
-        strings.get_string('subscription_menu_message', user.language),
-    )
+async def send_subscription_menu_button(update: Update, context: CallbackContext.DEFAULT_TYPE, user: User):
+    subscriptions = await subscriptions_repository.get_subscriptions()
+    keybaord = []
+    for subscription in subscriptions:
+        keybaord.append([subscription.name])
     return update.message.reply_html(
-        strings.get_string('subscription_menu_message_2', user.language),
-        reply_markup=ReplyKeyboardMarkup(
-            [
-                [KeyboardButton(strings.get_string('graphical_signals', user.language))],
-            ], resize_keyboard=True
-        )
+        strings.get_string('subscription_menu_message', user.language),
+        reply_markup=ReplyKeyboardMarkup(keyboard=keybaord, resize_keyboard=True)
     )
 
 

@@ -20,14 +20,13 @@ CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION, SELECT_PAYMENT_PROVIDER, BACK, CLOUD_PAYM
 
 async def _subscription_start(update: Update, context: CallbackContext.DEFAULT_TYPE):
     user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
-    if update.message.text in [strings.get_string('graphical_signals', 'ru'), strings.get_string('graphical_signals', 'uz')]:
-        subscriptions = await subscriptions_repository.get_subscriptions('graph_signals')
-        context.user_data['subscription:id'] = subscriptions[0].id
-        await send_subscription_conditions(update, subscriptions[0].id, user, context)
+    message = update.message.text
+    subscription = await subscriptions_repository.get_subscription_by_name(message)
+    if subscription:
+        context.user_data['subscription:id'] = subscription.id
+        await send_subscription_conditions(update, subscription.id, user, context)
         return CHOOSE_CONDITION
-    await send_subscriptions(update, context, user)
-
-    return CHOOSE_SUBSCRIPTION
+    return ConversationHandler.END
 
 
 async def _choose_subscription(update: Update, context: CallbackContext.DEFAULT_TYPE):
@@ -207,12 +206,9 @@ async def _fallbacks_handler(update: Update, context: CallbackContext.DEFAULT_TY
 handler = ConversationHandler(
     allow_reentry=True,
     entry_points=[MessageHandler(
-        filters.Text(strings.get_string('graphical_signals', 'ru')) |
-        filters.Text(strings.get_string('graphical_signals', 'uz')) |
-        filters.Text(strings.get_string('interday_subscriptions', 'ru')) |
-        filters.Text(strings.get_string('interday_subscriptions', 'uz')) |
-        filters.Text(strings.get_string('marafon_subscriptions', 'ru')) |
-        filters.Text(strings.get_string('marafon_subscriptions', 'uz')),
+        filters.Text('OneZone [RU] группа - аналитические сигналы') |
+        filters.Text('OneZone [RU][UZ] группа - аналитические сигналы') |
+        filters.Text('OneZone [UZ] группа - аналитические сигналы'),
         _subscription_start)],
     states={
         CHOOSE_SUBSCRIPTION: [MessageHandler(filters.TEXT, _choose_subscription)],
