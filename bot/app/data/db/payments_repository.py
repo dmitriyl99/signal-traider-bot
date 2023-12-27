@@ -31,7 +31,7 @@ async def set_clouds_payments_transaction_id(
         transaction_id: str
 ):
     async with async_session() as session:
-        payment = session.get(Payment, payment_id)
+        payment = await session.get(Payment, payment_id)
         payment.cloud_payments_transaction_id = transaction_id
         await session.commit()
 
@@ -41,6 +41,6 @@ async def set_status(
         status
 ):
     async with async_session() as session:
-        payment = session.get(Payment, payment_id)
+        payment = await session.get(Payment, payment_id)
         payment.status = status
         await session.commit()
