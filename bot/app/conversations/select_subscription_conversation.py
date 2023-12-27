@@ -130,12 +130,9 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
                                            invite_links=' '.join(invite_links)),
                                        parse_mode=ParseMode.HTML,
                                        reply_markup=ReplyKeyboardRemove())
-        message1 = await update.message.reply_video_note(open('2023-12-27 23.43.59.mp4', 'rb'))
-        message2 = await update.message.reply_video(open('video3.mp4', 'rb'))
-        message3 = await update.message.reply_video(open('video4.mp4', 'rb'))
-        print('message1', message1.to_json())
-        print('message2', message2.to_json())
-        print('message3', message3.to_json())
+        await update.message.reply_video_note('DQACAgIAAxkDAAIDtWWMf8vD6t_meoDEAT0oa-Xpedm0AAIlRQACT7BpSAgX2xXgIQ4JMwQ')
+        await update.message.reply_video('BAACAgIAAxkDAAIDtmWMf84VTJyg7MnggOa8CwJA-HQFAAJpRQACFG1hSPkMCYQ7fdlFMwQ')
+        await update.message.reply_video('BAACAgIAAxkDAAIDt2WMf9KV0uH1yVSNdWtj39y7t2xYAAIoRQACT7BpSMAcZXLoo9ZDMwQ')
         return ConversationHandler.END
     if payment_provider.name == 'Click':
         try:
