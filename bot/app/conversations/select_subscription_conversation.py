@@ -133,6 +133,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
         await update.message.reply_video_note(open('2023-12-27 23.43.59.mp4', 'rb'))
         await update.message.reply_video(open('video3.mp4', 'rb'))
         await update.message.reply_video(open('video4.mp4', 'rb'))
+        return ConversationHandler.END
     if payment_provider.name == 'Click':
         try:
             payment_provider.create_invoice(int(exchanged_price), user.phone, payment.id)
