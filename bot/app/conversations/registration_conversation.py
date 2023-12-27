@@ -2,7 +2,7 @@ from typing import Optional
 import logging
 
 from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
-from telegram.constants import ChatType
+from telegram.constants import ChatType, ChatAction
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, filters
 
 from app.resources import strings
@@ -29,7 +29,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
             await update.message.reply_text(strings.get_string('registration_language'),
                                             reply_markup=ReplyKeyboardMarkup(
                                                 keyboard=[[
-                                                    #'🇷🇺 Русский',
+                                                    '🇷🇺 Русский',
                                                     "🇺🇿 O'zbek"]], resize_keyboard=True))
 
             return LANGUAGE
@@ -42,7 +42,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
             await update.message.reply_text(strings.get_string('registration_language'),
                                             reply_markup=ReplyKeyboardMarkup(
                                                 keyboard=[[
-                                                    #'🇷🇺 Русский',
+                                                    '🇷🇺 Русский',
                                                     "🇺🇿 O'zbek"]], resize_keyboard=True))
 
             return LANGUAGE
@@ -72,7 +72,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
         return ConversationHandler.END
     await update.message.reply_text(strings.get_string('registration_language'),
                                     reply_markup=ReplyKeyboardMarkup(keyboard=[[
-                                        # '🇷🇺 Русский',
+                                        '🇷🇺 Русский',
                                         "🇺🇿 O'zbek"]], resize_keyboard=True))
 
     return LANGUAGE
@@ -92,8 +92,8 @@ async def _language(update: Update, context: CallbackContext.DEFAULT_TYPE):
     if current_user is not None:
         await users_repository.set_user_language(update.effective_user.id, languages[text])
         return await _start(update, context)
-    video_id = 'DQACAgQAAxkBAAIK12WMKJ1ShKS9WJH6OWmuUpjDcUauAAIbFAACYn9hUGYIAmfdDanyMwQ'
-    await update.message.reply_video_note(video_id)
+    await update.message.reply_chat_action(ChatAction.UPLOAD_VIDEO_NOTE)
+    await update.message.reply_video_note(open('2023-12-27 23.43.47.mp4', 'rb'))
     await update.message.reply_html(strings.get_string('welcome_text'), context.user_data['registration_language'],
                                     reply_markup=ReplyKeyboardRemove())
     await update.message.reply_text(strings.get_string('registration_name', context.user_data['registration_language']),

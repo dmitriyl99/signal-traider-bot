@@ -18,7 +18,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
     await update.message.reply_text(strings.get_string('registration_language'),
                                     reply_markup=ReplyKeyboardMarkup(
                                         keyboard=[[
-                                            #'🇷🇺 Русский',
+                                            '🇷🇺 Русский',
                                             "🇺🇿 O'zbek"]], resize_keyboard=True))
 
     return LANGUAGE
