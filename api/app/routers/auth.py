@@ -26,7 +26,7 @@ def _create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-@router.post('/token', response_model=Token)
+@router.post('/token/', response_model=Token)
 async def token(
         form_data: LoginForm,
         user_repository: AdminUsersRepository = Depends(get_admin_users_repository)
