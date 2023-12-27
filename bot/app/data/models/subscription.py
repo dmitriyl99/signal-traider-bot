@@ -12,6 +12,7 @@ class Subscription(Base):
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String)
     category = sa.Column(sa.String)
+    telegram_group_ids = sa.Column(sa.String(255))
 
     conditions = relationship('SubscriptionCondition', back_populates='subscription', lazy='subquery')
     users = relationship('SubscriptionUser', back_populates='subscription')
