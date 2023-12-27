@@ -129,12 +129,9 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
                                            invite_links=' '.join(invite_links)),
                                        parse_mode=ParseMode.HTML,
                                        reply_markup=ReplyKeyboardRemove())
-        await context.bot.send_video_note(user.telegram_user_id,
-                                          open('2023-12-27 23.43.59.mp4', 'rb'))
-        await context.bot.send_video_note(user.telegram_user_id,
-                                          open('video3.mp4', 'rb'))
-        await context.bot.send_video_note(user.telegram_user_id,
-                                          open('video4.mp4', 'rb'))
+        await update.message.reply_video_note(open('2023-12-27 23.43.59.mp4', 'rb'))
+        await update.message.reply_video_note(open('video3.mp4', 'rb'))
+        await update.message.reply_video_note(open('video4.mp4', 'rb'))
     if payment_provider.name == 'Click':
         try:
             payment_provider.create_invoice(int(exchanged_price), user.phone, payment.id)
