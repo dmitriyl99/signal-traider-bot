@@ -18,7 +18,7 @@ async def send_subscription_menu_button(update: Update, context: CallbackContext
     keybaord = []
     for subscription in subscriptions:
         keybaord.append([subscription.name])
-    return update.message.reply_html(
+    await update.message.reply_html(
         strings.get_string('subscription_menu_message', user.language),
         reply_markup=ReplyKeyboardMarkup(keyboard=keybaord, resize_keyboard=True)
     )
