@@ -34,7 +34,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
 
             return LANGUAGE
         if active_subscription is not None:
-            await actions.send_current_subscription_information(active_subscription, update, hash_command_user)
+            await actions.send_current_subscription_information(active_subscription, update, hash_command_user, context)
             return ConversationHandler.END
     current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if current_user is not None:
@@ -66,7 +66,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
         active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(
             current_user)
         if active_subscription is not None:
-            await actions.send_current_subscription_information(active_subscription, update, current_user)
+            await actions.send_current_subscription_information(active_subscription, update, current_user, context)
             return ConversationHandler.END
         await actions.send_subscription_menu_button(update, context, current_user)
         return ConversationHandler.END
@@ -123,7 +123,7 @@ async def _name(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
             await update.message.reply_text(
                 text=strings.get_string('registration_bonus_activated', user.language)
             )
-            await actions.send_current_subscription_information(active_subscription, update, user)
+            await actions.send_current_subscription_information(active_subscription, update, user, context)
             return ConversationHandler.END
 
     await update.message.reply_text(
@@ -223,7 +223,13 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE):
     if active_subscription is None:
         await actions.send_subscription_menu_button(update, context, user)
     else:
-        await actions.send_current_subscription_information(active_subscription, update, user)
+        await actions.send_current_subscription_information(active_subscription, update, user, context)
+        await context.bot.send_video_note(user.telegram_user_id,
+                                  'DQACAgQAAxkBAAIK3GWML_pACb5nJl5VQ9_WtJu08N0PAAImFAACYn9hUDoupt0cOR4PMwQ')
+        await context.bot.send_video(user.telegram_user_id,
+                             'BQACAgIAAxkBAAIK32WMMv7q_-k6apWj23S2BtxEBt7mAALHOQACFWtYSI-qX8UK3PWkMwQ')
+        await context.bot.send_video(user.telegram_user_id,
+                             'BQACAgIAAxkBAAIK4GWMMyAGrU1pvWxv9bApYTfGu9jOAALUOQACFWtYSPLfU26VFltXMwQ')
     if 'registration_name' in context.user_data:
         del context.user_data['registration_name']
     return ConversationHandler.END

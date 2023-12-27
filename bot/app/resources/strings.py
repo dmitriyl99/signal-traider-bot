@@ -112,8 +112,8 @@ Ikki baravar tahlil oling va Forex'dagi treyding imkoniyatlaringizni oshiring!
         'uz': "Noto'g'ri raqam formati"
     },
     'active_subscription': {
-        'ru': 'У вас имеется подписка {name} до {to_date}. Осталось: {days} дней',
-        'uz': '{to_date} gacha {name}ga obunangiz bor. Qolgan kun: {days}'
+        'ru': 'У вас имеется подписка {name} до {to_date}. Осталось: {days} дней. Вот ваш эксклюзивный доступ к группе OneZone: {invite_links}.',
+        'uz': '{to_date} gacha {name}ga obunangiz bor. Qolgan kun: {days}. Mana sizning OneZone guruhiga eksklyuziv kirishingiz: {invite_links}.'
     },
 
     'subscription_not_found': {
@@ -183,6 +183,14 @@ Ikki baravar tahlil oling va Forex'dagi treyding imkoniyatlaringizni oshiring!
     'language_changed': {
         'ru': '🇷🇺 Язык изменён',
         'uz': "🇺🇿 Til o'zgartirildi"
+    },
+    'subscription_purchased': {
+        'ru': 'Поздравляем с успешной оплатой подписки! 🎉 Вот ваш эксклюзивный доступ к группе OneZone: {invite_links}. Присоединяйтесь и начните свой путь к успеху на Forex сегодня!',
+        'uz': "Tabriklaymiz, obuna uchun to'lov muvaffaqiyatli amalga oshirildi! 🎉 Mana sizning OneZone guruhiga eksklyuziv kirishingiz: {invite_links}. Qo'shiling va bugun Forex'dagi muvaffaqiyat yo'lingizni boshlang!"
+    },
+    'invite_group': {
+        'ru': 'Ссылка на Группу {name}',
+        'uz': '{name} Guruhiga Havola'
     },
     'welcome_text': {
         'ru': """🌐 В OneZone вы найдете: 
