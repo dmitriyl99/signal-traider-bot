@@ -28,7 +28,9 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
         if hash_command_user.language is None:
             await update.message.reply_text(strings.get_string('registration_language'),
                                             reply_markup=ReplyKeyboardMarkup(
-                                                keyboard=[['🇷🇺 Русский', "🇺🇿 O'zbek"]], resize_keyboard=True))
+                                                keyboard=[[
+                                                    #'🇷🇺 Русский',
+                                                    "🇺🇿 O'zbek"]], resize_keyboard=True))
 
             return LANGUAGE
         if active_subscription is not None:
@@ -39,7 +41,9 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
         if current_user.language is None:
             await update.message.reply_text(strings.get_string('registration_language'),
                                             reply_markup=ReplyKeyboardMarkup(
-                                                keyboard=[['🇷🇺 Русский', "🇺🇿 O'zbek"]], resize_keyboard=True))
+                                                keyboard=[[
+                                                    #'🇷🇺 Русский',
+                                                    "🇺🇿 O'zbek"]], resize_keyboard=True))
 
             return LANGUAGE
         await update.message.reply_text(strings.get_string('hello_message', current_user.language) % current_user.name)
@@ -67,7 +71,9 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
         await actions.send_subscription_menu_button(update, context, current_user)
         return ConversationHandler.END
     await update.message.reply_text(strings.get_string('registration_language'),
-                                    reply_markup=ReplyKeyboardMarkup(keyboard=[['🇷🇺 Русский', "🇺🇿 O'zbek"]], resize_keyboard=True))
+                                    reply_markup=ReplyKeyboardMarkup(keyboard=[[
+                                        # '🇷🇺 Русский',
+                                        "🇺🇿 O'zbek"]], resize_keyboard=True))
 
     return LANGUAGE
 
@@ -86,6 +92,8 @@ async def _language(update: Update, context: CallbackContext.DEFAULT_TYPE):
     if current_user is not None:
         await users_repository.set_user_language(update.effective_user.id, languages[text])
         return await _start(update, context)
+    video_id = 'DQACAgQAAxkBAAIK12WMKJ1ShKS9WJH6OWmuUpjDcUauAAIbFAACYn9hUGYIAmfdDanyMwQ'
+    await update.message.reply_video_note(video_id)
     await update.message.reply_html(strings.get_string('welcome_text'), context.user_data['registration_language'],
                                     reply_markup=ReplyKeyboardRemove())
     await update.message.reply_text(strings.get_string('registration_name', context.user_data['registration_language']),
