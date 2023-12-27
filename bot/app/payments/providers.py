@@ -114,6 +114,11 @@ class ClickPaymentProvider(PaymentProvider):
         logging.info(f'Response from Click: {response.status_code} - {response.content}')
 
 
+class FakePaymentProvider(PaymentProvider):
+    def __init__(self, name: str):
+        super().__init__(name, None)
+
+
 def get_payment_providers() -> List[PaymentProvider]:
     available_providers = config.PAYMENT_PROVIDERS
     providers = []
@@ -138,6 +143,8 @@ def get_payment_providers() -> List[PaymentProvider]:
             key=config.PAYME_KEY,
             test_key=config.PAYME_TEST_KEY
         ))
+    if 'fake' in available_providers:
+        providers.append(FakePaymentProvider('Fake'))
     return providers
 
 

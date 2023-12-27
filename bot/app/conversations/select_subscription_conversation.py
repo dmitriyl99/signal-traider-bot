@@ -2,7 +2,8 @@ import logging
 
 import json
 
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, WebAppInfo, KeyboardButton
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, WebAppInfo, KeyboardButton, ReplyKeyboardRemove
+from telegram.constants import ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, MessageHandler, filters
 
 from app.payments import providers as payment_providers, handlers
@@ -100,6 +101,40 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
         subscription_id,
         subscription_condition_id
     )
+    if payment_provider.name == 'Fake':
+        await payments_repository.set_status(payment.id, PaymentStatus.CONFIRMED)
+        telegram_group_ids = subscription.telegram_group_ids.split(',')
+        telegram_user_id = user.telegram_user_id
+        invite_links = []
+        index_group_mapper = {
+            0: {
+                'ru': 'Амаля',
+                'uz': 'Amal'
+            },
+            1: {
+                'ru': 'Захриддина',
+                'uz': 'Zahridin'
+            }
+        }
+        for index, telegram_group_chat_id in enumerate(telegram_group_ids):
+            chat_member = await context.bot.get_chat_member(telegram_group_chat_id, telegram_user_id)
+            if chat_member.status == 'kicked':
+                await context.bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
+            invite_link = await context.bot.export_chat_invite_link(telegram_group_chat_id)
+            link_name = f"[{strings.get_string('invite_group', user.language)}]" if len(
+                telegram_group_ids) == 1 else f"[{strings.get_string('invite_group', user.language).format(name=index_group_mapper[index][user.language])}]"
+            invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")
+        await context.bot.send_message(user.telegram_user_id,
+                                       strings.get_string('subscription_purchased', user.language).format(
+                                           invite_links=' '.join(invite_links)),
+                                       parse_mode=ParseMode.HTML,
+                                       reply_markup=ReplyKeyboardRemove())
+        await context.bot.send_video_note(user.telegram_user_id,
+                                          open('2023-12-27 23.43.59.mp4', 'rb'))
+        await context.bot.send_video_note(user.telegram_user_id,
+                                          open('video3.mp4', 'rb'))
+        await context.bot.send_video_note(user.telegram_user_id,
+                                          open('video4.mp4', 'rb'))
     if payment_provider.name == 'Click':
         try:
             payment_provider.create_invoice(int(exchanged_price), user.phone, payment.id)
