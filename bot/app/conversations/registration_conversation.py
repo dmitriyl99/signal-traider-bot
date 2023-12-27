@@ -224,8 +224,6 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE):
         await actions.send_subscription_menu_button(update, context, user)
     else:
         await actions.send_current_subscription_information(active_subscription, update, user, context)
-        await context.bot.send_video_note(user.telegram_user_id,
-                                  'DQACAgQAAxkBAAIK3GWML_pACb5nJl5VQ9_WtJu08N0PAAImFAACYn9hUDoupt0cOR4PMwQ')
         await context.bot.send_video(user.telegram_user_id,
                              'BQACAgIAAxkBAAIK32WMMv7q_-k6apWj23S2BtxEBt7mAALHOQACFWtYSI-qX8UK3PWkMwQ')
         await context.bot.send_video(user.telegram_user_id,
