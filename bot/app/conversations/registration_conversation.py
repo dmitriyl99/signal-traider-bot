@@ -224,10 +224,8 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE):
         await actions.send_subscription_menu_button(update, context, user)
     else:
         await actions.send_current_subscription_information(active_subscription, update, user, context)
-        await context.bot.send_video(user.telegram_user_id,
-                             'BQACAgIAAxkBAAIK32WMMv7q_-k6apWj23S2BtxEBt7mAALHOQACFWtYSI-qX8UK3PWkMwQ')
-        await context.bot.send_video(user.telegram_user_id,
-                             'BQACAgIAAxkBAAIK4GWMMyAGrU1pvWxv9bApYTfGu9jOAALUOQACFWtYSPLfU26VFltXMwQ')
+        await update.message.reply_video(open('video3.mp4', 'rb'))
+        await update.message.reply_video(open('video4.mp4', 'rb'))
     if 'registration_name' in context.user_data:
         del context.user_data['registration_name']
     return ConversationHandler.END
