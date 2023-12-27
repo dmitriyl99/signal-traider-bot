@@ -103,6 +103,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     )
     if payment_provider.name == 'Fake':
         await payments_repository.set_status(payment.id, PaymentStatus.CONFIRMED)
+        # await subscriptions_repository.add_subscription_to_user(subscription.id, subscription_condition.id, user.id)
         telegram_group_ids = subscription.telegram_group_ids.split(',')
         telegram_user_id = user.telegram_user_id
         invite_links = []
