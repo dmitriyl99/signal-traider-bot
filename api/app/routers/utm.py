@@ -9,7 +9,7 @@ from app.routers.forms.utm import CreateUtmCommand
 router = APIRouter(prefix='/utm', tags=['UTM'])
 
 
-@router.get('/commands')
+@router.get('/commands/')
 async def get_utm_commands(
         utm_repository: UtmRepository = Depends(get_utm_repository),
         current_user: AdminUser = Depends(get_current_user),
@@ -17,7 +17,7 @@ async def get_utm_commands(
     return await utm_repository.get_all_utm_commands()
 
 
-@router.get('/commands/statistics')
+@router.get('/commands/statistics/')
 async def get_utm_commands(
         utm_repository: UtmRepository = Depends(get_utm_repository),
         current_user: AdminUser = Depends(get_current_user),
@@ -25,7 +25,7 @@ async def get_utm_commands(
     return utm_repository.get_utm_commands_statistics()
 
 
-@router.get('/commands/{utm_command_id}')
+@router.get('/commands/{utm_command_id}/')
 async def get_utm_command_by_id(
         utm_command_id: int,
         utm_repository: UtmRepository = Depends(get_utm_repository),
@@ -41,7 +41,7 @@ async def get_utm_command_by_id(
     return utm_command
 
 
-@router.post('/commands')
+@router.post('/commands/')
 async def store_utm_command(
         utm_repository: UtmRepository = Depends(get_utm_repository),
         current_user: AdminUser = Depends(get_current_user),
@@ -56,7 +56,7 @@ async def store_utm_command(
         )
 
 
-@router.delete('/commands/{utm_command_id}')
+@router.delete('/commands/{utm_command_id}/')
 async def delete_utm_command(
         utm_command_id: int,
         utm_repository: UtmRepository = Depends(get_utm_repository),

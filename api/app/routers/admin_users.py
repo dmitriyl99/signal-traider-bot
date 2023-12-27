@@ -51,7 +51,7 @@ async def create_admin_user(
     return created_user
 
 
-@router.get('/roles')
+@router.get('/roles/')
 def get_roles(
         current_user: AdminUser = Depends(get_current_user),
         admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository),
@@ -64,7 +64,7 @@ def get_roles(
     return admin_users_repository.get_roles()
 
 
-@router.get('/{admin_user_id}')
+@router.get('/{admin_user_id}/')
 async def get_admin_user_by_id(
         admin_user_id: int,
         current_user: AdminUser = Depends(get_current_user),
@@ -85,7 +85,7 @@ async def get_admin_user_by_id(
     )
 
 
-@router.post('/{admin_user_id}/change-password')
+@router.post('/{admin_user_id}/change-password/')
 def change_password(
         admin_user_id: int,
         current_user: AdminUser = Depends(get_current_user),
@@ -110,7 +110,7 @@ def change_password(
     }
 
 
-@router.get('/permissions')
+@router.get('/permissions/')
 def get_permissions(
         current_user: AdminUser = Depends(get_current_user),
         admin_users_repository: AdminUsersRepository = Depends(get_admin_users_repository),
@@ -123,7 +123,7 @@ def get_permissions(
     return admin_users_repository.get_permissions()
 
 
-@router.delete('/{admin_user_id}')
+@router.delete('/{admin_user_id}/')
 def delete_admin_user(
         admin_user_id: int,
         current_user: AdminUser = Depends(get_current_user),

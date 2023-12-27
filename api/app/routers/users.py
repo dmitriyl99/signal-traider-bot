@@ -51,7 +51,7 @@ async def create_user(
     return user
 
 
-@router.get('/{user_id}')
+@router.get('/{user_id}/')
 async def get_user_by_id(
         user_id: int,
         user_repository: UsersRepository = Depends(get_user_repository),
@@ -62,7 +62,7 @@ async def get_user_by_id(
     return user
 
 
-@router.put('/{user_id}')
+@router.put('/{user_id}/')
 async def update_user(
         user_id: int,
         user_repository: UsersRepository = Depends(get_user_repository),
@@ -93,7 +93,7 @@ async def update_user(
     return user
 
 
-@router.delete('/{user_id}')
+@router.delete('/{user_id}/')
 async def delete_user(
         user_id: int,
         user_repository: UsersRepository = Depends(get_user_repository),

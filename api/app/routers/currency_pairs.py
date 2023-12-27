@@ -26,7 +26,7 @@ async def add_currency_pair(
     return await currency_pair_repository.add_currency_pair(form.pair_name)
 
 
-@router.delete('/{currency_pair_id}')
+@router.delete('/{currency_pair_id}/')
 async def delete_currency_pair(
         currency_pair_id: int,
         currency_pair_repository: CurrencyPairRepository = Depends(get_currency_pair_repository),

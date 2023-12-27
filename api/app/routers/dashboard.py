@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get('/users', response_model=UsersStatisticsResponse)
+@router.get('/users/', response_model=UsersStatisticsResponse)
 async def get_users_statistics(
     statistics_repository: StatisticsRepository = Depends(get_statistics_repository),
     current_user: AdminUser = Depends(get_current_user)
@@ -26,7 +26,7 @@ async def get_users_statistics(
     )
 
 
-@router.get('/subscriptions', response_model=SubscriptionStatisticsResponse)
+@router.get('/subscriptions/', response_model=SubscriptionStatisticsResponse)
 async def get_dashboard_statistics(
     statistics_repository: StatisticsRepository = Depends(get_statistics_repository),
     current_user: AdminUser = Depends(get_current_user)

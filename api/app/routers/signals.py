@@ -47,7 +47,7 @@ async def create_signal(
     }
 
 
-@router.post('/{signal_id}/reply')
+@router.post('/{signal_id}/reply/')
 async def reply_to_signal_message(
         signal_id: int,
         background_tasks: BackgroundTasks,
@@ -68,7 +68,7 @@ async def reply_to_signal_message(
     }
 
 
-@router.post('/message')
+@router.post('/message/')
 async def send_signal_message(
         text: str = Form(),
         importance: int = Form(),
@@ -106,7 +106,7 @@ async def send_signal_message(
     await signals_repository.save_text_distribution(text, importance, currency, current_user)
 
 
-@router.get('/message')
+@router.get('/message/')
 async def get_signal_messages(
         current_user: AdminUser = Depends(get_current_user),
         signals_repository: SignalsRepository = Depends(get_signals_repository),
@@ -128,7 +128,7 @@ async def get_signal_messages(
     )
 
 
-@router.get('/suggestion')
+@router.get('/suggestion/')
 async def get_currency_suggestion(
     current_user: AdminUser = Depends(get_current_user),
     currency_pair: str | None = None
