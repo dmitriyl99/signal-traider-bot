@@ -48,15 +48,15 @@ async def send_current_subscription_information(active_subscription: Subscriptio
         if chat_member.status == 'kicked':
             await context.bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
         invite_link = await context.bot.export_chat_invite_link(telegram_group_chat_id)
-        link_name = f"[{strings.get_string('invite_group', user.language)}]" if len(
+        link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]" if len(
             telegram_group_ids) == 1 else f"[{strings.get_string('invite_group', user.language).format(name=index_group_mapper[index][user.language])}]"
         invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")
-    await update.message.reply_text(strings.get_string('active_subscription', user.language).format(
+    await update.message.reply_html(strings.get_string('active_subscription', user.language).format(
         name=subscription.name,
         to_date=subscription_end_date.strftime('%d.%m.%Y'),
         days=diff_days,
         invite_links=' '.join(invite_links)
-        ), reply_markup=ReplyKeyboardRemove()
+        ), reply_markup=ReplyKeyboardRemove(),
     )
 
 

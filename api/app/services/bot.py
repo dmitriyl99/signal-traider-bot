@@ -109,7 +109,7 @@ async def subscription_purchased(user: User, subscription: Subscription):
         if chat_member.status == 'kicked':
             await bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
         invite_link = await bot.export_chat_invite_link(telegram_group_chat_id)
-        link_name = f"[{strings.get_string('invite_group', user.language)}]" if len(
+        link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]" if len(
             telegram_group_ids) == 1 else f"[{strings.get_string('invite_group', user.language).format(name=index_group_mapper[index][user.language])}]"
         invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")
     await bot.send_message(user.telegram_user_id,
