@@ -118,11 +118,11 @@ async def subscription_purchased(user: User, subscription: Subscription):
                            parse_mode=types.ParseMode.HTML,
                            reply_markup=types.ReplyKeyboardRemove())
     await bot.send_video_note(user.telegram_user_id,
-                              types.FSInputFile('2023-12-27 23.43.59.mp4'))
+                              'DQACAgIAAxkDAAIDtWWMf8vD6t_meoDEAT0oa-Xpedm0AAIlRQACT7BpSAgX2xXgIQ4JMwQ')
     await bot.send_video_note(user.telegram_user_id,
-                              types.FSInputFile('video3.mp4'))
+                              'BAACAgIAAxkDAAIDtmWMf84VTJyg7MnggOa8CwJA-HQFAAJpRQACFG1hSPkMCYQ7fdlFMwQ')
     await bot.send_video_note(user.telegram_user_id,
-                              types.FSInputFile('video4.mp4'))
+                              'BAACAgIAAxkDAAIDt2WMf9KV0uH1yVSNdWtj39y7t2xYAAIoRQACT7BpSMAcZXLoo9ZDMwQ')
 
 
 async def ban_user_in_group(telegram_user_id: int, telegram_group_chat_id):

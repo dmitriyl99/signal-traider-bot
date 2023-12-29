@@ -224,8 +224,8 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE):
         await actions.send_subscription_menu_button(update, context, user)
     else:
         await actions.send_current_subscription_information(active_subscription, update, user, context)
-        await update.message.reply_video(open('video3.mp4', 'rb'))
-        await update.message.reply_video(open('video4.mp4', 'rb'))
+        await update.message.reply_video('BAACAgIAAxkDAAIDtmWMf84VTJyg7MnggOa8CwJA-HQFAAJpRQACFG1hSPkMCYQ7fdlFMwQ')
+        await update.message.reply_video('BAACAgIAAxkDAAIDt2WMf9KV0uH1yVSNdWtj39y7t2xYAAIoRQACT7BpSMAcZXLoo9ZDMwQ')
     if 'registration_name' in context.user_data:
         del context.user_data['registration_name']
     return ConversationHandler.END
