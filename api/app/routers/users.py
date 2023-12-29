@@ -39,7 +39,7 @@ async def create_user(
     )
     user_repository.divide_users_between_analytics()
     if form.subscription_id and (form.subscription_condition_id or form.subscription_duration_in_days):
-        await subscription_repository.add_subscription_to_user(
+        user_subscription = await subscription_repository.add_subscription_to_user(
             user,
             form.subscription_id,
             form.subscription_duration_in_days,
@@ -47,6 +47,8 @@ async def create_user(
             proactively_added=True,
             active=True
         )
+        subscription = await subscription_repository.get_subscription_by_id(user_subscription.subscription_id)
+        await bot.subscription_purchased(user, subscription)
 
     return user
 
@@ -88,7 +90,8 @@ async def update_user(
             proactively_added=False,
             active=True
         )
-        await bot.send_message_to_user(user.telegram_user_id, f'Вам добавлена подписка на {user_subscription.duration_in_days} дней!')
+        subscription = await subscription_repository.get_subscription_by_id(user_subscription.subscription_id)
+        await bot.subscription_purchased(user, subscription)
 
     return user
 

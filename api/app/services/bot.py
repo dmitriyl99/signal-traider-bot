@@ -112,17 +112,22 @@ async def subscription_purchased(user: User, subscription: Subscription):
         link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]" if len(
             telegram_group_ids) == 1 else f"[{strings.get_string('invite_group', user.language).format(name=index_group_mapper[index][user.language])}]"
         invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")
-    await bot.send_message(user.telegram_user_id,
-                           strings.get_string('subscription_purchased', user.language).format(
-                               invite_links=' '.join(invite_links)),
-                           parse_mode=types.ParseMode.HTML,
-                           reply_markup=types.ReplyKeyboardRemove())
-    await bot.send_video_note(user.telegram_user_id,
-                              'DQACAgIAAxkDAAIDtWWMf8vD6t_meoDEAT0oa-Xpedm0AAIlRQACT7BpSAgX2xXgIQ4JMwQ')
-    await bot.send_video_note(user.telegram_user_id,
-                              'BAACAgIAAxkDAAIDtmWMf84VTJyg7MnggOa8CwJA-HQFAAJpRQACFG1hSPkMCYQ7fdlFMwQ')
-    await bot.send_video_note(user.telegram_user_id,
-                              'BAACAgIAAxkDAAIDt2WMf9KV0uH1yVSNdWtj39y7t2xYAAIoRQACT7BpSMAcZXLoo9ZDMwQ')
+    try:
+        await bot.send_message(user.telegram_user_id,
+                               strings.get_string('subscription_purchased', user.language).format(
+                                   invite_links=' '.join(invite_links)),
+                               parse_mode=types.ParseMode.HTML,
+                               reply_markup=types.ReplyKeyboardRemove())
+        await bot.send_video_note(user.telegram_user_id,
+                                  'DQACAgIAAxkDAAIDtWWMf8vD6t_meoDEAT0oa-Xpedm0AAIlRQACT7BpSAgX2xXgIQ4JMwQ')
+        await bot.send_video_note(user.telegram_user_id,
+                                  'BAACAgIAAxkDAAIDtmWMf84VTJyg7MnggOa8CwJA-HQFAAJpRQACFG1hSPkMCYQ7fdlFMwQ')
+        await bot.send_video_note(user.telegram_user_id,
+                                  'BAACAgIAAxkDAAIDt2WMf9KV0uH1yVSNdWtj39y7t2xYAAIoRQACT7BpSMAcZXLoo9ZDMwQ')
+    except aiogram.utils.exceptions.ChatNotFound:
+        return None
+    except aiogram.utils.exceptions.BotBlocked:
+        return None
 
 
 async def ban_user_in_group(telegram_user_id: int, telegram_group_chat_id):
