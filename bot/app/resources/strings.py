@@ -9,7 +9,7 @@ strings_data = {
     },
     'registration_name': {
         'ru': "🤝Прежде чем мы начнем, давайте узнаем друг друга получше. Как мне к вам обращаться? Напишите свое имя в чат, как будто мы старые друзья – просто и непринужденно, например 'Тимур' или 'Мария'. 🔽",
-        'uz': "🤝Boshlashdan oldin, bir-birimizni yaxshiroq tanishaylik. Sizga qanday murojaat qilay? Chatga ismingizni yozing, go'yo biz eski do'stlarmizdek – oddiy va erkin, masalan, 'Timur' yoki 'Madina'. 🔽"
+        'uz': "🤝Ishimiz boshlanishidan avval keling yaqinrog’dan tanishaylik. Sizga qanday murojaat qilsam bo’ladi? Chatga ismingizni yozing, siz bilan do’stlardek yaqinlikda bo’laylik– barchasi oddiy, “Timur” yoki “Madina”. 😊"
     },
     'registration_phone': {
         'ru': "Отлично, теперь нам нужен ваш номер телефона для отправки SMS с кодом регистрации. Пожалуйста, введите его здесь, и мы сразу же отправим вам сообщение для продолжения 🔽",
@@ -48,15 +48,15 @@ strings_data = {
         'uz': 'Siz bonusli obunani faollashtirdingiz!'
     },
     'subscription_menu_message': {
-        'ru': """А теперь к самому доступу в комьюнити <b>OneZone</b>! Вот доступные тарифы для подписки:
-🔘 1 месяц - <b>39$</b> 💵
-🔘 6 месяцев - <b>174$</b> (9.83$ за месяц) 💵
-🔘 12 месяцев - <b><s>348$</s> 111$</b> (9.33$ за месяц) 💵
+        'ru': """А теперь к самому доступу в комьюнити <b>OneZone</b>! Вот доступные тарифы для подписки, со скидкой до 11 Января:
+🔘 1 месяц - <b><s>50$</s> 39$</b> 💵
+🔘 6 месяцев - <b><s>300$</s> 174$</b> (29$ за месяц) 💵
+🔘 12 месяцев - <b><s>600$</s> 111$</b> (9.25$ за месяц) 💵
 Чем <b>дольше</b> подписка, тем больше ваша <b>экономия</b> и <b>выгода</b>.""",
-        'uz': """Endi <b>OneZone</b> hamjamiyatiga kirish haqida! Mana obuna uchun mavjud tariflar:
-🔘 1 oy - <b>39$</b> 💵
-🔘 6 oy - <b>174$</b> (oyiga 9.83$) 💵
-🔘 12 oy - <b><s>348$</s> 111$</b> (oyiga 9.33$) 💵 
+        'uz': """Endi <b>OneZone</b> hamjamiyatiga kirish haqida! Mana obuna uchun mavjud tariflar, 11 yanvargacha chegirma:
+🔘 1 oy - <b><s>50$</s> 39$</b> 💵
+🔘 6 oy - <b><s>300$</s> 174$</b> (oyiga 29$) 💵
+🔘 12 oy - <b><s>600$</s> 111$</b> (oyiga 9.25$) 💵 
 
 <b>Obuna</b> muddati qancha uzoq bo'lsa, shuncha ko'p <b>iqtisod</b> qilasiz va <b>foyda</b> olasiz."""
     },
@@ -201,11 +201,12 @@ Ikki baravar tahlil oling va Forex'dagi treyding imkoniyatlaringizni oshiring!
 """,
         'uz': """🌐 OneZone'da topasiz: 
 
-📊 <b>Forex Bozor Tahlillari</b>: Video tahlillar va narxlar o'sishini bashorat qilish uchun aniq savdo qarorlari. 
-📰 <b>Forex Haftalik Yangiliklari</b>: Yuqori xavf signallari, savdolarni ochish uchun noto'g'ri vaqtni ogohlantiradi. 
-📚 <b>O'quv Kurslari</b>: Yangi boshlovchilar va tajribali treyderlar uchun to'liq resurslar, sizga muvaffaqiyatli treyding uchun zarur bo'lgan hamma narsani o'rgatadi. 
+📊 <b>Forex Bozor Tahlillari</b>: Jonli efir da jonli savdo va grafik tahlillari 📈
+📰 <b>Forex Haftalik Yangiliklari</b>: Ta’sir darajasi yuqori yangiliklar. 
+📚 <b>O'quv Kurslari</b>: Yangi boshlovchilar va tajribali treyderlar uchun o’quv resurslari, sizni muvaffaqiyatga olib boruvchi tajriba darslari. 
 🔗 <b>Foydali Maslahatlar va Havolalar</b>: Samarali savdo uchun maslahatlar va resurslar. 
-🤝 <b>Treyderlar Hamjamiyatiga Kirish</b>: Tajribali ishtirokchilar bilan muloqot qiling va ulardan o'rganing."""
+🤝 <b>Treyderlar Hamjamiyatiga Kirish</b>: Tajribali ishtirokchilar bilan muloqot qiling va ulardan o'rganing.
+Dunyodagi eng qimmat narsalardan biri bu “fikr almashish”"""
     }
 }
 
