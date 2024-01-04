@@ -15,7 +15,8 @@ class PaymentsRepository:
         self._session = session
 
     async def get_all_payment(self) -> List[Payment]:
-        stmt = select(Payment).options(joinedload(Payment.subscription), joinedload(Payment.subscription_condition))
+        stmt = select(Payment).options(joinedload(Payment.subscription), joinedload(Payment.subscription_condition))\
+            .order_by(Payment.created_at.desc())
         result = await self._session.execute(stmt)
         return result.scalars().all()
 
