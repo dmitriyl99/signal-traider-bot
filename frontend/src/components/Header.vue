@@ -9,7 +9,7 @@
 
             <!-- Pretitle -->
             <h6 class="header-pretitle">
-              MassPower FX Signal VIP Bot
+              Channel Subscription Bot
             </h6>
 
             <!-- Title -->
@@ -18,12 +18,7 @@
             </h1>
 
           </div>
-          <div class="col-auto">
-            <router-link :to="{name: 'CreateDistribution'}" class="btn btn-primary me-2">
-              Отправить сообщение
-            </router-link>
 
-          </div>
         </div> <!-- / .row -->
       </div> <!-- / .header-body -->
 

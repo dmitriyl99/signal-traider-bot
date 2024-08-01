@@ -8,8 +8,8 @@
           </div>
         </div>
         <div class="col-2">
-          <div class="d-flex justify-content-end">
-            <router-link :to="{name: 'CreateUser'}" class="btn btn-primary lift">
+          <div class="d-flex justify-content-end align-items-center">
+            <router-link :to="{name: 'CreateUser'}" class="btn btn-primary">
               Добавить пользователя
             </router-link>
           </div>
