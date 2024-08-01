@@ -15,6 +15,7 @@ from app.conversations.registration_conversation import handler as registration_
 from app.services import currency_exchange as currency_exchange_service, cloud_payments
 from app.actions import (send_subscriptions, send_subscription_conditions, send_payment_providers,
                          send_subscription_menu_button)
+from app.config import config
 
 CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION, SELECT_PAYMENT_PROVIDER, BACK, CLOUD_PAYMENTS = range(5)
 
@@ -104,35 +105,23 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     if payment_provider.name == 'Fake':
         await payments_repository.set_status(payment.id, PaymentStatus.CONFIRMED)
         await subscriptions_repository.add_subscription_to_user(subscription.id, subscription_condition.id, user.telegram_user_id)
-        telegram_group_ids = subscription.telegram_group_ids.split(',')
         telegram_user_id = user.telegram_user_id
         invite_links = []
-        index_group_mapper = {
-            0: {
-                'ru': 'Амаля',
-                'uz': 'Amal'
-            },
-            1: {
-                'ru': 'Захриддина',
-                'uz': 'Zahridin'
-            }
-        }
-        for index, telegram_group_chat_id in enumerate(telegram_group_ids):
-            chat_member = await context.bot.get_chat_member(telegram_group_chat_id, telegram_user_id)
-            if chat_member.status == 'kicked':
-                await context.bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
-            invite_link = await context.bot.export_chat_invite_link(telegram_group_chat_id)
-            link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]" if len(
-                telegram_group_ids) == 1 else f"[{strings.get_string('invite_group', user.language).format(name=index_group_mapper[index][user.language])}]"
-            invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")
+        telegram_group_chat_id = config.TELEGRAM_GROUP_ID
+        # for index, telegram_group_chat_id in enumerate(telegram_group_ids):
+        chat_member = await context.bot.get_chat_member(telegram_group_chat_id, telegram_user_id)
+        if chat_member.status == 'kicked':
+            await context.bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
+        invite_link = await context.bot.export_chat_invite_link(telegram_group_chat_id)
+        link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]"
+        # link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]" if len(
+        #     [telegram_group_chat_id]) == 1 else f"[{strings.get_string('invite_group', user.language).format(name=index_group_mapper[index][user.language])}]"
+        invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")
         await context.bot.send_message(user.telegram_user_id,
                                        strings.get_string('subscription_purchased', user.language).format(
                                            invite_links=' '.join(invite_links)),
                                        parse_mode=ParseMode.HTML,
                                        reply_markup=ReplyKeyboardRemove())
-        await update.message.reply_video_note('DQACAgIAAxkDAAIDtWWMf8vD6t_meoDEAT0oa-Xpedm0AAIlRQACT7BpSAgX2xXgIQ4JMwQ')
-        await update.message.reply_video('BAACAgIAAxkDAAIDtmWMf84VTJyg7MnggOa8CwJA-HQFAAJpRQACFG1hSPkMCYQ7fdlFMwQ')
-        await update.message.reply_video('BAACAgIAAxkDAAIDt2WMf9KV0uH1yVSNdWtj39y7t2xYAAIoRQACT7BpSMAcZXLoo9ZDMwQ')
         return ConversationHandler.END
     if payment_provider.name == 'Click':
         try:
@@ -240,9 +229,7 @@ async def _fallbacks_handler(update: Update, context: CallbackContext.DEFAULT_TY
 handler = ConversationHandler(
     allow_reentry=True,
     entry_points=[MessageHandler(
-        filters.Text('OneZone [RU] группа - аналитические сигналы') |
-        filters.Text('OneZone [RU][UZ] группа - аналитические сигналы') |
-        filters.Text('OneZone [UZ] группа - аналитические сигналы'),
+        filters.Text('Подписка'),
         _subscription_start)],
     states={
         CHOOSE_SUBSCRIPTION: [MessageHandler(filters.TEXT, _choose_subscription)],

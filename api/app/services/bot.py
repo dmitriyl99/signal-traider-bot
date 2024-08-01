@@ -91,39 +91,24 @@ async def add_user_to_group(telegram_user_id: int):
 
 async def subscription_purchased(user: User, subscription: Subscription):
     bot = Bot(settings.telegram_bot_api_token)
-    telegram_group_ids = subscription.telegram_group_ids.split(',')
     telegram_user_id = user.telegram_user_id
     invite_links = []
-    index_group_mapper = {
-        0: {
-            'ru': 'Амаля',
-            'uz': 'Amal'
-        },
-        1: {
-            'ru': 'Захриддина',
-            'uz': 'Zahridin'
-        }
-    }
-    for index, telegram_group_chat_id in enumerate(telegram_group_ids):
-        chat_member = await bot.get_chat_member(telegram_group_chat_id, telegram_user_id)
-        if chat_member.status == 'kicked':
-            await bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
-        invite_link = await bot.export_chat_invite_link(telegram_group_chat_id)
-        link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]" if len(
-            telegram_group_ids) == 1 else f"[{strings.get_string('invite_group', user.language).format(name=index_group_mapper[index][user.language])}]"
-        invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")
+    telegram_group_chat_id = settings.telegram_group_id
+    # for index, telegram_group_chat_id in enumerate(telegram_group_ids):
+    chat_member = await bot.get_chat_member(telegram_group_chat_id, telegram_user_id)
+    if chat_member.status == 'kicked':
+        await bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
+    invite_link = await bot.export_chat_invite_link(telegram_group_chat_id)
+    link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]"
+    # link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]" if len(
+    #     telegram_group_ids) == 1 else f"[{strings.get_string('invite_group', user.language).format(name=index_group_mapper[index][user.language])}]"
+    invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")
     try:
         await bot.send_message(user.telegram_user_id,
                                strings.get_string('subscription_purchased', user.language).format(
                                    invite_links=' '.join(invite_links)),
                                parse_mode=types.ParseMode.HTML,
                                reply_markup=types.ReplyKeyboardRemove())
-        await bot.send_video_note(user.telegram_user_id,
-                                  'DQACAgIAAxkDAAIDtWWMf8vD6t_meoDEAT0oa-Xpedm0AAIlRQACT7BpSAgX2xXgIQ4JMwQ')
-        await bot.send_video_note(user.telegram_user_id,
-                                  'BAACAgIAAxkDAAIDtmWMf84VTJyg7MnggOa8CwJA-HQFAAJpRQACFG1hSPkMCYQ7fdlFMwQ')
-        await bot.send_video_note(user.telegram_user_id,
-                                  'BAACAgIAAxkDAAIDt2WMf9KV0uH1yVSNdWtj39y7t2xYAAIoRQACT7BpSMAcZXLoo9ZDMwQ')
     except aiogram.utils.exceptions.ChatNotFound:
         return None
     except aiogram.utils.exceptions.BotBlocked:

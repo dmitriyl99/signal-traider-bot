@@ -33,9 +33,8 @@ async def check_all_subscriptions_job():
                 subscription.active = False
                 await session.commit()
                 subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
-                telegram_group_chat_ids = subscription_entity.telegram_group_ids.split(',')
-                for telegram_group_chat_id in telegram_group_chat_ids:
-                    await bot.ban_user_in_group(subscription.user.telegram_user_id, telegram_group_chat_id)
+                telegram_group_chat_id = settings.telegram_group_id
+                await bot.ban_user_in_group(subscription.user.telegram_user_id, telegram_group_chat_id)
                 # amocrm_integration.add_user_to_catalog(subscription.user, amocrm_integration.AmoCrmUserType.LOST_USER)
 
                 await tg_bot.send_message(

@@ -7,12 +7,9 @@ from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, M
 
 from app.resources import strings
 from app.data.models.subscription import SubscriptionUser
-from app.data.models.users import User
 from app import actions
 from app.data.db import users_repository, subscriptions_repository, utm_respository
 from app.services.otp_service import OTPService
-from app.services import masspay
-from app.services import amocrm_integration
 
 LANGUAGE, NAME, PHONE, OTP = range(4)
 
@@ -21,21 +18,21 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
     if update.message.chat.type != ChatType.PRIVATE:
         return ConversationHandler.END
     await _process_update_for_utm(update)
-    hash_command_user = await _process_update_for_hash_command(update, context)
-    if hash_command_user:
-        active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(
-            hash_command_user)
-        if hash_command_user.language is None:
-            await update.message.reply_text(strings.get_string('registration_language'),
-                                            reply_markup=ReplyKeyboardMarkup(
-                                                keyboard=[[
-                                                    '🇷🇺 Русский',
-                                                    "🇺🇿 O'zbek"]], resize_keyboard=True))
-
-            return LANGUAGE
-        if active_subscription is not None:
-            await actions.send_current_subscription_information(active_subscription, update, hash_command_user, context)
-            return ConversationHandler.END
+    # hash_command_user = await _process_update_for_hash_command(update, context)
+    # if hash_command_user:
+    #     active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(
+    #         hash_command_user)
+    #     if hash_command_user.language is None:
+    #         await update.message.reply_text(strings.get_string('registration_language'),
+    #                                         reply_markup=ReplyKeyboardMarkup(
+    #                                             keyboard=[[
+    #                                                 '🇷🇺 Русский',
+    #                                                 "🇺🇿 O'zbek"]], resize_keyboard=True))
+    #
+    #         return LANGUAGE
+    #     if active_subscription is not None:
+    #         await actions.send_current_subscription_information(active_subscription, update, hash_command_user, context)
+    #         return ConversationHandler.END
     current_user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
     if current_user is not None:
         if current_user.language is None:
@@ -92,10 +89,8 @@ async def _language(update: Update, context: CallbackContext.DEFAULT_TYPE):
     if current_user is not None:
         await users_repository.set_user_language(update.effective_user.id, languages[text])
         return await _start(update, context)
-    await update.message.reply_chat_action(ChatAction.UPLOAD_VIDEO_NOTE)
-    await update.message.reply_video_note(open('2023-12-27 23.43.47.mp4', 'rb'))
-    await update.message.reply_html(strings.get_string('welcome_text'), context.user_data['registration_language'],
-                                    reply_markup=ReplyKeyboardRemove())
+    # await update.message.reply_html(strings.get_string('welcome_text'), context.user_data['registration_language'],
+    #                                 reply_markup=ReplyKeyboardRemove())
     await update.message.reply_text(strings.get_string('registration_name', context.user_data['registration_language']),
                                     reply_markup=ReplyKeyboardRemove())
 
@@ -224,8 +219,6 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE):
         await actions.send_subscription_menu_button(update, context, user)
     else:
         await actions.send_current_subscription_information(active_subscription, update, user, context)
-        await update.message.reply_video('BAACAgIAAxkDAAIDtmWMf84VTJyg7MnggOa8CwJA-HQFAAJpRQACFG1hSPkMCYQ7fdlFMwQ')
-        await update.message.reply_video('BAACAgIAAxkDAAIDt2WMf9KV0uH1yVSNdWtj39y7t2xYAAIoRQACT7BpSMAcZXLoo9ZDMwQ')
     if 'registration_name' in context.user_data:
         del context.user_data['registration_name']
     return ConversationHandler.END
@@ -270,37 +263,37 @@ async def _process_update_for_utm(update: Update):
         await utm_respository.utm_click(utm_command, update.effective_user.id)
 
 
-async def _process_update_for_hash_command(update: Update, context: CallbackContext.DEFAULT_TYPE) -> Optional[User]:
-    logging.info(f'Process for hash command: {update.message.text}')
-    text = update.message.text
-    if '/start' not in text:
-        return None
-    text_split = text.split(' ')
-    if len(text_split) == 1:
-        return None
-    payload = text_split[1]
-    if 'hash' not in payload:
-        return None
-    logging.info(f'Hash found for user {update.effective_user.id}')
-    hash_payload_split = payload.split('_')
-    if len(hash_payload_split) == 1:
-        return None
-    hash_command = hash_payload_split[1]
-    result: masspay.CheckHashCommandResult = masspay.check_hash_command(hash_command)
-    if result is None:
-        return None
-
-    subscriptions = await subscriptions_repository.get_subscriptions()
-    subscription = subscriptions[0]
-    existing_user_by_phone = await users_repository.find_user_by_phone(result.user_phone_number)
-    if existing_user_by_phone:
-        if update.effective_user.id != existing_user_by_phone.telegram_user_id:
-            return None
-        await subscriptions_repository.add_subscription_with_days_to_user(existing_user_by_phone, subscription.id,
-                                                                          result.subscription_days)
-        return existing_user_by_phone
-    context.user_data['registration_phone'] = result.user_phone_number
-    context.user_data['hash_command_subscription_id'] = subscription.id
-    context.user_data['hash_command_subscription_days'] = result.subscription_days
-
-    return None
+# async def _process_update_for_hash_command(update: Update, context: CallbackContext.DEFAULT_TYPE) -> Optional[User]:
+#     logging.info(f'Process for hash command: {update.message.text}')
+#     text = update.message.text
+#     if '/start' not in text:
+#         return None
+#     text_split = text.split(' ')
+#     if len(text_split) == 1:
+#         return None
+#     payload = text_split[1]
+#     if 'hash' not in payload:
+#         return None
+#     logging.info(f'Hash found for user {update.effective_user.id}')
+#     hash_payload_split = payload.split('_')
+#     if len(hash_payload_split) == 1:
+#         return None
+#     hash_command = hash_payload_split[1]
+#     result: masspay.CheckHashCommandResult = masspay.check_hash_command(hash_command)
+#     if result is None:
+#         return None
+#
+#     subscriptions = await subscriptions_repository.get_subscriptions()
+#     subscription = subscriptions[0]
+#     existing_user_by_phone = await users_repository.find_user_by_phone(result.user_phone_number)
+#     if existing_user_by_phone:
+#         if update.effective_user.id != existing_user_by_phone.telegram_user_id:
+#             return None
+#         await subscriptions_repository.add_subscription_with_days_to_user(existing_user_by_phone, subscription.id,
+#                                                                           result.subscription_days)
+#         return existing_user_by_phone
+#     context.user_data['registration_phone'] = result.user_phone_number
+#     context.user_data['hash_command_subscription_id'] = subscription.id
+#     context.user_data['hash_command_subscription_days'] = result.subscription_days
+#
+#     return None
