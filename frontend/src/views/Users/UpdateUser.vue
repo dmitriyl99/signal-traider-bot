@@ -32,10 +32,6 @@
               </option>
             </select>
           </div>
-          <div class="col-12 col-md-4 mb-3" v-if="selectedSubscription != null" >
-            <label for="subscription_duration_in_days" class="form-label">Дней подписки</label>
-            <input type="number" name="subscription_duration_in_days" id="subscription_duration_in_days" class="form-control" placeholder="Количество дней подписки" v-model="subscriptionDurationInDays">
-          </div>
         </div>
         <button :disabled="isLoading" class="btn btn-primary mt-3" type="submit" v-html="isLoading ? 'Сохраняю, подождите...' : 'Сохранить'"/>
       </form>
