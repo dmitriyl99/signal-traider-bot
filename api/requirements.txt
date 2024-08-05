@@ -3,7 +3,7 @@ alembic==1.8.0
 anyio==3.6.1
 APScheduler==3.9.1
 async-timeout==4.0.2
-asyncpg==0.25.0
+asyncpg
 attrs==21.4.0
 Babel==2.9.1
 bcrypt==3.2.2
