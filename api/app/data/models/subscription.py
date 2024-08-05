@@ -36,6 +36,7 @@ class SubscriptionUser(Base):
     proactively_added = sa.Column(sa.Boolean)
     duration_in_days = sa.Column(sa.Integer)
     notified_3_days = sa.Column(sa.Boolean, default=False)
+    notified_1_day_after = sa.Column(sa.Boolean, default=False)
     activation_datetime = sa.Column(sa.DateTime, nullable=True, default=None)
     subscription: Subscription = relationship('Subscription', back_populates='users')
     user = relationship('User', back_populates='subscription')

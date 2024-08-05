@@ -28,24 +28,38 @@ async def check_all_subscriptions_job():
         for subscription in active_subscriptions:
             diff_in_days = date.diff_in_days(subscription.activation_datetime, datetime.now())
             if abs(diff_in_days) >= subscription.duration_in_days:
-                logger.info(
-                    'Deactivate subscription %d for user %d' % (subscription.subscription_id, subscription.user_id))
-                subscription.active = False
-                await session.commit()
-                subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
-                telegram_group_chat_id = settings.telegram_group_id
-                await bot.ban_user_in_group(subscription.user.telegram_user_id, telegram_group_chat_id)
-                # amocrm_integration.add_user_to_catalog(subscription.user, amocrm_integration.AmoCrmUserType.LOST_USER)
+                if abs(diff_in_days) - subscription.duration_in_days == 1:
+                    if subscription.notified_1_day_after is False:
+                        subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
+                        await tg_bot.send_message(
+                            chat_id=subscription.user.telegram_user_id,
+                            text='Срок вашей подписки <b>{name}</b> подошёл к концу. Продлите подписку, чтобы не потерять доступ к группе.'.format(
+                                name=subscription_entity.name),
+                            parse_mode=types.ParseMode.HTML,
+                            reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[
+                                types.InlineKeyboardButton(text="Продлить",
+                                                           callback_data=f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
+                            ]])
+                        )
+                else:
+                    logger.info(
+                        'Deactivate subscription %d for user %d' % (subscription.subscription_id, subscription.user_id))
+                    subscription.active = False
+                    await session.commit()
+                    subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
+                    telegram_group_chat_id = settings.telegram_group_id
+                    await bot.ban_user_in_group(subscription.user.telegram_user_id, telegram_group_chat_id)
+                    # amocrm_integration.add_user_to_catalog(subscription.user, amocrm_integration.AmoCrmUserType.LOST_USER)
 
-                await tg_bot.send_message(
-                    chat_id=subscription.user.telegram_user_id,
-                    text='Ваша подписка {name} окончена и вы были исключены из группы. Оформите подписку заново, чтобы получить доступ к группе'.format(
-                                                   name=subscription_entity.name),
-                    parse_mode=types.ParseMode.HTML,
-                    reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[
-                        types.InlineKeyboardButton(text="Продлить", callback_data=f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
-                    ]])
-                )
+                    await tg_bot.send_message(
+                        chat_id=subscription.user.telegram_user_id,
+                        text='Ваша подписка {name} окончена и вы были исключены из группы. Оформите подписку заново, чтобы получить доступ к группе'.format(
+                                                       name=subscription_entity.name),
+                        parse_mode=types.ParseMode.HTML,
+                        reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[
+                            types.InlineKeyboardButton(text="Продлить", callback_data=f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
+                        ]])
+                    )
             elif subscription.duration_in_days - abs(diff_in_days) == 3:
                 logger.info(f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
                 if subscription.notified_3_days is False:
