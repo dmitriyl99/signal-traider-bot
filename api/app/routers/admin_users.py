@@ -45,8 +45,8 @@ async def create_admin_user(
         form.password,
         form.roles
     )
-    if need_to_divide_users:
-        users_repository.divide_users_between_analytics()
+    # if need_to_divide_users:
+    #     users_repository.divide_users_between_analytics()
 
     return created_user
 

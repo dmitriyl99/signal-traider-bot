@@ -37,7 +37,7 @@ async def create_user(
         form.name,
         form.phone,
     )
-    user_repository.divide_users_between_analytics()
+    # user_repository.divide_users_between_analytics()
     if form.subscription_id and (form.subscription_condition_id or form.subscription_duration_in_days):
         user_subscription = await subscription_repository.add_subscription_to_user(
             user,
@@ -113,3 +113,11 @@ async def delete_user(
     return {
         'detail': 'User deleted!'
     }
+
+
+@router.get('/excel')
+async def download_excel(
+        user_repository: UsersRepository = Depends(get_user_repository),
+        current_user: AdminUser = Depends(get_current_user),
+):
+    pass

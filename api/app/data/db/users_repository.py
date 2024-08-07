@@ -38,6 +38,12 @@ class UsersRepository:
             query = query.order_by(User.created_at.desc())
             return paginator.paginate(query, page, per_page)
 
+    async def get_all_users_without_pagination(self) -> List[User]:
+        with Session() as session:
+            return session.query(User).options(selectinload(User.subscription).options(
+                joinedload(SubscriptionUser.subscription)
+            )).order_by(User.created_at.desc()).all()
+
     async def get_all_users_with_active_subscriptions(self, analyst_id: int = None) -> List[User]:
         stmt = select(User).options(
             joinedload(User.subscription.and_(SubscriptionUser.active == True), innerjoin=True)).filter(
