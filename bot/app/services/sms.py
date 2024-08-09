@@ -1,7 +1,9 @@
 import logging
+import json
 
 from eskiz_sms import EskizSMS
 from twilio.rest import Client
+import requests
 
 from app.config import config
 
@@ -20,11 +22,25 @@ def _configure_client_twilio() -> Client:
 def send_sms(phone: str, text: str):
     if phone.startswith('998') or phone.startswith('+998'):
         phone = phone.replace('+', '')
-        client = _configure_client_eskiz()
+        sms = [{
+            'phone': phone,
+            'text': text
+        }]
+        data = {
+            'login': config.SMS_LOGIN,
+            'password': config.SMS_PASSWORD,
+            'data': json.dumps(sms)
+        }
+        url = 'http://185.8.212.184/smsgateway/'
         try:
-            client.send_sms(phone, text, from_whom=config.SMS_FROM_WHOM, callback_url=None)
+            response = requests.post(
+                url,
+                data=data,
+                timeout=5,
+                verify=False
+            )
         except Exception as e:
-            logging.error(f'Error while sending sms via eskiz to {phone}')
+            logging.error(f'Error while sending sms via getsms to {phone}')
             raise e
     else:
         client = _configure_client_twilio()

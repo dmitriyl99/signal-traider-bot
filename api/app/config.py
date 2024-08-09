@@ -25,10 +25,10 @@ class Settings(BaseSettings):
     redis_host: str
     redis_port: int
 
-    amocrm_client_id: str
-    amocrm_secret_key: str
-    amocrm_authorization_code: str
-    amocrm_redirect_uri: str
+    amocrm_client_id: str | None = None
+    amocrm_secret_key: str | None = None
+    amocrm_authorization_code: str | None = None
+    amocrm_redirect_uri: str | None = None
 
 
 class CsrfSettings(BaseSettings):

@@ -12,40 +12,43 @@ class Config:
     DATABASE_URL: str
     PAYMENT_PROVIDERS: list
 
-    CLICK_PAYMENT_PROVIDER_TOKEN: str
+    CLICK_PAYMENT_PROVIDER_TOKEN: str | None = None
     CLICK_SERVICE_ID: str
     CLICK_MERCHANT_ID: str
     CLICK_SECRET_KEY: str
     CLICK_MERCHANT_USER_ID: int
 
-    PAYME_PAYMENT_PROVIDER_TOKEN: str
+    PAYME_PAYMENT_PROVIDER_TOKEN: str | None = None
     PAYME_MERCHANT_ID: str
     PAYME_KEY: str
     PAYME_TEST_KEY: str
 
-    CLOUD_PAYMENTS_PUBLIC_ID: str
-    CLOUD_PAYMENTS_PASSWORD: str
-    CLOUD_PAYMENTS_HOST: str
+    CLOUD_PAYMENTS_PUBLIC_ID: str | None = None
+    CLOUD_PAYMENTS_PASSWORD: str | None = None
+    CLOUD_PAYMENTS_HOST: str | None = None
 
     WEBHOOK_PORT: int
     WEBHOOK_TOKEN: str
 
-    ESKIZ_EMAIL: str
-    ESKIZ_PASSWORD: str
+    ESKIZ_EMAIL: str | None = None
+    ESKIZ_PASSWORD: str | None = None
     SMS_FROM_WHOM: str
 
-    TWILIO_ACCOUNT_SID: str
-    TWILIO_AUTH_TOKEN: str
+    TWILIO_ACCOUNT_SID: str | None = None
+    TWILIO_AUTH_TOKEN: str | None = None
+
+    SMS_LOGIN: str
+    SMS_PASSWORD: str
 
     REDIS_HOST: str
 
-    MASSPAY_HOST: str
+    MASSPAY_HOST: str | None = None
 
-    AMOCRM_CLIENT_ID: str
-    AMOCRM_SECRET_KEY: str
-    AMOCRM_AUTHORIZATION_CODE: str
-    AMOCRM_REDIRECT_URI: str
-    AMOCRM_SUBDOMAIN: str
+    AMOCRM_CLIENT_ID: str | None = None
+    AMOCRM_SECRET_KEY: str | None = None
+    AMOCRM_AUTHORIZATION_CODE: str | None = None
+    AMOCRM_REDIRECT_URI: str | None = None
+    AMOCRM_SUBDOMAIN: str | None = None
 
     def __init__(self):
         self.ENV = os.getenv('ENV')
