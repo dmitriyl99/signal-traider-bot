@@ -2,16 +2,17 @@
   <div class="card">
     <div class="card-header">
       <div class="row align-items-center">
-        <div class="col-10">
+        <div class="col-8">
           <div class="search-group">
             <input type="text" class="form-control form-control-flush" v-model="searchQuery" placeholder="Search">
           </div>
         </div>
-        <div class="col-2">
+        <div class="col-4">
           <div class="d-flex justify-content-end align-items-center">
-            <router-link :to="{name: 'CreateUser'}" class="btn btn-primary">
+            <router-link :to="{name: 'CreateUser'}" class="btn btn-primary me-4">
               Добавить пользователя
             </router-link>
+            <button class="btn btn-primary" @click="excelDownload">Скачать Excel</button>
           </div>
         </div>
       </div>
@@ -87,6 +88,17 @@ export default {
     }, 1000),
   },
   methods: {
+    excelDownload() {
+      usersApi.downloadExcel().then(response => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.style.display = 'none';
+        link.setAttribute('download', 'Пользователи.xlsx');
+        document.body.appendChild(link);
+        link.click()
+      })
+    },
     onClickHandler(page) {
       usersApi.getUsersList(page).then(response => {
         this.users = response.data

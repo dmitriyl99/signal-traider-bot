@@ -31,6 +31,11 @@ function deleteUser(
     return apiInstance.delete(`/users/${id}/`)
 }
 
+function downloadExcel()
+{
+    return apiInstance.get('/users/excel', {responseType: 'blob'})
+}
+
 export default {
-    getUsersList, saveUser, getUserById, updateUser, deleteUser
+    getUsersList, saveUser, getUserById, updateUser, deleteUser, downloadExcel
 }

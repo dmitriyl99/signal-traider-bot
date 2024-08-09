@@ -1,11 +1,14 @@
-from fastapi import APIRouter, Depends, Body, HTTPException, status
+from pathlib import Path
+
+from fastapi import APIRouter, Depends, Body, HTTPException, status, BackgroundTasks
+from fastapi.responses import FileResponse
 
 from app.dependencies import get_user_repository, get_current_user, get_subscriptions_repository
 from app.data.db.users_repository import UsersRepository
 from app.data.db.subscriptions_repository import SubscriptionsRepository
 from app.data.models.admin_users import AdminUser
 
-from app.services import bot
+from app.services import bot, excel
 
 from app.routers.forms.users import CreateUserForm, UpdateUserForm
 
@@ -117,7 +120,16 @@ async def delete_user(
 
 @router.get('/excel')
 async def download_excel(
+        background_tasks: BackgroundTasks,
         user_repository: UsersRepository = Depends(get_user_repository),
         current_user: AdminUser = Depends(get_current_user),
 ):
-    pass
+    users = await user_repository.get_all_users_without_pagination()
+    excel_filename = excel.get_users_excel(users)
+
+    def remove_file(temp_file):
+        Path(temp_file).unlink()
+    response = FileResponse(excel_filename, filename='Пользователи.xlsx')
+    background_tasks.add_task(remove_file, excel_filename)
+
+    return response

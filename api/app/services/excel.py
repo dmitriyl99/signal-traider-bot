@@ -8,14 +8,14 @@ import xlsxwriter
 
 
 def get_users_excel(users: List[User]) -> str:
-    workbook = xlsxwriter.Workbook("users.xlsx")
+    workbook = xlsxwriter.Workbook("app/storage/users.xlsx")
     worksheet = workbook.add_worksheet()
 
     row = 0
     column = 0
 
     headers = ['ID', 'Telegram ID', 'Имя', 'Номер телефона', "Дата регистрации", "Есть подписка?", "Подписка активна?",
-               "Срок подписки, дней", "Дней подписки осталось"]
+           "Срок подписки, дней", "Дней подписки осталось"]
     for index, header in enumerate(headers):
         worksheet.write(row, column + index, header)
     row += 1
@@ -32,7 +32,6 @@ def get_users_excel(users: List[User]) -> str:
         diff_in_days = date.diff_in_days(user.subscription.activation_datetime,
                                          datetime.now()) if user.subscription and user.subscription.activation_datetime else ''
         worksheet.write(row, column + 8, diff_in_days)
-
         row += 1
     workbook.close()
 
