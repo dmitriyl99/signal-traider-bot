@@ -39,7 +39,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
             await update.message.reply_text(strings.get_string('registration_language'),
                                             reply_markup=ReplyKeyboardMarkup(
                                                 keyboard=[[
-                                                    '🇷🇺 Русский',
+                                                    '🇺🇿 Ўзбек',
                                                     "🇺🇿 O'zbek"]], resize_keyboard=True))
 
             return LANGUAGE
@@ -69,7 +69,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
         return ConversationHandler.END
     await update.message.reply_text(strings.get_string('registration_language'),
                                     reply_markup=ReplyKeyboardMarkup(keyboard=[[
-                                        '🇷🇺 Русский',
+                                        '🇺🇿 Ўзбек',
                                         "🇺🇿 O'zbek"]], resize_keyboard=True))
 
     return LANGUAGE
@@ -78,7 +78,7 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
 async def _language(update: Update, context: CallbackContext.DEFAULT_TYPE):
     text = update.message.text
     languages = {
-        '🇷🇺 Русский': 'ru',
+        '🇺🇿 Ўзбек': 'ўз',
         "🇺🇿 O'zbek": 'uz'
     }
     if text not in languages:

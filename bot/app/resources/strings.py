@@ -171,6 +171,6 @@ def get_string(key: str, language: str | None = None):
         language = 'uz'
     if key not in strings_data:
         raise Exception(f'Wrong string key {key}')
-    if language not in ['ru', 'uz']:
+    if language not in ['ўз', 'uz']:
         language = 'uz'
     return strings_data[key][language]

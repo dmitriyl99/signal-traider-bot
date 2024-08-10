@@ -113,7 +113,6 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
         if chat_member.status == 'kicked':
             await context.bot.unban_chat_member(telegram_group_chat_id, telegram_user_id)
         invite_link = await context.bot.export_chat_invite_link(telegram_group_chat_id)
-        link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]"
         # link_name = f"[{strings.get_string('invite_group', user.language).format(name='')}]" if len(
         #     [telegram_group_chat_id]) == 1 else f"[{strings.get_string('invite_group', user.language).format(name=index_group_mapper[index][user.language])}]"
         invite_links.append(f"<a href='{invite_link}'>{link_name}</a>")

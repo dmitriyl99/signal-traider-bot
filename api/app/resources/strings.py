@@ -1,12 +1,12 @@
 strings_data = {
     'subscription_purchased': {
-        'ru': 'Поздравляем с успешной оплатой подписки! 🎉 Вот ваш эксклюзивный доступ к группе OneZone: {invite_links}. Присоединяйтесь и начните свой путь к успеху на Forex сегодня!',
-        'uz': "Tabriklaymiz, obuna uchun to'lov muvaffaqiyatli amalga oshirildi! 🎉 Mana sizning OneZone guruhiga eksklyuziv kirishingiz: {invite_links}. Qo'shiling va bugun Forex'dagi muvaffaqiyat yo'lingizni boshlang!"
+        'ўз': 'Табриклаймиз, обуна учун тўлов муваффақиятли амалга оширилди! 🎉 Мана сизнинг Isaev Full Contact гуруҳига эксклюзив киришингиз: {invite_links}. Қўшилинг ва бугун Форехъдаги муваффақият йўлингизни бошланг',
+        'uz': "Tabriklaymiz, obuna uchun to'lov muvaffaqiyatli amalga oshirildi! 🎉 Mana sizning Isaev Full Contact guruhiga eksklyuziv kirishingiz: {invite_links}. Qo'shiling va bugun Forex'dagi muvaffaqiyat yo'lingizni boshlang!"
     },
     'invite_group': {
-        'ru': 'Ссылка на Группу {name}',
+        'ўз': '{name} Гуруҳига Ҳавола',
         'uz': '{name} Guruhiga Havola'
-    }
+    },
 }
 
 
@@ -15,6 +15,6 @@ def get_string(key: str, language: str | None = None) -> str:
         language = 'uz'
     if key not in strings_data:
         raise Exception(f'Wrong string key {key}')
-    if language not in ['ru', 'uz']:
+    if language not in ['ўз', 'uz']:
         language = 'uz'
     return strings_data[key][language]
