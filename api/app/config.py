@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     ikpu_unit_code: str
     click_secret_key: str
     click_service_id: int
+    payme_key: str
 
     redis_host: str
     redis_port: int

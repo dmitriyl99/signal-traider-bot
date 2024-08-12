@@ -1,5 +1,7 @@
 import logging
 from datetime import datetime
+import base64
+import re
 
 from typing import Any
 
@@ -21,19 +23,22 @@ class PaycomPaymentHandler:
     payments_repository: PaymentsRepository
     subscriptions_repository: SubscriptionsRepository
     users_repository: UsersRepository
+    headers: dict
 
     def __init__(self,
                  data: PaymeForm,
                  transactions_repository: PaycomTransactionsRepository,
                  payments_repository: PaymentsRepository,
                  subscriptions_repository: SubscriptionsRepository,
-                 users_repository: UsersRepository
+                 users_repository: UsersRepository,
+                 headers: dict
                  ):
         self.data = data
         self.transaction_repository = transactions_repository
         self.payments_repository = payments_repository
         self.users_repository = users_repository
         self.subscriptions_repository = subscriptions_repository
+        self.headers = headers
 
     async def handle(self):
         method_maps = {
@@ -48,6 +53,22 @@ class PaycomPaymentHandler:
 
     async def _validate_payment(self):
         payment = None
+        authorization = self.headers.get('Authorization')
+        auth_error = PaycomException(
+                self.data.id,
+                PaycomException.create_message(
+                    'Неверная авторизация',
+                    'Неверная авторизация',
+                    'Invalid authorization'
+                ),
+                PaycomException.ERROR_INSUFFICIENT_PRIVILEGE,
+                'Authorization'
+            )
+        if not authorization or not re.match(r'^\s*Basic\s+(\S+)\s*$', authorization):
+            raise auth_error
+        match = re.match(r'^\s*Basic\s+(\S+)\s*$', authorization)
+        if not match or base64.b64decode(match.group(1)).decode('utf-8') != f"Paycom:{settings.payme_key}":
+            raise auth_error
         if 'order_id' in self.data.params['account']:
             payment = await self.payments_repository.get_payment_by_id(int(self.data.params['account']['order_id']))
         if not payment:
@@ -182,7 +203,9 @@ class PaycomPaymentHandler:
             transaction = self.transaction_repository.perform_transaction(transaction.id)
             payment = await self.payments_repository.get_payment_by_id(transaction.payment_id)
             user = await self.users_repository.get_user_by_id(payment.user_id)
-            subscription_user = await self.subscriptions_repository.add_subscription_to_user(user, payment.subscription_id, subscription_condition_id=payment.subscription_condition_id)
+            subscription_user = await self.subscriptions_repository.add_subscription_to_user(user,
+                                                                                             payment.subscription_id,
+                                                                                             subscription_condition_id=payment.subscription_condition_id)
             subscription_entity: Subscription = await self.subscriptions_repository.get_subscription_by_id(
                 subscription_user.subscription_id)
             await bot.subscription_purchased(user, subscription_entity)
@@ -215,7 +238,8 @@ class PaycomPaymentHandler:
                 PaycomException.ERROR_TRANSACTION_NOT_FOUND
             )
 
-        if transaction.state in [PaymeTransactionStates.STATE_CANCELLED, PaymeTransactionStates.STATE_CANCELLED_AFTER_COMPLETE]:
+        if transaction.state in [PaymeTransactionStates.STATE_CANCELLED,
+                                 PaymeTransactionStates.STATE_CANCELLED_AFTER_COMPLETE]:
             return {
                 'transaction': transaction.id,
                 'cancel_time': transaction.cancel_time.timestamp(),
