@@ -110,6 +110,7 @@ async def click_complete(
 
 @router.post('/payme')
 async def payme(
+        request: Request,
         form: PaymeForm = Body(),
         payment_repository: PaymentsRepository = Depends(get_payments_repository),
         paycom_transactions_repository: PaycomTransactionsRepository = Depends(get_paycom_transactions_repository),
@@ -118,7 +119,7 @@ async def payme(
 
 ):
     handler = PaycomPaymentHandler(form, paycom_transactions_repository, payment_repository, subscription_repository,
-                                   users_repository)
+                                   users_repository, request.headers)
     logging.info(f'Request from payme: id: {form.id}, Method: {form.method}, Params: {form.params}')
     try:
         result = await handler.handle()

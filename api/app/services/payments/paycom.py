@@ -4,6 +4,7 @@ import base64
 import re
 
 from typing import Any
+from fastapi import Headers
 
 from app.data.db.paycom_transactions_repository import PaycomTransactionsRepository
 from app.data.db.payments_repository import PaymentsRepository
@@ -23,7 +24,6 @@ class PaycomPaymentHandler:
     payments_repository: PaymentsRepository
     subscriptions_repository: SubscriptionsRepository
     users_repository: UsersRepository
-    headers: dict
 
     def __init__(self,
                  data: PaymeForm,
@@ -31,7 +31,7 @@ class PaycomPaymentHandler:
                  payments_repository: PaymentsRepository,
                  subscriptions_repository: SubscriptionsRepository,
                  users_repository: UsersRepository,
-                 headers: dict
+                 headers
                  ):
         self.data = data
         self.transaction_repository = transactions_repository
