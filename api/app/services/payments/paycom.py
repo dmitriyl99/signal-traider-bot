@@ -4,7 +4,6 @@ import base64
 import re
 
 from typing import Any
-from fastapi import Headers
 
 from app.data.db.paycom_transactions_repository import PaycomTransactionsRepository
 from app.data.db.payments_repository import PaymentsRepository
