@@ -50,24 +50,26 @@ class PaycomPaymentHandler:
 
         return await method_maps[self.data.method]()
 
-    async def _validate_payment(self):
-        payment = None
+    def _validate_auth(self):
         authorization = self.headers.get('Authorization')
         auth_error = PaycomException(
-                self.data.id,
-                PaycomException.create_message(
-                    'Неверная авторизация',
-                    'Неверная авторизация',
-                    'Invalid authorization'
-                ),
-                PaycomException.ERROR_INSUFFICIENT_PRIVILEGE,
-                'Authorization'
-            )
+            self.data.id,
+            PaycomException.create_message(
+                'Неверная авторизация',
+                'Неверная авторизация',
+                'Invalid authorization'
+            ),
+            PaycomException.ERROR_INSUFFICIENT_PRIVILEGE,
+            'Authorization'
+        )
         if not authorization or not re.match(r'^\s*Basic\s+(\S+)\s*$', authorization):
             raise auth_error
         match = re.match(r'^\s*Basic\s+(\S+)\s*$', authorization)
         if not match or base64.b64decode(match.group(1)).decode('utf-8') != f"Paycom:{settings.payme_key}":
             raise auth_error
+
+    async def _validate_payment(self):
+        payment = None
         if 'order_id' in self.data.params['account']:
             payment = await self.payments_repository.get_payment_by_id(int(self.data.params['account']['order_id']))
         if not payment:
@@ -94,6 +96,7 @@ class PaycomPaymentHandler:
             )
 
     async def _handle_check_perform_transaction(self):
+        await self._validate_auth()
         await self._validate_payment()
         logging.info(self.data.params)
         transaction = self.transaction_repository.find_transaction(self.data.params)
@@ -125,7 +128,7 @@ class PaycomPaymentHandler:
         }
 
     async def _handle_check_transaction(self):
-        await self._validate_payment()
+        await self._validate_auth()
         transaction = self.transaction_repository.find_transaction(self.data.params)
         if not transaction:
             raise PaycomException(
@@ -188,7 +191,7 @@ class PaycomPaymentHandler:
         }
 
     async def _handle_perform_transaction(self):
-        await self._validate_payment()
+        await self._validate_auth()
         transaction = self.transaction_repository.find_transaction(self.data.params)
 
         if not transaction:
@@ -229,7 +232,7 @@ class PaycomPaymentHandler:
             )
 
     async def _handle_cancel_transaction(self):
-        await self._validate_payment()
+        await self._validate_auth()
         transaction = self.transaction_repository.find_transaction(self.data.params)
 
         if not transaction:
