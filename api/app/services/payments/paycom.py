@@ -185,7 +185,7 @@ class PaycomPaymentHandler:
 
         return {
             'create_time': int(timestamp / 1000),
-            'transaction': transaction.id,
+            'transaction': transaction.paycom_transaction_id,
             'state': transaction.state,
             'receivers': None
         }
