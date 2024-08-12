@@ -219,8 +219,8 @@ class PaycomPaymentHandler:
                 logging.error(e)
 
             return {
-                'transaction': transaction.id,
-                'perform_time': transaction.perform_time.timestamp(),
+                'transaction': transaction.paycom_transaction_id,
+                'perform_time': int(transaction.perform_time.timestamp() * 1000000 / 1000),
                 'state': transaction.state
             }
         elif transaction.state == PaymeTransactionStates.STATE_COMPLETED:
