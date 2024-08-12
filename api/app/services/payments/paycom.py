@@ -115,12 +115,11 @@ class PaycomPaymentHandler:
                 'items': [
                     {
                         'title': payment.subscription.name,
-                        'price': payment.subscription_condition.price,
+                        'price': payment.amount,
                         'count': payment.subscription_condition.duration_in_month,
                         'code': settings.ikpu,
                         'vat_percent': 0,
                         'package_code': settings.ikpu_unit_code,
-                        'units': settings.ikpu_unit_code
                     }
                 ]
             }
