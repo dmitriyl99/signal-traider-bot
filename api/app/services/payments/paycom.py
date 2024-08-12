@@ -204,16 +204,19 @@ class PaycomPaymentHandler:
             )
 
         if transaction.state == PaymeTransactionStates.STATE_CREATED:
-            await self.payments_repository.set_payment_status(transaction.payment_id, PaymentStatus.CONFIRMED)
-            transaction = self.transaction_repository.perform_transaction(transaction.id)
-            payment = await self.payments_repository.get_payment_by_id(transaction.payment_id)
-            user = await self.users_repository.get_user_by_id(payment.user_id)
-            subscription_user = await self.subscriptions_repository.add_subscription_to_user(user,
-                                                                                             payment.subscription_id,
-                                                                                             subscription_condition_id=payment.subscription_condition_id)
-            subscription_entity: Subscription = await self.subscriptions_repository.get_subscription_by_id(
-                subscription_user.subscription_id)
-            await bot.subscription_purchased(user, subscription_entity)
+            try:
+                await self.payments_repository.set_payment_status(transaction.payment_id, PaymentStatus.CONFIRMED)
+                transaction = self.transaction_repository.perform_transaction(transaction.id)
+                payment = await self.payments_repository.get_payment_by_id(transaction.payment_id)
+                user = await self.users_repository.get_user_by_id(payment.user_id)
+                subscription_user = await self.subscriptions_repository.add_subscription_to_user(user,
+                                                                                                 payment.subscription_id,
+                                                                                                 subscription_condition_id=payment.subscription_condition_id)
+                subscription_entity: Subscription = await self.subscriptions_repository.get_subscription_by_id(
+                    subscription_user.subscription_id)
+                await bot.subscription_purchased(user, subscription_entity)
+            except Exception as e:
+                logging.error(e)
 
             return {
                 'transaction': transaction.id,
