@@ -184,7 +184,7 @@ class PaycomPaymentHandler:
         timestamp = transaction.create_time.timestamp() * 1000000
 
         return {
-            'create_time': int(timestamp / 100),
+            'create_time': int(timestamp / 1000),
             'transaction': transaction.id,
             'state': transaction.state,
             'receivers': None
