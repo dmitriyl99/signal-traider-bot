@@ -75,6 +75,8 @@ class Config:
         self.TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
         self.TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
         self.TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
+        self.SMS_LOGIN = os.getenv('SMS_LOGIN')
+        self.SMS_PASSWORD = os.getenv('SMS_PASSWORD')
         self.SMS_FROM_WHOM = os.getenv('SMS_FROM_WHOM')
         self.REDIS_HOST = os.getenv('REDIS_HOST')
         self.MASSPAY_HOST = os.getenv('MASSPAY_HOST')
