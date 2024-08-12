@@ -32,7 +32,7 @@ def _on_app_shutdown():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "http://bot.onepayment.uz", "https://bot.onepayment.uz", "https://api-bot.onepayment.uz"],
+    allow_origins=["http://localhost:8080", "http://bot.onepayment.uz", "https://bot.onepayment.uz", "https://isaev-full-contact.uz"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
