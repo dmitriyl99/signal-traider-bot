@@ -141,8 +141,8 @@ class PaycomPaymentHandler:
 
         return {
             'create_time': int(timestamp / 1000),
-            'perform_time': int(transaction.perform_time.timestamp() * 1000000 / 1000) if transaction.perform_time else None,
-            'cancel_time': int(transaction.cancel_time.timestamp() * 1000000 / 1000) if transaction.cancel_time else None,
+            'perform_time': int(transaction.perform_time.timestamp() * 1000000 / 1000) if transaction.perform_time else 0,
+            'cancel_time': int(transaction.cancel_time.timestamp() * 1000000 / 1000) if transaction.cancel_time else 0,
             'transaction': transaction.paycom_transaction_id,
             'state': transaction.state,
             'reason': 1 * transaction.reason if transaction.reason is not None else None
