@@ -149,6 +149,7 @@ class PaycomPaymentHandler:
         }
 
     async def _handle_create_transaction(self):
+        self._validate_auth()
         await self._validate_payment()
         # Check, is there any other transaction for this payment
         transaction = self.transaction_repository.find_transaction({'account': self.data.params['account']})
