@@ -1,7 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
 from . import Session
 from ..models.payme_transaction import PaymeTransaction, PaymeTransactionStates
@@ -34,7 +33,7 @@ class PaycomTransactionsRepository:
             paycom_transaction_id=paycom_transaction_id,
             paycom_time=paycom_time,
             paycom_time_datetime=paycom_time_datetime,
-            create_time=datetime.now(),
+            create_time=datetime.now() + timedelta(hours=5),
             amount=amount,
             state=PaymeTransactionStates.STATE_CREATED,
             payment_id=payment_id
