@@ -125,6 +125,7 @@ class PaycomPaymentHandler:
         }
 
     async def _handle_check_transaction(self):
+        await self._validate_payment()
         transaction = self.transaction_repository.find_transaction(self.data.params)
         if not transaction:
             raise PaycomException(
@@ -187,6 +188,7 @@ class PaycomPaymentHandler:
         }
 
     async def _handle_perform_transaction(self):
+        await self._validate_payment()
         transaction = self.transaction_repository.find_transaction(self.data.params)
 
         if not transaction:
@@ -227,6 +229,7 @@ class PaycomPaymentHandler:
             )
 
     async def _handle_cancel_transaction(self):
+        await self._validate_payment()
         transaction = self.transaction_repository.find_transaction(self.data.params)
 
         if not transaction:
