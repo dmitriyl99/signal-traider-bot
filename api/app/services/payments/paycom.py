@@ -181,7 +181,7 @@ class PaycomPaymentHandler:
             self.data.params['amount'],
             self.data.params['account']['order_id']
         )
-        timestamp = transaction.create_time.timestamp() * 1000000
+        timestamp = transaction.create_time.timestamp() * 1000
 
         return {
             'create_time': int(timestamp),
