@@ -10,6 +10,7 @@ from app.data.db.payments_repository import PaymentsRepository
 from app.data.db.subscriptions_repository import SubscriptionsRepository
 from app.data.db.users_repository import UsersRepository
 from app.data.models.payments import PaymentStatus
+from app.helpers import date as date_helper
 from app.routers.forms.payments import PaymeForm
 from app.data.models.payme_transaction import PaymeTransactionStates
 from app.services import bot
@@ -145,9 +146,9 @@ class PaycomPaymentHandler:
         timestamp = transaction.create_time.timestamp() * 1000000
 
         return {
-            'create_time': int(timestamp / 1000),
-            'perform_time': int(transaction.perform_time.timestamp() * 1000000 / 1000) if transaction.perform_time else 0,
-            'cancel_time': int(transaction.cancel_time.timestamp() * 1000000 / 1000) if transaction.cancel_time else 0,
+            'create_time': date_helper.datetime2timestamp(transaction.create_time),
+            'perform_time': date_helper.datetime2timestamp(transaction.create_time) if transaction.perform_time else 0,
+            'cancel_time': date_helper.datetime2timestamp(transaction.create_time) if transaction.cancel_time else 0,
             'transaction': transaction.paycom_transaction_id,
             'state': transaction.state,
             'reason': 1 * transaction.reason if transaction.reason is not None else None
@@ -177,7 +178,7 @@ class PaycomPaymentHandler:
                 )
             else:
                 return {
-                    'create_time': transaction.create_time,
+                    'create_time': date_helper.datetime2timestamp(transaction.create_time),
                     'transaction': transaction.id,
                     'state': transaction.state,
                     'receivers': None
@@ -192,7 +193,7 @@ class PaycomPaymentHandler:
         timestamp = transaction.create_time.timestamp() * 1000000
 
         return {
-            'create_time': int(timestamp / 1000),
+            'create_time': date_helper.datetime2timestamp(transaction.create_time),
             'transaction': transaction.paycom_transaction_id,
             'state': transaction.state,
             'receivers': None
@@ -226,13 +227,13 @@ class PaycomPaymentHandler:
 
             return {
                 'transaction': transaction.paycom_transaction_id,
-                'perform_time': int(transaction.perform_time.timestamp() * 1000000 / 1000),
+                'perform_time': date_helper.datetime2timestamp(transaction.perform_time),
                 'state': transaction.state
             }
         elif transaction.state == PaymeTransactionStates.STATE_COMPLETED:
             return {
                 'transaction': transaction.paycom_transaction_id,
-                'perform_time': int(transaction.perform_time.timestamp() * 1000000 / 1000),
+                'perform_time': date_helper.datetime2timestamp(transaction.perform_time),
                 'state': transaction.state
             }
         else:
@@ -257,7 +258,7 @@ class PaycomPaymentHandler:
                                  PaymeTransactionStates.STATE_CANCELLED_AFTER_COMPLETE]:
             return {
                 'transaction': transaction.id,
-                'cancel_time': transaction.cancel_time.timestamp(),
+                'cancel_time': date_helper.datetime2timestamp(transaction.cancel_time),
                 'state': transaction.state
             }
         elif transaction.state == PaymeTransactionStates.STATE_CREATED:
@@ -265,7 +266,7 @@ class PaycomPaymentHandler:
             await self.payments_repository.set_payment_status(transaction.payment_id, PaymentStatus.REJECTED)
             return {
                 'transaction': transaction.id,
-                'cancel_time': transaction.cancel_time.timestamp(),
+                'cancel_time': date_helper.datetime2timestamp(transaction.cancel_time),
                 'state': transaction.state
             }
         elif transaction.state == PaymeTransactionStates.STATE_COMPLETED:
