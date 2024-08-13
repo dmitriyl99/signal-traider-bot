@@ -10,8 +10,10 @@ from app.data.models.subscription import SubscriptionUser
 from app import actions
 from app.data.db import users_repository, subscriptions_repository, utm_respository
 from app.services.otp_service import OTPService
+from app.conversations.select_subscription_conversation import _choose_condition, _select_payment_provider, \
+    _back_handler
 
-LANGUAGE, NAME, PHONE, OTP = range(4)
+LANGUAGE, NAME, PHONE, OTP, CHOOSE_SUBSCRIPTION, CHOOSE_CONDITION, SELECT_PAYMENT_PROVIDER, BACK = range(8)
 
 
 async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
@@ -65,8 +67,8 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
         if active_subscription is not None:
             await actions.send_current_subscription_information(active_subscription, update, current_user, context)
             return ConversationHandler.END
-        await actions.send_subscription_menu_button(update, context, current_user)
-        return ConversationHandler.END
+        await actions.send_subscription_conditions(update, 1, current_user, context)
+        return CHOOSE_CONDITION
     await update.message.reply_text(strings.get_string('registration_language'),
                                     reply_markup=ReplyKeyboardMarkup(keyboard=[[
                                         '🇺🇿 Ўзбек',
@@ -216,7 +218,8 @@ async def _verify_otp(update: Update, context: CallbackContext.DEFAULT_TYPE):
                                     reply_markup=ReplyKeyboardRemove())
     active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(user)
     if active_subscription is None:
-        await actions.send_subscription_menu_button(update, context, user)
+        await actions.send_subscription_conditions(update, 1, user, context)
+        return CHOOSE_CONDITION
     else:
         await actions.send_current_subscription_information(active_subscription, update, user, context)
     if 'registration_name' in context.user_data:
@@ -235,7 +238,10 @@ handler = ConversationHandler(
         LANGUAGE: [MessageHandler(filters.TEXT & ~filters.COMMAND, _language)],
         NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, _name)],
         PHONE: [MessageHandler((filters.TEXT | filters.CONTACT) & ~filters.COMMAND, _phone)],
-        OTP: [MessageHandler(filters.TEXT & ~filters.COMMAND, _verify_otp)]
+        OTP: [MessageHandler(filters.TEXT & ~filters.COMMAND, _verify_otp)],
+        CHOOSE_CONDITION: [MessageHandler(filters.TEXT, _choose_condition)],
+        SELECT_PAYMENT_PROVIDER: [MessageHandler(filters.TEXT, _select_payment_provider)],
+        BACK: [MessageHandler(filters.TEXT, _back_handler)]
     },
     fallbacks=[
         CommandHandler('start', _start),
@@ -261,7 +267,6 @@ async def _process_update_for_utm(update: Update):
     utm_commands = utm_payload_split[1:]
     for utm_command in utm_commands:
         await utm_respository.utm_click(utm_command, update.effective_user.id)
-
 
 # async def _process_update_for_hash_command(update: Update, context: CallbackContext.DEFAULT_TYPE) -> Optional[User]:
 #     logging.info(f'Process for hash command: {update.message.text}')

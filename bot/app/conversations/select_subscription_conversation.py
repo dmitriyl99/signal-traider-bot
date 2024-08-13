@@ -10,7 +10,6 @@ from app.payments import providers as payment_providers, handlers
 from app.data.db import subscriptions_repository, users_repository, payments_repository
 from app.data.models.payments import PaymentStatus
 from app.resources import strings
-from app.conversations.registration_conversation import handler as registration_handler
 
 from app.services import currency_exchange as currency_exchange_service, cloud_payments
 from app.actions import (send_subscriptions, send_subscription_conditions, send_payment_providers,
@@ -226,17 +225,17 @@ async def _fallbacks_handler(update: Update, context: CallbackContext.DEFAULT_TY
     return ConversationHandler.END
 
 
-handler = ConversationHandler(
-    allow_reentry=True,
-    entry_points=[MessageHandler(
-        filters.Text('Isaev Full Contact'),
-        _subscription_start)],
-    states={
-        CHOOSE_SUBSCRIPTION: [MessageHandler(filters.TEXT, _choose_subscription)],
-        CHOOSE_CONDITION: [MessageHandler(filters.TEXT, _choose_condition)],
-        SELECT_PAYMENT_PROVIDER: [MessageHandler(filters.TEXT, _select_payment_provider)],
-        CLOUD_PAYMENTS: [MessageHandler(filters.StatusUpdate.WEB_APP_DATA | filters.TEXT, cloud_payment_web_app_data)],
-        BACK: [MessageHandler(filters.TEXT, _back_handler)]
-    },
-    fallbacks=[registration_handler, MessageHandler(filters.TEXT, _fallbacks_handler)]
-)
+# handler = ConversationHandler(
+#     allow_reentry=True,
+#     entry_points=[MessageHandler(
+#         filters.Text('Isaev Full Contact'),
+#         _subscription_start)],
+#     states={
+#         CHOOSE_SUBSCRIPTION: [MessageHandler(filters.TEXT, _choose_subscription)],
+#         CHOOSE_CONDITION: [MessageHandler(filters.TEXT, _choose_condition)],
+#         SELECT_PAYMENT_PROVIDER: [MessageHandler(filters.TEXT, _select_payment_provider)],
+#         CLOUD_PAYMENTS: [MessageHandler(filters.StatusUpdate.WEB_APP_DATA | filters.TEXT, cloud_payment_web_app_data)],
+#         BACK: [MessageHandler(filters.TEXT, _back_handler)]
+#     },
+#     fallbacks=[registration_handler, MessageHandler(filters.TEXT, _fallbacks_handler)]
+# )

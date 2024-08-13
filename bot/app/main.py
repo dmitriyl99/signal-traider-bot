@@ -4,7 +4,7 @@ from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, fi
 from telegram.constants import ChatType
 from telegram import Update, ReplyKeyboardRemove
 
-from app.conversations import registration_conversation, select_subscription_conversation, language_conversation, renew_subscription
+from app.conversations import registration_conversation, language_conversation, renew_subscription
 from app.payments import handlers as payment_handlers
 from app.config import config
 
@@ -26,7 +26,7 @@ def main():
     application = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).build()
 
     application.add_handler(registration_conversation.handler)
-    application.add_handler(select_subscription_conversation.handler)
+    # application.add_handler(select_subscription_conversation.handler)
     application.add_handler(language_conversation.handler)
     application.add_handlers(payment_handlers.handlers)
     application.add_handler(renew_subscription.handler)
