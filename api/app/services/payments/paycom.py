@@ -177,7 +177,7 @@ class PaycomPaymentHandler:
             else:
                 return {
                     'create_time': date_helper.datetime2timestamp(transaction.create_time),
-                    'transaction': transaction.id,
+                    'transaction': transaction.paycom_transaction_id,
                     'state': transaction.state,
                     'receivers': None
                 }
