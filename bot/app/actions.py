@@ -82,6 +82,7 @@ async def send_subscriptions(update: Update, context: CallbackContext.DEFAULT_TY
 
 async def send_subscription_conditions(update: Update, subscription_id: int, user: User, context: CallbackContext.DEFAULT_TYPE):
     subscription_conditions = await subscriptions_repository.get_subscription_condition(subscription_id)
+    context.user_data['subscription:id'] = subscription_id
     chunked_conditions = array.chunks(subscription_conditions, 2)
     keyboard = []
     for chunk in chunked_conditions:
