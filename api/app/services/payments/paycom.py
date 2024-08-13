@@ -123,7 +123,7 @@ class PaycomPaymentHandler:
                 'items': [
                     {
                         'title': payment.subscription.name,
-                        'price': payment.amount,
+                        'price': payment.amount  * 100,
                         'count': payment.subscription_condition.duration_in_month,
                         'code': settings.ikpu,
                         'vat_percent': 0,
