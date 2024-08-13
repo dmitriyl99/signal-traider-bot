@@ -226,19 +226,19 @@ class PaycomPaymentHandler:
 
             return {
                 'create_time': date_helper.datetime2timestamp(transaction.create_time),
-                'transaction': transaction.paycom_transaction_id,
                 'perform_time': date_helper.datetime2timestamp(transaction.perform_time),
                 'cancel_time': date_helper.datetime2timestamp(
                     transaction.create_time) if transaction.cancel_time else 0,
+                'transaction': transaction.paycom_transaction_id,
                 'state': transaction.state
             }
         elif transaction.state == PaymeTransactionStates.STATE_COMPLETED:
             return {
                 'create_time': date_helper.datetime2timestamp(transaction.create_time),
-                'transaction': transaction.paycom_transaction_id,
                 'perform_time': date_helper.datetime2timestamp(transaction.perform_time),
                 'cancel_time': date_helper.datetime2timestamp(
                     transaction.create_time) if transaction.cancel_time else 0,
+                'transaction': transaction.paycom_transaction_id,
                 'state': transaction.state
             }
         else:
