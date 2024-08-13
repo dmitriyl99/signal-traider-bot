@@ -119,7 +119,7 @@ async def payme(
 
 ):
     handler = PaycomPaymentHandler(form, paycom_transactions_repository, payment_repository, subscription_repository,
-                                   users_repository, request.headers)
+                                   users_repository, request.headers, request.get('date_from'), request.get('date_to'))
     logging.info(f'Request from payme: id: {form.id}, Method: {form.method}, Params: {form.params}')
     try:
         result = await handler.handle()
