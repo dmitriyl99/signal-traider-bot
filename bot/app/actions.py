@@ -96,7 +96,7 @@ async def send_subscription_conditions(update: Update, subscription_id: int, use
                     KeyboardButton(strings.get_string('subscription_condition_name_days',
                                                       user.language) % condition.duration_in_days))
         keyboard.append(buttons)
-    keyboard.append([KeyboardButton(strings.get_string('back_button', user.language))])
+    # keyboard.append([KeyboardButton(strings.get_string('back_button', user.language))])
     if update.message:
         await update.message.reply_text(strings.get_string('subscription_select_condition', user.language), reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True))
     else:
