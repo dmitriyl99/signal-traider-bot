@@ -143,8 +143,6 @@ class PaycomPaymentHandler:
                 PaycomException.ERROR_TRANSACTION_NOT_FOUND
             )
 
-        timestamp = transaction.create_time.timestamp() * 1000000
-
         return {
             'create_time': date_helper.datetime2timestamp(transaction.create_time),
             'perform_time': date_helper.datetime2timestamp(transaction.create_time) if transaction.perform_time else 0,
@@ -230,7 +228,8 @@ class PaycomPaymentHandler:
                 'cancel_time': date_helper.datetime2timestamp(
                     transaction.create_time) if transaction.cancel_time else 0,
                 'transaction': transaction.paycom_transaction_id,
-                'state': transaction.state
+                'state': transaction.state,
+                'reason': 1 * transaction.reason if transaction.reason is not None else None
             }
         elif transaction.state == PaymeTransactionStates.STATE_COMPLETED:
             return {
@@ -239,7 +238,8 @@ class PaycomPaymentHandler:
                 'cancel_time': date_helper.datetime2timestamp(
                     transaction.create_time) if transaction.cancel_time else 0,
                 'transaction': transaction.paycom_transaction_id,
-                'state': transaction.state
+                'state': transaction.state,
+                'reason': 1 * transaction.reason if transaction.reason is not None else None
             }
         else:
             raise PaycomException(
