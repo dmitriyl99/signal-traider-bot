@@ -145,8 +145,8 @@ class PaycomPaymentHandler:
 
         return {
             'create_time': date_helper.datetime2timestamp(transaction.create_time),
-            'perform_time': date_helper.datetime2timestamp(transaction.create_time) if transaction.perform_time else 0,
-            'cancel_time': date_helper.datetime2timestamp(transaction.create_time) if transaction.cancel_time else 0,
+            'perform_time': date_helper.datetime2timestamp(transaction.perform_time) if transaction.perform_time else 0,
+            'cancel_time': date_helper.datetime2timestamp(transaction.cancel_time) if transaction.cancel_time else 0,
             'transaction': transaction.paycom_transaction_id,
             'state': transaction.state,
             'reason': 1 * transaction.reason if transaction.reason is not None else None
@@ -236,7 +236,7 @@ class PaycomPaymentHandler:
                 'create_time': date_helper.datetime2timestamp(transaction.create_time),
                 'perform_time': date_helper.datetime2timestamp(transaction.perform_time),
                 'cancel_time': date_helper.datetime2timestamp(
-                    transaction.create_time) if transaction.cancel_time else 0,
+                    transaction.cancel_time) if transaction.cancel_time else 0,
                 'transaction': transaction.paycom_transaction_id,
                 'state': transaction.state,
                 'reason': 1 * transaction.reason if transaction.reason is not None else None
