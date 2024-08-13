@@ -65,6 +65,7 @@ class PaycomTransactionsRepository:
             else:
                 transaction.state = PaymeTransactionStates.STATE_CANCELLED
             session.commit()
+            session.refresh(transaction)
         return transaction
 
     def report(self, from_date, to_date):
