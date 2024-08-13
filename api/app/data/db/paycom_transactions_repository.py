@@ -87,8 +87,8 @@ class PaycomTransactionsRepository:
                     'order_id': transaction.payment_id
                 },
                 'create_time': date_helper.datetime2timestamp(transaction.create_time),
-                'perform_time': date_helper.datetime2timestamp(transaction.perform_time),
-                'cancel_time': date_helper.datetime2timestamp(transaction.cancel_time),
+                'perform_time': date_helper.datetime2timestamp(transaction.perform_time) if transaction.perform_time else 0,
+                'cancel_time': date_helper.datetime2timestamp(transaction.cancel_time) if transaction.cancel_time else 0,
                 'transaction': 1 * transaction.id,
                 'state': 1 * transaction.state,
                 'reason': 1 * transaction.reason if transaction.reason else None,
