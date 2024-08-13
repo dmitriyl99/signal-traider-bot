@@ -190,7 +190,6 @@ class PaycomPaymentHandler:
             self.data.params['amount'],
             self.data.params['account']['order_id']
         )
-        timestamp = transaction.create_time.timestamp() * 1000000
 
         return {
             'create_time': date_helper.datetime2timestamp(transaction.create_time),

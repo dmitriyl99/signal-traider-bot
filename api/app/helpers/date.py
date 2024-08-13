@@ -31,6 +31,8 @@ def timestamp2datetime(timestamp):
 
 
 def datetime2timestamp(datetime_str):
+    if isinstance(datetime_str, datetime):
+        datetime_str = datetime_str.strftime('%Y-%m-%d %H:%M:%S')
     if datetime_str:
         return int(time.mktime(time.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')) * 1000)
     return datetime_str
