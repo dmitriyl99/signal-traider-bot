@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import between
 
 from . import Session
 from ..models.payme_transaction import PaymeTransaction, PaymeTransactionStates
+from app.helpers import date as date_helper
 
 
 class PaycomTransactionsRepository:
@@ -63,3 +65,32 @@ class PaycomTransactionsRepository:
             else:
                 transaction.state = PaymeTransactionStates.STATE_CANCELLED
             session.commit()
+
+    def report(self, from_date, to_date):
+        from_date = date_helper.timestamp2datetime(from_date)
+        to_date = date_helper.timestamp2datetime(to_date)
+
+        with Session() as session:
+            transactions = session.query(PaymeTransaction).filter(
+                between(PaymeTransaction.paycom_time_datetime, from_date, to_date)
+            )
+        result = []
+
+        for transaction in transactions:
+            result.append({
+                'id': transaction.paycom_transaction_id,
+                'time': 1 * transaction.paycom_time,
+                'amount': 1 * transaction.amount,
+                'account': {
+                    'order_id': transaction.payment_id
+                },
+                'create_time': date_helper.datetime2timestamp(transaction.create_time),
+                'perform_time': date_helper.datetime2timestamp(transaction.perform_time),
+                'cancel_time': date_helper.datetime2timestamp(transaction.cancel_time),
+                'transaction': 1 * transaction.id,
+                'state': 1 * transaction.state,
+                'reason': 1 * transaction.reason if transaction.reason else None,
+                'receivers': None
+            })
+
+        return result

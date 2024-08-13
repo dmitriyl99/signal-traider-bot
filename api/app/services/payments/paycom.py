@@ -30,7 +30,9 @@ class PaycomPaymentHandler:
                  payments_repository: PaymentsRepository,
                  subscriptions_repository: SubscriptionsRepository,
                  users_repository: UsersRepository,
-                 headers
+                 headers,
+                 date_from: int = None,
+                 date_to: int = None
                  ):
         self.data = data
         self.transaction_repository = transactions_repository
@@ -38,6 +40,8 @@ class PaycomPaymentHandler:
         self.users_repository = users_repository
         self.subscriptions_repository = subscriptions_repository
         self.headers = headers
+        self.date_from = date_from
+        self.date_to = date_to
 
     async def handle(self):
         method_maps = {
@@ -45,7 +49,8 @@ class PaycomPaymentHandler:
             'CheckTransaction': self._handle_check_transaction,
             'CreateTransaction': self._handle_create_transaction,
             'PerformTransaction': self._handle_perform_transaction,
-            'CancelTransaction': self._handle_cancel_transaction
+            'CancelTransaction': self._handle_cancel_transaction,
+            'GetStatement': self._handle_get_statement,
         }
 
         return await method_maps[self.data.method]()
@@ -269,6 +274,23 @@ class PaycomPaymentHandler:
                 'Could not cancel transaction. Order is delivered/Service is completed.',
                 PaycomException.ERROR_COULD_NOT_CANCEL
             )
+
+    async def _handle_get_statment(self):
+        self._validate_auth()
+        if not self.date_from:
+            raise PaycomException(self.data.id, 'Incorrect period', PaycomException.ERROR_INVALID_ACCOUNT, 'from')
+
+        if not self.date_to:
+            raise PaycomException(self.data.id, 'Incorrect period', PaycomException.ERROR_INVALID_ACCOUNT, 'to')
+
+        if 1 * self.date_from >= 1 * self.date_to:
+            raise PaycomException(self.data.id, 'Incorrect period. (from >= to)', PaycomException.ERROR_INVALID_ACCOUNT, 'from')
+
+        transactions = self.transaction_repository.report(self.date_from, self.date_to)
+
+        return {
+            'transactions': transactions
+        }
 
 
 class PaycomException(Exception):
