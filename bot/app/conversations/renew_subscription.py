@@ -12,7 +12,8 @@ from telegram.ext import (
 from app.data.db import subscriptions_repository, users_repository
 from app import actions
 from app.conversations.select_subscription_conversation import _choose_subscription, _choose_condition, \
-    _select_payment_provider, _back_handler, _fallbacks_handler, registration_handler
+    _select_payment_provider, _back_handler, _fallbacks_handler
+from app.conversations.registration_conversation import handler as registration_handler
 
 RENEW_SUBSCRIPTION = 'renew_subscription'
 ARRANGE_SUBSCRIPTION = 'arrange_subscription'
