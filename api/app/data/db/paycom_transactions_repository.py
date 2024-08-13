@@ -35,7 +35,7 @@ class PaycomTransactionsRepository:
             paycom_transaction_id=paycom_transaction_id,
             paycom_time=paycom_time,
             paycom_time_datetime=paycom_time_datetime,
-            create_time=datetime.now() + timedelta(hours=5),
+            create_time=datetime.now(),
             amount=amount,
             state=PaymeTransactionStates.STATE_CREATED,
             payment_id=payment_id
