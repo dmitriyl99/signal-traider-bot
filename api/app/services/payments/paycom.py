@@ -275,7 +275,7 @@ class PaycomPaymentHandler:
                 PaycomException.ERROR_COULD_NOT_CANCEL
             )
 
-    async def _handle_get_statment(self):
+    async def _handle_get_statement(self):
         self._validate_auth()
         if not self.date_from:
             raise PaycomException(self.data.id, 'Incorrect period', PaycomException.ERROR_INVALID_ACCOUNT, 'from')
