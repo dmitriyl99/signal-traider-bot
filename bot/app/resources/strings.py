@@ -49,9 +49,12 @@ strings_data = {
     },
     'subscription_menu_message': {
         'ўз': """Энди  Isaev Full Contact  ҳамжамиятига кириш ҳақида! Мана обуна учун мавжуд тарифлар:
-🔘 1 ой - <b>50$</b> 💵""",
+🔘 1 ой - <b>1$</b> 💵
+🔘 2 ой - <b>2$</b> 💵""",
         'uz': """Endi <b>Isaev Full Contact</b> hamjamiyatiga kirish haqida! Mana obuna uchun mavjud tariflar:
-🔘 1 oy - <b>50$</b> 💵"""
+🔘 1 oy - <b>1$</b> 💵
+🔘 2 oy - <b>2$</b> 💵
+"""
     },
 
     'choose_subscription_text': {
