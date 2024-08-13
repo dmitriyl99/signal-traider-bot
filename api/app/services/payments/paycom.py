@@ -32,8 +32,6 @@ class PaycomPaymentHandler:
                  subscriptions_repository: SubscriptionsRepository,
                  users_repository: UsersRepository,
                  headers,
-                 date_from: int = None,
-                 date_to: int = None
                  ):
         self.data = data
         self.transaction_repository = transactions_repository
@@ -41,8 +39,6 @@ class PaycomPaymentHandler:
         self.users_repository = users_repository
         self.subscriptions_repository = subscriptions_repository
         self.headers = headers
-        self.date_from = date_from
-        self.date_to = date_to
 
     async def handle(self):
         method_maps = {
@@ -283,16 +279,18 @@ class PaycomPaymentHandler:
 
     async def _handle_get_statement(self):
         self._validate_auth()
-        if not self.date_from:
+        date_from = self.data.params.get('from')
+        date_to = self.data.params.get('to')
+        if not date_from:
             raise PaycomException(self.data.id, 'Incorrect period', PaycomException.ERROR_INVALID_ACCOUNT, 'from')
 
-        if not self.date_to:
+        if not date_to:
             raise PaycomException(self.data.id, 'Incorrect period', PaycomException.ERROR_INVALID_ACCOUNT, 'to')
 
-        if 1 * self.date_from >= 1 * self.date_to:
+        if 1 * date_from >= 1 * date_to:
             raise PaycomException(self.data.id, 'Incorrect period. (from >= to)', PaycomException.ERROR_INVALID_ACCOUNT, 'from')
 
-        transactions = self.transaction_repository.report(self.date_from, self.date_to)
+        transactions = self.transaction_repository.report(date_from, date_to)
 
         return {
             'transactions': transactions
