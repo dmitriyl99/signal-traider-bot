@@ -262,17 +262,17 @@ class PaycomPaymentHandler:
         if transaction.state in [PaymeTransactionStates.STATE_CANCELLED,
                                  PaymeTransactionStates.STATE_CANCELLED_AFTER_COMPLETE]:
             return {
-                'transaction': transaction.id,
+                'transaction': transaction.paycom_transaction_id,
                 'cancel_time': date_helper.datetime2timestamp(transaction.cancel_time),
                 'state': transaction.state
             }
         elif transaction.state == PaymeTransactionStates.STATE_CREATED:
-            self.transaction_repository.cancel_transaction(transaction.id, self.data.params['reason'])
+            canceled_transaction = self.transaction_repository.cancel_transaction(transaction.id, self.data.params['reason'])
             await self.payments_repository.set_payment_status(transaction.payment_id, PaymentStatus.REJECTED)
             return {
-                'transaction': transaction.id,
-                'cancel_time': date_helper.datetime2timestamp(transaction.cancel_time),
-                'state': transaction.state
+                'transaction': canceled_transaction.paycom_transaction_id,
+                'cancel_time': date_helper.datetime2timestamp(canceled_transaction.cancel_time),
+                'state': canceled_transaction.state
             }
         elif transaction.state == PaymeTransactionStates.STATE_COMPLETED:
             raise PaycomException(

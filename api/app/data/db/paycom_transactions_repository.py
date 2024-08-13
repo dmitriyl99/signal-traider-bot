@@ -55,7 +55,7 @@ class PaycomTransactionsRepository:
             session.refresh(transaction)
         return transaction
 
-    def cancel_transaction(self, transaction_id: int, reason):
+    def cancel_transaction(self, transaction_id: int, reason) -> PaymeTransaction:
         with Session() as session:
             transaction: PaymeTransaction = session.query(PaymeTransaction).get(transaction_id)
             transaction.reason = 1 * reason
@@ -65,6 +65,7 @@ class PaycomTransactionsRepository:
             else:
                 transaction.state = PaymeTransactionStates.STATE_CANCELLED
             session.commit()
+        return transaction
 
     def report(self, from_date, to_date):
         from_date = date_helper.timestamp2datetime(from_date)
