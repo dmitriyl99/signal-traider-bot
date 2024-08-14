@@ -147,8 +147,8 @@ strings_data = {
         'uz': 'Obuna muddatini tanlang'
     },
     'subscription_full_info': {
-        'ўз': '<b>Обуна:</b> {}\n<b>Муддат:</b> {}\n<b>Нарх:</b> ${}',
-        'uz': '<b>Obuna:</b> {}\n<b>Muddat:</b> {}\n<b>Narx:</b> ${}'
+        'ўз': '<b>Обуна:</b> {}\n<b>Муддат:</b> {}\n<b>Нарх:</b> {} сўм',
+        'uz': "<b>Obuna:</b> {}\n<b>Muddat:</b> {}\n<b>Narx:</b> {} so'm"
     },
     'subscription_pay': {
         'ўз': '💳 Тўлаш',
