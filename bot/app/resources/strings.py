@@ -134,6 +134,10 @@ strings_data = {
         'ўз': 'Обуна учун тўлаш',
         'uz': "Obuna uchun to'lash"
     },
+    'payment_invoice_created': {
+        'ўз': '“Click” тизимида сизга ҳисоб-китоб қилинган. Бунинг учун тўланг ва сиз обуна бўласиз',
+        'uz': '“Click” tizimida sizga hisob-kitob qilingan. Buning uchun to\'lang va siz obuna bo\'lasiz'
+    },
     'payment_subscription_info': {
         'ўз': '%s на % ой давомида  $%d учун',
         'uz': '%s %d oy davomida $%d'

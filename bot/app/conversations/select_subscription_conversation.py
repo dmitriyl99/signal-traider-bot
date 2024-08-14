@@ -126,8 +126,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     if payment_provider.name == 'Click':
         try:
             payment_provider.create_invoice(int(exchanged_price), user.phone, payment.id)
-            await update.message.reply_text(
-                f'Вам выставлен счёт в системе {payment_provider.name}. Оплатите его и вам будет оформлена подписка')
+            await update.message.reply_text(strings.get_string('payment_invoice_created', user.language))
         except Exception as e:
             await update.message.reply_text(
                 f'Ошибка при создании платежа в системе {payment_provider.name}. Обратитесь к разработчику.\n\nДля перезапуска бота, отправьте команду /start')
