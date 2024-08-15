@@ -126,6 +126,10 @@ class PaycomPaymentHandler:
                         'package_code': settings.ikpu_unit_code,
                     }
                 ]
+            },
+            "additional": {
+                "name": payment.user.name,
+                "phone": payment.user.phone
             }
         }
 
