@@ -310,7 +310,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
         return ConversationHandler.END
     payment_url = payment_provider.get_payment_url(int(exchanged_price), subscription.name, payment.id)
     await update.message.reply_text(
-        strings.get_string('payment_link', user.language).format(provider_name={payment_provider.name}),
+        strings.get_string('payment_link', user.language).format(provider_name=payment_provider.name),
         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
             strings.get_string('subscription_pay', user.language), url=payment_url)]]))
     back_message = await context.bot.send_message(update.effective_chat.id,
