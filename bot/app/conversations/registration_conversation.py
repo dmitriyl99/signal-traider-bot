@@ -308,20 +308,11 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
                                        parse_mode=ParseMode.HTML,
                                        reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
-    if payment_provider.name == 'Click':
-        try:
-            payment_provider.create_invoice(int(exchanged_price), user.phone, payment.id)
-            await update.message.reply_text(
-                f'Вам выставлен счёт в системе {payment_provider.name}. Оплатите его и вам будет оформлена подписка')
-        except Exception as e:
-            await update.message.reply_text(
-                f'Ошибка при создании платежа в системе {payment_provider.name}. Обратитесь к разработчику.\n\nДля перезапуска бота, отправьте команду /start')
-            raise e
-    elif payment_provider.name == 'Payme':
-        payment_url = payment_provider.get_payment_url(int(exchanged_price), subscription.name, payment.id)
-        await update.message.reply_text(f"Оплатите через систему {payment_provider.name}",
-                                        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
-                                            strings.get_string('subscription_pay', user.language), url=payment_url)]]))
+    payment_url = payment_provider.get_payment_url(int(exchanged_price), subscription.name, payment.id)
+    await update.message.reply_text(
+        strings.get_string('payment_link', user.language).format(provider_name={payment_provider.name}),
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+            strings.get_string('subscription_pay', user.language), url=payment_url)]]))
     back_message = await context.bot.send_message(update.effective_chat.id,
                                                   strings.get_string('payment_cancelation_button', user.language),
                                                   reply_markup=ReplyKeyboardMarkup(

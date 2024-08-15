@@ -138,6 +138,10 @@ strings_data = {
         'ўз': '“Click” тизимида сизга ҳисоб-китоб қилинган. Бунинг учун тўланг ва сиз обуна бўласиз',
         'uz': '“Click” tizimida sizga hisob-kitob qilingan. Buning uchun to\'lang va siz obuna bo\'lasiz'
     },
+    'payment_link': {
+        'ўз': "{provider_name} орқали тўлаш",
+        'uz': "{provider_name} orqali to'lash"
+    },
     'payment_subscription_info': {
         'ўз': '%s на % ой давомида  $%d учун',
         'uz': '%s %d oy davomida $%d'

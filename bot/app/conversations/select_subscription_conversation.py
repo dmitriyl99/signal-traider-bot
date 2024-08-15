@@ -2,7 +2,8 @@ import logging
 
 import json
 
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, WebAppInfo, KeyboardButton, ReplyKeyboardRemove
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, WebAppInfo, \
+    KeyboardButton, ReplyKeyboardRemove
 from telegram.constants import ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, MessageHandler, filters
 
@@ -104,7 +105,8 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
     )
     if payment_provider.name == 'Fake':
         await payments_repository.set_status(payment.id, PaymentStatus.CONFIRMED)
-        await subscriptions_repository.add_subscription_to_user(subscription.id, subscription_condition.id, user.telegram_user_id)
+        await subscriptions_repository.add_subscription_to_user(subscription.id, subscription_condition.id,
+                                                                user.telegram_user_id)
         telegram_user_id = user.telegram_user_id
         invite_links = []
         telegram_group_chat_id = config.TELEGRAM_GROUP_ID
@@ -123,10 +125,18 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
                                        parse_mode=ParseMode.HTML,
                                        reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
+    payment_url = payment_provider.get_payment_url(int(exchanged_price), subscription.name, payment.id)
+    await update.message.reply_text(
+        strings.get_string('payment_link', user.language).format(provider_name={payment_provider.name}),
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+            strings.get_string('subscription_pay', user.language), url=payment_url)]]))
+
     if payment_provider.name == 'Click':
         try:
-            payment_provider.create_invoice(int(exchanged_price), user.phone, payment.id)
-            await update.message.reply_text(strings.get_string('payment_invoice_created', user.language))
+            payment_url = payment_provider.get_payment_url(int(exchanged_price), subscription.name, payment.id)
+            # payment_provider.create_invoice(int(exchanged_price), user.phone, payment.id)
+            await update.message.reply_text(
+                strings.get_string('payment_link', user.language).format(provider_name={payment_provider.name}))
         except Exception as e:
             await update.message.reply_text(
                 f'Ошибка при создании платежа в системе {payment_provider.name}. Обратитесь к разработчику.\n\nДля перезапуска бота, отправьте команду /start')
@@ -223,7 +233,6 @@ async def _fallbacks_handler(update: Update, context: CallbackContext.DEFAULT_TY
     if update.pre_checkout_query:
         await handlers._pre_checkout_subscription(update, context)
     return ConversationHandler.END
-
 
 # handler = ConversationHandler(
 #     allow_reentry=True,
