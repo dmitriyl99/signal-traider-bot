@@ -41,9 +41,9 @@
             <td :class="{'text-success': user.subscription.active, 'text-danger': !user.subscription.active}" v-else>
               {{ user.subscription.subscription.name }}, {{ user.subscription.duration_in_days }} дней
             </td>
-            <td>{{ (new Date(user.created_at)).toLocaleString() }}</td>
+            <td>{{ addHours(new Date(user.created_at), 5).toLocaleString() }}</td>
             <td><span class="text-success" v-if="user.registration_date != null">{{
-                (new Date(user.registration_date)).toLocaleString()
+                addHours(new Date(user.registration_date), 5).toLocaleString()
               }}</span><span v-else class="text-danger">Не зарегистрирован</span></td>
             <td>
               <div class="d-flex justify-content-around">
@@ -71,6 +71,7 @@
 <script>
 import usersApi from "../../api/usersApi";
 import {debounce} from "lodash";
+import date_helper from "../../helpers/date";
 
 export default {
   name: "UsersList",
@@ -98,6 +99,9 @@ export default {
         document.body.appendChild(link);
         link.click()
       })
+    },
+    addHours(date, hours) {
+      return date_helper.addHours(date, hours)
     },
     onClickHandler(page) {
       usersApi.getUsersList(page).then(response => {

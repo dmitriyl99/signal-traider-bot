@@ -23,7 +23,7 @@
             <td :style="'color:'+statusMapper[payment.status].color">{{ statusMapper[payment.status].title }}</td>
             <td>{{ payment.subscription.name }}</td>
             <td>{{ payment.subscription_condition.duration_in_month }} мес.</td>
-            <td>{{ (new Date(payment.created_at)).toLocaleDateString() }}</td>
+            <td>{{ addHours(new Date(payment.created_at), 5).toLocaleDateString() }}</td>
           </tr>
           </tbody>
         </table>
@@ -34,6 +34,7 @@
 
 <script>
 import paymentsApi from "../../api/paymentsApi";
+import date_helper from "../../helpers/date"
 export default {
   name: "PaymentsList",
   data: () => ({
@@ -61,6 +62,11 @@ export default {
     paymentsApi.getPayments().then(response => {
       this.payments = response.data
     })
+  },
+  methods: {
+    addHours(date, hours) {
+      return date_helper.addHours(date, hours)
+    },
   }
 }
 </script>
