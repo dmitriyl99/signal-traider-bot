@@ -18,7 +18,7 @@ class PaymentProvider:
         self.name = name
         self.provider_token = provider_token
 
-    def get_payment_url(self, amount, title, payment_id):
+    def get_payment_url(self, amount, title, payment_id, name, phone):
         pass
 
     def create_invoice(self, amount, phone, payment_id):
@@ -37,7 +37,7 @@ class PaymePaymentProvider(PaymentProvider):
         self.key = key
         self.test_key = test_key
 
-    def get_payment_url(self, amount, title, payment_id):
+    def get_payment_url(self, amount, title, payment_id, name, phone):
         if config.ENV == 'local':
             host = 'https://checkout.test.paycom.uz'
         else:
@@ -76,14 +76,16 @@ class ClickPaymentProvider(PaymentProvider):
         self.secret_key = secret_key
         self.merchant_user_id = merchant_user_id
 
-    def get_payment_url(self, amount, title, payment_id):
+    def get_payment_url(self, amount, title, payment_id, name, phone):
         host = 'https://my.click.uz'
         schema = 'services/pay'
         payload = {
             'service_id': self.service_id,
             'merchant_id': self.merchant_id,
             'amount': amount,
-            'transaction_param': payment_id
+            'transaction_param': payment_id,
+            'additional_param3': name,
+            'additional_param4': phone,
         }
         query_string = urllib.parse.urlencode(payload)
         return f"{host}/{schema}?{query_string}"

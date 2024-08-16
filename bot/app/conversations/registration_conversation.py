@@ -308,7 +308,7 @@ async def _select_payment_provider(update: Update, context: CallbackContext.DEFA
                                        parse_mode=ParseMode.HTML,
                                        reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
-    payment_url = payment_provider.get_payment_url(int(exchanged_price), subscription.name, payment.id)
+    payment_url = payment_provider.get_payment_url(int(exchanged_price), subscription.name, payment.id, user.name, user.phone)
     await update.message.reply_text(
         strings.get_string('payment_link', user.language).format(provider_name=payment_provider.name),
         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
