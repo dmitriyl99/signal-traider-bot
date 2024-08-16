@@ -20,8 +20,8 @@
           <tbody>
           <tr v-for="payment in payments" :key="payment.id">
             <td>{{ payment.id }}</td>
-            <td>{{ payment.user.name ?? '' }}</td>
-            <td>{{ payment.user.phone ?? '' }}</td>
+            <td><span v-if="payment.user">{{ payment.user.name }}</span><span></span></td>
+            <td><span v-if="payment.user">{{ payment.user.phone }}</span><span></span></td>
             <td>{{ payment.amount.toLocaleString() }}</td>
             <td>{{ payment.provider }}</td>
             <td :style="'color:'+statusMapper[payment.status].color">{{ statusMapper[payment.status].title }}</td>
