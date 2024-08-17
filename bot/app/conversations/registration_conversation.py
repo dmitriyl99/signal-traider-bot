@@ -51,18 +51,15 @@ async def _start(update: Update, context: CallbackContext.DEFAULT_TYPE):
         await update.message.reply_text(strings.get_string('hello_message', current_user.language) % current_user.name)
         if current_user.verified_at is None:
             await users_repository.verify_user(current_user.id)
-            user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
             await users_repository.activate_proactively_added_user(context.user_data['registration_phone'],
                                                                    update.effective_user.id)
-            await update.message.reply_text(strings.get_string('registration_finished', user.language),
-                                            reply_markup=ReplyKeyboardRemove())
             active_subscription: SubscriptionUser = await subscriptions_repository.get_active_subscription_for_user(
-                user)
+                current_user)
             if active_subscription is None:
-                await actions.send_subscription_conditions(update, 1, user, context)
+                await actions.send_subscription_conditions(update, 1, current_user, context)
                 return CHOOSE_CONDITION
             else:
-                await actions.send_current_subscription_information(active_subscription, update, user, context)
+                await actions.send_current_subscription_information(active_subscription, update, current_user, context)
             if 'registration_name' in context.user_data:
                 del context.user_data['registration_name']
             return ConversationHandler.END
@@ -174,9 +171,16 @@ async def _phone(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
             await update.message.reply_text(
                 strings.get_string('registration_phone_user_exists', context.user_data['registration_language']))
             return
-    user = await users_repository.get_user_by_telegram_id(update.effective_user.id)
+    user = await users_repository.find_user_by_phone(phone_number)
+    if user is None:
+        user = await users_repository.save_user(
+            context.user_data['registration_name'],
+            phone_number,
+            update.effective_user.id,
+            context.user_data['registration_language']
+        )
     await users_repository.verify_user(user.id)
-    await users_repository.activate_proactively_added_user(context.user_data['registration_phone'],
+    await users_repository.activate_proactively_added_user(phone_number,
                                                            update.effective_user.id)
     await update.message.reply_text(strings.get_string('registration_finished', user.language),
                                     reply_markup=ReplyKeyboardRemove())
