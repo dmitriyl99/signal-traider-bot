@@ -26,7 +26,8 @@ class UsersRepository:
         result = await self._session.execute(stmt)
         return result.scalars().first()
 
-    async def get_all_users(self, analyst_id: int = None, page: int = 1, per_page: int = 25, search: str| None = None) -> paginator.Paginator:
+    async def get_all_users(self, analyst_id: int = None, page: int = 1, per_page: int = 25,
+                            search: str | None = None, filter_subscription: str | None = None) -> paginator.Paginator:
         with Session() as session:
             query = session.query(User).options(selectinload(User.subscription).options(
                 joinedload(SubscriptionUser.subscription)
@@ -35,6 +36,11 @@ class UsersRepository:
                 query = query.filter(User.analyst_id == analyst_id)
             if search and search != '':
                 query = query.filter(or_(User.name.like(f"%{search}%"), User.phone.like(f"%{search}%")))
+            if filter_subscription is not None and filter_subscription != '':
+                if filter_subscription == 'true':
+                    query = query.filter(User.subscription != None)
+                else:
+                    query = query.filter(User.subscription == None)
             query = query.order_by(User.created_at.desc())
             return paginator.paginate(query, page, per_page)
 

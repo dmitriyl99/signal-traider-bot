@@ -2,10 +2,17 @@
   <div class="card">
     <div class="card-header">
       <div class="row align-items-center">
-        <div class="col-8">
+        <div class="col-6">
           <div class="search-group">
             <input type="text" class="form-control form-control-flush" v-model="searchQuery" placeholder="Search">
           </div>
+        </div>
+        <div class="col-2">
+          <select class="form-select" v-model="filter_subscription">
+            <option value="" selected>Подписка</option>
+            <option value="true">Есть</option>
+            <option value="false">Нет</option>
+          </select>
         </div>
         <div class="col-4">
           <div class="d-flex justify-content-end align-items-center">
@@ -80,13 +87,17 @@ export default {
     page: 1,
     searchQuery: "",
     isTyping: false,
-    isLoading: false
+    isLoading: false,
+    filter_subscription: ""
   }),
   watch: {
     searchQuery: debounce(function () {
       console.log(this.searchQuery)
       this.fetchUsers()
     }, 1000),
+    filter_subscription: function () {
+      this.fetchUsers();
+    }
   },
   methods: {
     excelDownload() {
@@ -109,7 +120,7 @@ export default {
       })
     },
     fetchUsers() {
-      usersApi.getUsersList(this.page, this.searchQuery).then(response => {
+      usersApi.getUsersList(this.page, this.searchQuery, this.filter_subscription).then(response => {
         this.users = response.data
       })
     },

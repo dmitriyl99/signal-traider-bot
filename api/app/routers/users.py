@@ -20,12 +20,14 @@ async def get_users_list(
         user_repository: UsersRepository = Depends(get_user_repository),
         current_user: AdminUser = Depends(get_current_user),
         page: int = 1,
-        search: str = None
+        search: str = None,
+        filter_subscription: str | None = None,
 ):
     if len(list(filter(lambda x: x.name == 'Analyst', current_user.roles))) > 0:
-        users = await user_repository.get_all_users(current_user.id, page=page, search=search)
+        users = await user_repository.get_all_users(current_user.id, page=page, search=search,
+                                                    filter_subscription=filter_subscription)
     else:
-        users = await user_repository.get_all_users(page=page, search=search)
+        users = await user_repository.get_all_users(page=page, search=search, filter_subscription=filter_subscription)
     return users
 
 
@@ -129,6 +131,7 @@ async def download_excel(
 
     def remove_file(temp_file):
         Path(temp_file).unlink()
+
     response = FileResponse(excel_filename, filename='Пользователи.xlsx')
     background_tasks.add_task(remove_file, excel_filename)
 

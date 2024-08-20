@@ -1,7 +1,7 @@
 import apiInstance from "./index";
 
-function getUsersList(page = 1, searchQuery = '') {
-    return apiInstance.get(`/users/?page=${page}&search=${searchQuery}`)
+function getUsersList(page = 1, searchQuery = '', filter_subscription = '') {
+    return apiInstance.get(`/users/`, {params: {search: searchQuery, page: page, filter_subscription: filter_subscription}})
 }
 
 function saveUser(
