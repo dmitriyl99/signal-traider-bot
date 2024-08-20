@@ -3,7 +3,7 @@ import router from '../router'
 import store from '../store'
 
 const apiInstance = axios.create({
-    baseURL: 'http://localhost:8000/api/'
+    baseURL: 'https://api.isaev-full-contact.uz/api/'
 })
 
 apiInstance.interceptors.response.use(function (response) {
