@@ -23,7 +23,7 @@
         <table class="table table-sm table-hover table-no-wrap card-table">
           <thead>
           <tr>
-            <th>ID</th>
+            <th>#</th>
             <th>Имя</th>
             <th>Номер телефона</th>
             <th>Подписка</th>
@@ -33,8 +33,8 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="user in users.items" :key="user.id">
-            <td>{{ user.id }}</td>
+          <tr v-for="(user, index) in users.items" :key="user.id">
+            <td>{{ index + 1 + ((page - 1) * 25) }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.phone }}</td>
             <td v-if="user.subscription == null">-</td>
