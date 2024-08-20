@@ -1,6 +1,7 @@
 import logging
 
 from typing import Optional
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, Body, Form, HTTPException, Request
 from fastapi_csrf_protect import CsrfProtect
@@ -26,9 +27,18 @@ router = APIRouter(prefix='/payments', tags=['Payments'])
 @router.get('/')
 async def get_payments_list(
         payment_repository: PaymentsRepository = Depends(get_payments_repository),
+        filter_sum: int | None = None,
+        filter_provider: str | None = None,
+        filter_status: str | None = None,
+        filter_duration: int | None = None,
+        filter_date_from: str | None = None,
+        filter_date_to: str | None = None,
         current_user: AdminUser = Depends(get_current_user)
+
 ):
-    return await payment_repository.get_all_payment()
+    return await payment_repository.get_all_payment(
+        filter_sum, filter_provider, filter_status, filter_duration, filter_date_from, filter_date_to
+    )
 
 
 @router.post('/click/prepare')

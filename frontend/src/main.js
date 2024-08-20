@@ -7,6 +7,7 @@ import Select2 from 'vue3-select2-component';
 import VueAwesomePaginate from "vue-awesome-paginate";
 import "vue-awesome-paginate/dist/style.css";
 import { vMaska } from "maska"
+import 'flatpickr/dist/flatpickr.css'
 
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
