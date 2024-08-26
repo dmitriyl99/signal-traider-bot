@@ -372,19 +372,22 @@ async def _fallbacks_text(update: Update, context: CallbackContext.DEFAULT_TYPE)
     return ConversationHandler.END
 
 
+start_handler = CommandHandler('start', _start)
+
+
 handler = ConversationHandler(
-    entry_points=[CommandHandler('start', _start)],
+    entry_points=[start_handler],
     states={
-        LANGUAGE: [MessageHandler(filters.TEXT & ~filters.COMMAND, _language)],
-        NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, _name)],
-        PHONE: [MessageHandler((filters.TEXT | filters.CONTACT) & ~filters.COMMAND, _phone)],
-        OTP: [MessageHandler(filters.TEXT & ~filters.COMMAND, _verify_otp)],
-        CHOOSE_CONDITION: [MessageHandler(filters.TEXT, _choose_condition)],
-        SELECT_PAYMENT_PROVIDER: [MessageHandler(filters.TEXT, _select_payment_provider)],
-        BACK: [MessageHandler(filters.TEXT, _back_handler)]
+        LANGUAGE: [start_handler, MessageHandler(filters.TEXT & ~filters.COMMAND, _language)],
+        NAME: [start_handler, MessageHandler(filters.TEXT & ~filters.COMMAND, _name)],
+        PHONE: [start_handler, MessageHandler((filters.TEXT | filters.CONTACT) & ~filters.COMMAND, _phone)],
+        OTP: [start_handler, MessageHandler(filters.TEXT & ~filters.COMMAND, _verify_otp)],
+        CHOOSE_CONDITION: [start_handler, MessageHandler(filters.TEXT, _choose_condition)],
+        SELECT_PAYMENT_PROVIDER: [start_handler, MessageHandler(filters.TEXT, _select_payment_provider)],
+        BACK: [start_handler, MessageHandler(filters.TEXT, _back_handler)]
     },
     fallbacks=[
-        CommandHandler('start', _start),
+        start_handler,
         MessageHandler(filters.TEXT, _fallbacks_text)
     ]
 )
