@@ -4,7 +4,7 @@ from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, fi
 from telegram.constants import ChatType
 from telegram import Update, ReplyKeyboardRemove
 
-from app.conversations import registration_conversation, language_conversation, renew_subscription
+from app.conversations import registration_conversation, language_conversation, renew_subscription, chat_join_request
 from app.payments import handlers as payment_handlers
 from app.config import config
 
@@ -31,6 +31,7 @@ def main():
     application.add_handlers(payment_handlers.handlers)
     application.add_handler(renew_subscription.handler)
     application.add_handler(MessageHandler(filters.ALL, default_handler))
+    application.add_handler(chat_join_request.handler)
     if config.ENV == 'production':
         application.run_webhook(
             listen='0.0.0.0',
