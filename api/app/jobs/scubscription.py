@@ -31,16 +31,19 @@ async def check_all_subscriptions_job():
                 if abs(diff_in_days) - subscription.duration_in_days == 1:
                     if subscription.notified_1_day_after is False:
                         subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
-                        await tg_bot.send_message(
-                            chat_id=subscription.user.telegram_user_id,
-                            text='Срок вашей подписки <b>{name}</b> подошёл к концу. Продлите подписку, чтобы не потерять доступ к группе.'.format(
-                                name=subscription_entity.name),
-                            parse_mode=types.ParseMode.HTML,
-                            reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[
-                                types.InlineKeyboardButton(text="Продлить",
-                                                           callback_data=f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
-                            ]])
-                        )
+                        try:
+                            await tg_bot.send_message(
+                                chat_id=subscription.user.telegram_user_id,
+                                text='Срок вашей подписки <b>{name}</b> подошёл к концу. Продлите подписку, чтобы не потерять доступ к группе.'.format(
+                                    name=subscription_entity.name),
+                                parse_mode=types.ParseMode.HTML,
+                                reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[
+                                    types.InlineKeyboardButton(text="Продлить",
+                                                               callback_data=f'renew_subscription:{subscription.user.telegram_user_id},{subscription.subscription_id},{subscription.user_id}')
+                                ]])
+                            )
+                        except:
+                            pass
                 else:
                     logger.info(
                         'Deactivate subscription %d for user %d' % (subscription.subscription_id, subscription.user_id))
@@ -48,7 +51,10 @@ async def check_all_subscriptions_job():
                     await session.commit()
                     subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
                     telegram_group_chat_id = settings.telegram_group_id
-                    await bot.ban_user_in_group(subscription.user.telegram_user_id, telegram_group_chat_id)
+                    try:
+                        await bot.ban_user_in_group(subscription.user.telegram_user_id, telegram_group_chat_id)
+                    except:
+                        pass
                     # amocrm_integration.add_user_to_catalog(subscription.user, amocrm_integration.AmoCrmUserType.LOST_USER)
 
                     await tg_bot.send_message(
