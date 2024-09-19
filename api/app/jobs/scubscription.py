@@ -28,7 +28,7 @@ async def check_all_subscriptions_job():
         for subscription in active_subscriptions:
             diff_in_days = date.diff_in_days(subscription.activation_datetime, datetime.now())
             if abs(diff_in_days) >= subscription.duration_in_days:
-                if abs(diff_in_days) - subscription.duration_in_days == 1:
+                if abs(diff_in_days) - subscription.duration_in_days in [0, 1]:
                     if subscription.notified_1_day_after is False:
                         subscription_entity: Subscription = await session.get(Subscription, subscription.subscription_id)
                         try:
