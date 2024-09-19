@@ -1,5 +1,5 @@
 from typing import List
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from app.data.models.users import User
 from app.helpers import date
@@ -29,7 +29,7 @@ def get_users_excel(users: List[User]) -> str:
         worksheet.write(row, column + 5, 'Да' if user.subscription else 'Нет')
         worksheet.write(row, column + 6, 'Да' if user.subscription and user.subscription.active else 'Нет')
         worksheet.write(row, column + 7, user.subscription.duration_in_days if user.subscription else '')
-        diff_in_days = date.diff_in_days(user.subscription.activation_datetime,
+        diff_in_days = date.diff_in_days(user.subscription.activation_datetime + timedelta(days=user.subscription.duration_in_days),
                                          datetime.now()) if user.subscription and user.subscription.activation_datetime else ''
         worksheet.write(row, column + 8, diff_in_days)
         row += 1
