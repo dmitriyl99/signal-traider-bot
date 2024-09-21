@@ -118,8 +118,7 @@ async def subscription_purchased(user: User, subscription: Subscription):
 async def ban_user_in_group(telegram_user_id: int, telegram_group_chat_id):
     bot = Bot(settings.telegram_bot_api_token)
     chat_member = await bot.get_chat_member(telegram_group_chat_id, telegram_user_id)
-    if chat_member.status in ['creator', 'administrator', 'member', 'restricted']:
-        await bot.ban_chat_member(telegram_group_chat_id, telegram_user_id)
+    await bot.ban_chat_member(telegram_group_chat_id, telegram_user_id)
 
 
 async def send_message_to_user(
